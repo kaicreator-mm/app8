@@ -204,3 +204,16 @@ For Product Freeze, the Independent Product Reviewer must verify for every L2_RE
 - no open P0/P1 has been relabeled as L2_REQUIRED.
 
 Any failed transfer test reclassifies the question as L1_BLOCKING and Product Freeze fails.
+
+
+### Q-L2-010 — Hard-case adaptation distribution
+
+Classification: L2_REQUIRED
+
+Question:
+
+> How often do valuable non-trivial software Providers require deeper-than-thin adaptation, and what adaptation levels remain economically acceptable?
+
+L2 / later evidence must sample hard cases such as stateful/headless desktop-core software and classify adaptation cost without using a single easy CLI-heavy sample as proof of scalability.
+
+This does not change the v0.1 Provider-native product claim; it constrains future automatic/scalable adaptation positioning.
