@@ -29,7 +29,7 @@ Classification: L2_REQUIRED
 
 Question:
 
-> Which Linux enforcement composition provides the v0.1 reference isolation contract, and what exact threat boundary does it support?
+> Which Linux enforcement composition satisfies the **already frozen product-level threat promise** in PRD §4?
 
 Known at L1:
 
@@ -40,9 +40,11 @@ Known at L1:
 L2 must decide:
 
 - process/filesystem/network containment mechanism;
-- sandbox-escape/kernel-exploit assumption;
 - required privileges;
-- observable violation telemetry.
+- observable violation telemetry;
+- how the architecture demonstrates conformance to the PRD's fixed IN/OUT threat assumptions.
+
+L2 MUST NOT weaken, broaden or redefine the product-level threat promise.
 
 Why not L1-blocking:
 
@@ -204,16 +206,3 @@ For Product Freeze, the Independent Product Reviewer must verify for every L2_RE
 - no open P0/P1 has been relabeled as L2_REQUIRED.
 
 Any failed transfer test reclassifies the question as L1_BLOCKING and Product Freeze fails.
-
-
-### Q-L2-010 — Hard-case adaptation distribution
-
-Classification: L2_REQUIRED
-
-Question:
-
-> How often do valuable non-trivial software Providers require deeper-than-thin adaptation, and what adaptation levels remain economically acceptable?
-
-L2 / later evidence must sample hard cases such as stateful/headless desktop-core software and classify adaptation cost without using a single easy CLI-heavy sample as proof of scalability.
-
-This does not change the v0.1 Provider-native product claim; it constrains future automatic/scalable adaptation positioning.
