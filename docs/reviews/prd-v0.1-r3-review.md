@@ -1,3 +1,5 @@
+> **Provenance notice (added 2026-10-07):** This review text was restored into GitHub after the repository had already advanced to r4. The original reviewed r3 PRD blob/SHA, original GitHub review event, original file hash, and reviewer operator_id/session_ref are not recoverable from GitHub durable state. Based on later r4 review history, the text originated outside GitHub from an earlier Claude/local review context. Therefore provenance and exact reviewed-subject identity are **NOT VERIFIED**. This file is retained as historical context only and is **not** an authority for Product Freeze. Durable r4 and r5 review events supersede it for current closure decisions.
+
 # 对抗审核 — PRD v0.1-r3 (Executable Capability Evidence)
 
 **审核对象:** `prd-0.1-r3.md`(DRAFT_FOR_SUCCESSOR_ADVERSARIAL_REVIEW, 2026-10-07)
