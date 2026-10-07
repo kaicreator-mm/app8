@@ -33,7 +33,7 @@ PRODUCT_FREEZE.md
 | §2 security property classes | PRD security boundary + Q-L2-001/Q-L2-007; internal taxonomy deferred |
 | §§3–4 MVP/canonical model | PRD §§5–6; internal object graph deferred to L2 |
 | §§5–14 Provider/Evidence/scope/refutation/admission/TOCTOU mechanics | Product invariants retained in PRD; exact mechanics moved to Q-L2-002..008 |
-| §15 threat model | Product-level security limits in PRD; exact threat/enforcer boundary Q-L2-001/Q-L2-007 |
+| §15 threat model | Product-level threat boundary is frozen in PRD §4; Q-L2-001 chooses an enforcement mechanism that must satisfy it; output-trust mechanics remain Q-L2-007 |
 | §§16–21 L1 lifecycle/CAL/PREV/ADOPT/Review/Freeze | PRD §§8–12 + L1_EVIDENCE_INDEX + E00/E01/E03 protocols + PRODUCT_FREEZE |
 | §§22–28 post-Freeze technical gates | Removed from L1 PRD authority; become L2/release-design inputs after Freeze |
 | §24 T2 four-arm experiment | Replaced by E02 Evidence Decision-Value protocol; old formulation intentionally retired |
@@ -52,7 +52,7 @@ PRODUCT_FREEZE.md
 The following r4 concepts are explicitly accounted for rather than silently dropped:
 
 - **Output trust** → restored as PRD INV-007 + Q-L2-007.
-- **Hard-case adaptation probe** → Q-L2-010.
+- **Hard-case adaptation probe** → moved to `PRODUCT_RESEARCH_BACKLOG.md` R-001 as non-blocking future Product Evidence, not L2 architecture authority.
 - **Kill criteria** → restored as PRD K1–K4, tied to PCL-001/002/003/005.
 - **Anti-metrics** → restored in PRD §14.
 - **Technical suite sensitivity / replay / attestation gates** → intentionally moved out of L1 Freeze authority into future L2/release design; they are not claimed solved.
