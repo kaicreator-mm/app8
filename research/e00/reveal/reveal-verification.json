@@ -1,0 +1,256 @@
+{
+  "schema": "app8.e00.reveal-verification.v1",
+  "generated_utc": "2026-10-07T16:03:05Z",
+  "scoring_base_commit": "6d877a9fa8fdb6c9c2a7b0df86eb114b35c1f791",
+  "protocol_blob": "84dc764846d12bc84f9f21a0ce1922c3ffa180b0",
+  "escrow_source": "curator-held private reveal material from #7 (released after #8 DETECTOR_OUTPUT_FROZEN=YES)",
+  "escrow_sha256": "8f9b5f2f5d87bbc80fc4aa3593ec74907414e69118f38a59e315fc0ccb76961b",
+  "reconstructed_label_manifest_sha256": "bdcd2d61f8ade3572ea4f21382d596ec5b234a6b4d6db7a63dfa6d4e0df980a2",
+  "recomputed_salted_commitment_sha256": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e",
+  "expected_commitment_sha256": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e",
+  "revealed_counts": {
+    "positive_material_false_safe": 80,
+    "negative_safe": 80,
+    "by_category": {
+      "network": {
+        "SAFE": 20,
+        "MATERIAL_FALSE_SAFE": 20
+      },
+      "filesystem": {
+        "SAFE": 20,
+        "MATERIAL_FALSE_SAFE": 20
+      },
+      "process_side_effect": {
+        "SAFE": 20,
+        "MATERIAL_FALSE_SAFE": 20
+      },
+      "structured_output_reliability": {
+        "SAFE": 20,
+        "MATERIAL_FALSE_SAFE": 20
+      }
+    }
+  },
+  "checks": [
+    {
+      "check": "scoring base commit",
+      "ok": true,
+      "detail": "6d877a9fa8fdb6c9c2a7b0df86eb114b35c1f791"
+    },
+    {
+      "check": "protocol blob frozen at HEAD",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "corpus digest case_manifest_sha256",
+      "ok": true,
+      "detail": "a5bd20fce71c02c421a71b847358f49a3cd543464269fa74a6f53ef5e0ae5a67"
+    },
+    {
+      "check": "corpus digest cases_sha256",
+      "ok": true,
+      "detail": "fe2012c79f5171bbba00ae96bfa3b340f9d01c05b3409795f29b57e0a7aa089f"
+    },
+    {
+      "check": "corpus digest catalog_sha256",
+      "ok": true,
+      "detail": "7761cfe4cf5e9ea015e95b21b214b7f53ada253e429ea14e19a13f83cfc3401f"
+    },
+    {
+      "check": "commitment artifact sha256 (canonical, trailing newline excluded)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "detector blob unchanged research/e00/detector/detector.cjs",
+      "ok": true,
+      "detail": "5d7ed47c920a63fb3be9239d7080f88b04c9e7b5"
+    },
+    {
+      "check": "detector blob unchanged research/e00/detector/run.cjs",
+      "ok": true,
+      "detail": "8d33bab853670c5e40b2d30122ea7ba0000ec78b"
+    },
+    {
+      "check": "detector blob unchanged research/e00/detector/config.json",
+      "ok": true,
+      "detail": "37a4826ca5a263223e206bfd9a5e2dc268d64b61"
+    },
+    {
+      "check": "detector/harness/config bundle digest",
+      "ok": true,
+      "detail": "a0d4ba6189e505a9a07dabf064a5839a274036356bdf53a0c71a72866a6f14be"
+    },
+    {
+      "check": "config corpus digests == frozen corpus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "config base_commit == corpus freeze",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "config protocol_blob",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run base_commit == corpus freeze",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run protocol_blob",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run corpus == config corpus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run bundle digest == recomputed bundle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run opaque commitments frozen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run case_count 160",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "run unknown_count 0",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "frozen output blob at HEAD",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "canonical predictions output digest",
+      "ok": true,
+      "detail": "9cef7f828a621c63673934f7fb0f613f2d099d4ce23b12fb11f5c3e4c28fec28"
+    },
+    {
+      "check": "prediction row key order stable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "prediction case_ids == corpus case_ids (1:1, order-preserving)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "case_id uniqueness",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "every case resolves fixture_ref+profile",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "manifest independent_subset flag",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "manifest labels_present false",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "unchanged since corpus freeze research/e00/corpus/manifest.json",
+      "ok": true,
+      "detail": "2fe36cdb735dcec283bd37a5a31436ff2949125c"
+    },
+    {
+      "check": "unchanged since corpus freeze research/e00/corpus/cases.json",
+      "ok": true,
+      "detail": "7ed682027446a9d2016ae43d663b67f497d04296"
+    },
+    {
+      "check": "unchanged since corpus freeze research/e00/corpus/catalog.json",
+      "ok": true,
+      "detail": "a739747bc707d5b22fd000fd0501290d7bd842f7"
+    },
+    {
+      "check": "unchanged since corpus freeze research/e00/commitments/commitment.json",
+      "ok": true,
+      "detail": "a5c01b52fd1e9d720225bb3cf913ea73622f0bac"
+    },
+    {
+      "check": "escrow schema",
+      "ok": true,
+      "detail": "app8.e00.private-reveal-escrow.v1"
+    },
+    {
+      "check": "escrow curator_issue",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "escrow pr/tree match #7 terminal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "escrow release gate recorded",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "secret salt is 256-bit hex",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "case_id derivation verified for all 160 cases",
+      "ok": true,
+      "detail": "mismatches=0"
+    },
+    {
+      "check": "plaintext label-manifest SHA-256",
+      "ok": true,
+      "detail": "bdcd2d61f8ade3572ea4f21382d596ec5b234a6b4d6db7a63dfa6d4e0df980a2"
+    },
+    {
+      "check": "salted hidden-label commitment recompute",
+      "ok": true,
+      "detail": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e"
+    },
+    {
+      "check": "revealed aggregate positive count == 80",
+      "ok": true,
+      "detail": "{'SAFE': 80, 'MATERIAL_FALSE_SAFE': 80}"
+    },
+    {
+      "check": "revealed aggregate negative count == 80",
+      "ok": true,
+      "detail": "{'SAFE': 80, 'MATERIAL_FALSE_SAFE': 80}"
+    },
+    {
+      "check": "revealed per-category counts match commitment.json",
+      "ok": true,
+      "detail": "{\"network\": {\"SAFE\": 20, \"MATERIAL_FALSE_SAFE\": 20}, \"filesystem\": {\"SAFE\": 20, \"MATERIAL_FALSE_SAFE\": 20}, \"process_side_effect\": {\"SAFE\": 20, \"MATERIAL_FALSE_SAFE\": 20}, \"structured_output_reliability\": {\"SAFE\": 20, \"MATERIAL_FALSE_SAFE\": 20}}"
+    },
+    {
+      "check": "feasibility cross-check: wilson(78,80) lower == #7 value",
+      "ok": true,
+      "detail": "0.9133556701442198"
+    }
+  ],
+  "all_checks_passed": true
+}
