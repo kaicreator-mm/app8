@@ -23,6 +23,17 @@ The measured variable is **Provider-behavior evidence**.
 
 This protocol does not compare "sandbox vs no sandbox".
 
+## Shared decision procedure
+
+Before any arm output is generated, freeze one exact admission/decision procedure and its digest/rule-set version.
+
+Both S and E MUST use that identical procedure.
+
+- S receives static/publisher declarations + the fixed enforcement baseline.
+- E receives those exact same inputs plus generated Provider-behavior evidence.
+
+Any arm-specific decision logic, rule change, model change or threshold change invalidates the run.
+
 ## Baseline S — Static declaration
 
 Decision input includes:
@@ -77,7 +88,7 @@ All must hold at the frozen maximum sample:
 4. Benign admissibility non-inferiority:
    - paired 95% CI lower bound for `E_valid_allow - S_valid_allow` >= -0.05.
 
-The paired CI method and analysis script are frozen before labels are revealed.
+The exact paired-CI method, analysis script, decision-engine digest and all thresholds are frozen in GitHub **before any experimental arm output is generated**. Label reveal occurs only after those authorities are immutable.
 
 ## FAIL
 
