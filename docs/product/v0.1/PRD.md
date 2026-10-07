@@ -70,8 +70,10 @@ Security boundary:
 The v0.1 verified path MUST protect against a Provider, including a malicious or test-aware Provider, violating the **configured enforceable boundary** for:
 
 - undeclared outbound network access;
+- filesystem reads outside explicitly granted readable scope;
 - filesystem writes outside explicitly granted writable scope;
 - process escape outside the configured containment boundary;
+- host-wide CPU/memory/process exhaustion beyond configured resource quotas;
 - silent escalation from untrusted Provider output into trusted control/policy/instruction authority.
 
 The verified path MUST fail closed when required enforcement/evidence is absent.
@@ -81,12 +83,15 @@ Explicit MVP assumptions / exclusions:
 - compromise of the trusted first-party runner, host kernel, sandbox implementation or trust root is OUT OF SCOPE;
 - kernel/sandbox escape vulnerabilities are OUT OF SCOPE;
 - finite behavioral fixtures do not defend universally against time-bomb or arbitrary data-triggered semantic misbehavior;
-- secrets/credentials are denied to an untrusted Provider by default; granting them requires an explicit policy/residual-risk authorization outside the normal verified-safe claim;
+- service availability/SLA within an already granted resource quota is OUT OF SCOPE; the promise is confinement of consumption to configured quotas, not availability;
+- credential material is denied to an untrusted Provider by default. At minimum this includes API/auth tokens, passwords, private keys, session cookies, credential-store files, and environment/configuration values explicitly designated as secret. Granting such material requires an explicit policy/residual-risk authorization outside the normal verified-safe claim;
 - Provider output derived from external or Provider-controlled content is treated as untrusted unless an L2 contract explicitly proves a narrower trusted field.
 
 L2 chooses the enforcement architecture that satisfies this frozen threat promise; L2 does not redefine the promise.
 
 ## 5. MVP black-box behavior
+
+The v0.1 reference execution/evidence platform is **Linux x86_64**. Other native platforms are post-v0.1 unless a successor PRD changes the scope.
 
 The v0.1 product, after Product Freeze and L2 design, is expected to expose these black-box behaviors:
 
