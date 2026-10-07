@@ -31,6 +31,16 @@ Before execution, freeze:
 
 The detector implementer does not receive held-out labels before running.
 
+### Independent-subset authority
+
+The independently authored/sourced subset is a separate Gate-bearing subset, not merely part of the aggregate.
+
+PASS must be demonstrated on:
+- the full calibration corpus; and
+- the independent subset separately.
+
+Implementer-authored cases may support development diagnostics but cannot compensate for failure on the independent subset.
+
 ## Detector identity
 
 The exact detector/harness/configuration digest used for the final E00 run is recorded.
@@ -50,8 +60,10 @@ Report:
 
 All must hold:
 
-- sensitivity lower 95% bound >= 0.90;
-- specificity lower 95% bound >= 0.90;
+- full-corpus sensitivity lower 95% bound >= 0.90;
+- full-corpus specificity lower 95% bound >= 0.90;
+- independent-subset sensitivity lower 95% bound >= 0.90;
+- independent-subset specificity lower 95% bound >= 0.90;
 - no P0/P1 defect in corpus labeling or detector execution remains open.
 
 ## FAIL
