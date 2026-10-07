@@ -2,7 +2,7 @@
 
 Status: NOT_RUN
 Gate: L1-CAL
-Protocol blob: ce0c1e6ac7f4e8bdae74a8380d2c95275965eb35
+Protocol blob: 1e79c61a8d51bd86e125ffcf31936f2a19bc9f42
 
 No data has been collected under this protocol.
 
