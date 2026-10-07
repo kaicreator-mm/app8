@@ -120,6 +120,10 @@ A question may be transferred to L2 only if it passes the L1→L2 Transfer Test 
 
 Under the pinned standard, Product Freeze requires zero unresolved valid P0 and zero unresolved valid P1.
 
+### INV-007 — Untrusted output never silently becomes control authority
+
+Provider output derived from untrusted external content must not be silently promoted into trusted control, policy or instruction semantics. The exact representation/enforcement mechanism is L2_REQUIRED.
+
 ## 8. L1 success / kill model
 
 Product Freeze is allowed only if all required L1 claims have supporting evidence and no open P0/P1 remain.
@@ -209,11 +213,24 @@ The current L2 Question Register includes, at minimum:
 - evidence attestation/trust;
 - output trust propagation;
 - process containment/cancellation;
-- performance architecture.
+- performance architecture;
+- hard-case adaptation distribution.
 
 These are not considered solved by this PRD.
 
-## 14. Current terminal
+## 14. Anti-metrics
+
+The following do not prove product success:
+
+- wrapper count;
+- MCP server count;
+- registry entry count;
+- adapter LOC;
+- fork count;
+- raw upgrade survival without suite sensitivity;
+- number of "VERIFIED" labels without scoped negative testing.
+
+## 15. Current terminal
 
 ~~~text
 PRODUCT_DIRECTION = CONDITIONAL_GO
