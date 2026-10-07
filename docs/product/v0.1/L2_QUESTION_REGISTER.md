@@ -184,7 +184,7 @@ L2 defines:
 - cold/warm path;
 - measurement method.
 
-Failure to meet interactive targets may branch positioning to CI/governance while retaining the core product, subject to Product Review.
+Failure to meet interactive targets may branch positioning to CI/governance while retaining the core product. If that repositioning changes the target user, PCL-001..005, MVP black-box behavior, or other product-level authority, PRD §12 applies and a successor PRD/Product Freeze review is required; Product Review alone cannot rewrite the frozen product.
 
 ## 4. Explicit non-transfer items
 
