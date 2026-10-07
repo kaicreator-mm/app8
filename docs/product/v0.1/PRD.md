@@ -41,7 +41,7 @@ A bounded conformance process can detect materially false-safe/stale behavior wi
 
 ### PCL-003 — Evidence adds decision value beyond a typed interface and fixed enforcement baseline
 
-Given the same typed invocation surface and the same enforcement runtime, executable provider-behavior evidence can improve pre-execution admission/currentness decisions without unacceptable false denial or operational cost.
+Given the same typed invocation surface and the same enforcement runtime, executable provider-behavior evidence can improve pre-execution admission/currentness decisions without unacceptable false denial.
 
 This claim does **not** require finite tests to prove arbitrary-input safety.
 
@@ -64,6 +64,27 @@ Security boundary:
 - runtime/adapter enforcement supplies the actual security restriction;
 - executable evidence verifies bounded Provider behavior/currentness and, where applicable, that the configured enforcer works for the tested Provider/invocation class;
 - upstream observation alone never becomes a universal safety guarantee.
+
+### Product-level threat promise
+
+The v0.1 verified path MUST protect against a Provider, including a malicious or test-aware Provider, violating the **configured enforceable boundary** for:
+
+- undeclared outbound network access;
+- filesystem writes outside explicitly granted writable scope;
+- process escape outside the configured containment boundary;
+- silent escalation from untrusted Provider output into trusted control/policy/instruction authority.
+
+The verified path MUST fail closed when required enforcement/evidence is absent.
+
+Explicit MVP assumptions / exclusions:
+
+- compromise of the trusted first-party runner, host kernel, sandbox implementation or trust root is OUT OF SCOPE;
+- kernel/sandbox escape vulnerabilities are OUT OF SCOPE;
+- finite behavioral fixtures do not defend universally against time-bomb or arbitrary data-triggered semantic misbehavior;
+- secrets/credentials are denied to an untrusted Provider by default; granting them requires an explicit policy/residual-risk authorization outside the normal verified-safe claim;
+- Provider output derived from external or Provider-controlled content is treated as untrusted unless an L2 contract explicitly proves a narrower trusted field.
+
+L2 chooses the enforcement architecture that satisfies this frozen threat promise; L2 does not redefine the promise.
 
 ## 5. MVP black-box behavior
 
@@ -205,7 +226,7 @@ If L2 evidence proves a product claim impossible, Product Freeze must be reopene
 
 The current L2 Question Register includes, at minimum:
 
-- enforcement/sandbox trust boundary;
+- enforcement/sandbox mechanism satisfying the frozen threat boundary;
 - host/kernel capability binding;
 - evidence scope and runtime instance identity;
 - immutable input / decision-execution binding;
@@ -213,8 +234,7 @@ The current L2 Question Register includes, at minimum:
 - evidence attestation/trust;
 - output trust propagation;
 - process containment/cancellation;
-- performance architecture;
-- hard-case adaptation distribution.
+- performance architecture.
 
 These are not considered solved by this PRD.
 
