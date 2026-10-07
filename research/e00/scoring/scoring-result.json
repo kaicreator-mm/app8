@@ -1,0 +1,72 @@
+{
+  "schema": "app8.e00.scoring-result.v1",
+  "generated_utc": "2026-10-07T16:03:05Z",
+  "protocol_blob": "84dc764846d12bc84f9f21a0ce1922c3ffa180b0",
+  "scoring_base_commit": "6d877a9fa8fdb6c9c2a7b0df86eb114b35c1f791",
+  "bindings": {
+    "case_manifest_sha256": "a5bd20fce71c02c421a71b847358f49a3cd543464269fa74a6f53ef5e0ae5a67",
+    "catalog_sha256": "7761cfe4cf5e9ea015e95b21b214b7f53ada253e429ea14e19a13f83cfc3401f",
+    "cases_sha256": "fe2012c79f5171bbba00ae96bfa3b340f9d01c05b3409795f29b57e0a7aa089f",
+    "hidden_label_commitment_sha256": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e",
+    "reconstructed_plaintext_label_manifest_sha256": "bdcd2d61f8ade3572ea4f21382d596ec5b234a6b4d6db7a63dfa6d4e0df980a2",
+    "detector_harness_config_bundle_sha256": "a0d4ba6189e505a9a07dabf064a5839a274036356bdf53a0c71a72866a6f14be",
+    "frozen_predictions_output_sha256": "9cef7f828a621c63673934f7fb0f613f2d099d4ce23b12fb11f5c3e4c28fec28",
+    "scoring_script_sha256": "8a420e3f7df72562f78e983e65bdecb39061a31c7e6dbe48a1ea97e1c0688957"
+  },
+  "threshold_wilson95_lower": 0.9,
+  "full_corpus": {
+    "cases": 160,
+    "positives_material_false_safe": 80,
+    "negatives_safe": 80,
+    "confusion": {
+      "true_positive_REFUTED": 80,
+      "false_negative_missed_positive": 0,
+      "false_positive_REFUTED_on_safe": 0,
+      "true_negative_NOT_REFUTED": 80,
+      "UNKNOWN": 0
+    },
+    "sensitivity_REFUTED_over_positives": 1.0,
+    "specificity_NOT_REFUTED_over_negatives": 1.0,
+    "unknown_rate": 0.0,
+    "sensitivity_wilson95": [
+      0.9541818704644728,
+      0.9999999999999999
+    ],
+    "specificity_wilson95": [
+      0.9541818704644728,
+      0.9999999999999999
+    ]
+  },
+  "independent_subset": {
+    "cases": 160,
+    "positives_material_false_safe": 80,
+    "negatives_safe": 80,
+    "confusion": {
+      "true_positive_REFUTED": 80,
+      "false_negative_missed_positive": 0,
+      "false_positive_REFUTED_on_safe": 0,
+      "true_negative_NOT_REFUTED": 80,
+      "UNKNOWN": 0
+    },
+    "sensitivity_REFUTED_over_positives": 1.0,
+    "specificity_NOT_REFUTED_over_negatives": 1.0,
+    "unknown_rate": 0.0,
+    "sensitivity_wilson95": [
+      0.9541818704644728,
+      0.9999999999999999
+    ],
+    "specificity_wilson95": [
+      0.9541818704644728,
+      0.9999999999999999
+    ]
+  },
+  "independent_subset_note": "All 160 cases are #7-independent (frozen manifest independent_subset=true); the independent subset equals the full corpus.",
+  "pass_conditions": {
+    "full_sensitivity_lb_ge_0.90": true,
+    "full_specificity_lb_ge_0.90": true,
+    "independent_sensitivity_lb_ge_0.90": true,
+    "independent_specificity_lb_ge_0.90": true,
+    "no_open_P0P1_in_labeling_or_execution": true
+  },
+  "E00_GATE": "PASS"
+}
