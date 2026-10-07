@@ -1,0 +1,21 @@
+{
+  "schema": "app8.e00.detector-config.v1",
+  "base_commit": "f12844d8d6783910bd2b95db23197d880be7117c",
+  "protocol_blob": "84dc764846d12bc84f9f21a0ce1922c3ffa180b0",
+  "corpus": {
+    "case_manifest_sha256": "a5bd20fce71c02c421a71b847358f49a3cd543464269fa74a6f53ef5e0ae5a67",
+    "catalog_sha256": "7761cfe4cf5e9ea015e95b21b214b7f53ada253e429ea14e19a13f83cfc3401f",
+    "cases_sha256": "fe2012c79f5171bbba00ae96bfa3b340f9d01c05b3409795f29b57e0a7aa089f"
+  },
+  "opaque_commitments": {
+    "hidden_label_commitment_sha256": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e",
+    "plaintext_label_manifest_sha256": "bdcd2d61f8ade3572ea4f21382d596ec5b234a6b4d6db7a63dfa6d4e0df980a2"
+  },
+  "settings": {
+    "deterministic": true,
+    "seed": null,
+    "label_access": "FORBIDDEN",
+    "profile_name_semantics": "IGNORED_EXCEPT_AS_PUBLIC_JOIN_SELECTOR",
+    "detector_mode": "BOUNDED_SOURCE_CONTRACT_ANALYZER"
+  }
+}

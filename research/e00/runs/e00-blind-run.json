@@ -1,0 +1,984 @@
+{
+  "schema": "app8.e00.blind-run.v1",
+  "base_commit": "f12844d8d6783910bd2b95db23197d880be7117c",
+  "protocol_blob": "84dc764846d12bc84f9f21a0ce1922c3ffa180b0",
+  "corpus": {
+    "case_manifest_sha256": "a5bd20fce71c02c421a71b847358f49a3cd543464269fa74a6f53ef5e0ae5a67",
+    "catalog_sha256": "7761cfe4cf5e9ea015e95b21b214b7f53ada253e429ea14e19a13f83cfc3401f",
+    "cases_sha256": "fe2012c79f5171bbba00ae96bfa3b340f9d01c05b3409795f29b57e0a7aa089f"
+  },
+  "opaque_commitments": {
+    "hidden_label_commitment_sha256": "aac5e7811409d077e35d3115f0ca36721b093d32d84b1068f5788aeea03b246e",
+    "plaintext_label_manifest_sha256": "bdcd2d61f8ade3572ea4f21382d596ec5b234a6b4d6db7a63dfa6d4e0df980a2"
+  },
+  "detector_bundle_sha256": "a0d4ba6189e505a9a07dabf064a5839a274036356bdf53a0c71a72866a6f14be",
+  "detector_runtime_identity": "OpenAI Code Mode V8 isolate (pure ECMAScript detector evaluation); replay harness targets Node.js >=20",
+  "replay_command": "APP8_E00_BUNDLE_SHA256=a0d4ba6189e505a9a07dabf064a5839a274036356bdf53a0c71a72866a6f14be node research/e00/detector/run.cjs",
+  "case_count": 160,
+  "unknown_count": 0,
+  "canonical_output_digest_rule": "sha256(JSON.stringify({schema:'app8.e00.predictions.v1',predictions}))",
+  "canonical_output_sha256": "9cef7f828a621c63673934f7fb0f613f2d099d4ce23b12fb11f5c3e4c28fec28",
+  "blindness_attestation": "No truth labels, reveal secret, #9 scoring material, or research/e00/commitments content was accessed. Profile names were used only as the public join selector required by the frozen corpus manifest and were not interpreted as labels.",
+  "predictions": [
+    {
+      "case_id": "c_00743f3181a31c06",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_01eb6ad4642e567b",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_03f8726658273595",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "symlink target resolves outside allowed root"
+    },
+    {
+      "case_id": "c_04fb3acfd16fe0a4",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "child executable is allowlisted"
+    },
+    {
+      "case_id": "c_06353d63a3be6251",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_066c666f73b05f83",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "child executable is outside allowlist"
+    },
+    {
+      "case_id": "c_0a64997c3e119e6e",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "no nondeterministic source observed"
+    },
+    {
+      "case_id": "c_0dcf8cbba8c2e210",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "child executable is allowlisted"
+    },
+    {
+      "case_id": "c_12d52ad30be6a951",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_13251691f52a2bdb",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_1503c8fedc3a5497",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "path traversal resolves outside allowed root"
+    },
+    {
+      "case_id": "c_17ea3cf92ce71c37",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_182873b94c8e0d9f",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "child executable is allowlisted"
+    },
+    {
+      "case_id": "c_1b3853182e58fd56",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_1ba5c766a12e5125",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "spawned child is synchronously waited"
+    },
+    {
+      "case_id": "c_1c0b09c544aa91e7",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_1e7cb2883a464178",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "stdout is not the required stdin echo"
+    },
+    {
+      "case_id": "c_1f4fb4b41667c9e8",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_1f56b81f3633c92c",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "exit status is not allowed"
+    },
+    {
+      "case_id": "c_1f56db4fce29d8e7",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_20170c9d94e1d8b8",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_2108e03ddcb70604",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "stderr write observed"
+    },
+    {
+      "case_id": "c_2588b1299b75279c",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "trailing newline count differs"
+    },
+    {
+      "case_id": "c_25e1bb9b9023e941",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_26a686eff54c1b9f",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "array length differs"
+    },
+    {
+      "case_id": "c_2a7cfa8e1d25c50f",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_2d1353533462e529",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON field type differs"
+    },
+    {
+      "case_id": "c_3126762ea5ad743d",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_3b4c95fbf4ed1f5b",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_3c20e0798e28595b",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_3c6ded124c0b0e8b",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "child executable is allowlisted"
+    },
+    {
+      "case_id": "c_4144902272c461ac",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_41c6738e967a3e1c",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_447897d7f6aef52c",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON enum value outside allowlist"
+    },
+    {
+      "case_id": "c_45bafb4c463aef13",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "required JSON key missing"
+    },
+    {
+      "case_id": "c_460dd02efdf787a0",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON parse requirement violated"
+    },
+    {
+      "case_id": "c_495074a37f487cb3",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_4b6f67a094839b3a",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "no forbidden new-session request observed"
+    },
+    {
+      "case_id": "c_4cb588ccf8642d6c",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSONL record count differs"
+    },
+    {
+      "case_id": "c_4d154b71a20bb490",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "child executable is outside allowlist"
+    },
+    {
+      "case_id": "c_4edd0d231b168ed1",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON document count differs"
+    },
+    {
+      "case_id": "c_4f7f292705819e3f",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_4ff75844bc975770",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_57c12a4ae06d8492",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON keys satisfy claim"
+    },
+    {
+      "case_id": "c_583c29dae29f4926",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON keys violate claim"
+    },
+    {
+      "case_id": "c_594f4d85edc268ff",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON field matches regex"
+    },
+    {
+      "case_id": "c_59b515f4fd4e6891",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_5abc9b275a5f5f18",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_5b6c8264b03db309",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_5be47345d3704d59",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON enum value allowed"
+    },
+    {
+      "case_id": "c_5ce7fa9012eab7be",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_5d1667a4c5e98cd4",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_5e5a2e7b82e3284c",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_5f4b183636dad4b2",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_6075e354201e4e31",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON field format differs"
+    },
+    {
+      "case_id": "c_60d136b2400f27b7",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "child executable is outside allowlist"
+    },
+    {
+      "case_id": "c_621a3d273ee78fe8",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_6283788245dcdf5b",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_66782b20ab3c7506",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_68843ccb4ae8524e",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_68d0162d2051c39b",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "spawned child is not synchronously waited"
+    },
+    {
+      "case_id": "c_68e980dd1f5f1ed9",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_68f8fad5cc5a2087",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_6afcdfa1a07de94b",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_6bd457d6150b5b5d",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_6ccf5ce78a27d806",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_6ef42f52b6a4281a",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_6fd372a44873383f",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "numeric field outside range"
+    },
+    {
+      "case_id": "c_7111ddff2f819bbe",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "new session explicitly requested"
+    },
+    {
+      "case_id": "c_719918354f80e7ac",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_71eecbd567329998",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "required JSON keys present"
+    },
+    {
+      "case_id": "c_738cf2499c809598",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_7414efe2451a6dfb",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON parse requirement satisfied"
+    },
+    {
+      "case_id": "c_747633b2aad88d19",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_7724f25311933d95",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_7870952ff0b81cb8",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_788096f998e4cee1",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "trailing newline count matches"
+    },
+    {
+      "case_id": "c_7ab49e55a5a8654a",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_7beabc7457afaf32",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_7e03d87dbad99586",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "pipeline process count within claim"
+    },
+    {
+      "case_id": "c_82811a36f09e48e3",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_83d8447217989491",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_843d606a847c8d3e",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_847fb4731eead3c1",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "numeric field within range"
+    },
+    {
+      "case_id": "c_8b98508c73f8ab85",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_8dc300a1a9a67563",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_8e45d60a80fd5755",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_8f7af9777ad479da",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_8f84449a1e193a05",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "no stderr write observed"
+    },
+    {
+      "case_id": "c_9047bc059e943425",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON field type matches"
+    },
+    {
+      "case_id": "c_908750bb0fb6ad29",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_91e63e1feb8c04e0",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "stdout is direct stdin echo"
+    },
+    {
+      "case_id": "c_972eec9a295daa32",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_97bf512377d48a21",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "literal stdout bytes are not valid UTF-8"
+    },
+    {
+      "case_id": "c_9aba69ee159f05b7",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_9afb00ee9131b030",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_9b91afc98ee7de4e",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "stdout size exceeds bound"
+    },
+    {
+      "case_id": "c_a15989070949f4ef",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "external signal operation observed"
+    },
+    {
+      "case_id": "c_a165b8e4df87e6dd",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_a388d46288ef1d30",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_a4e93cdd6f16a8db",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_a50b0af29464b361",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "nondeterministic UUID output observed"
+    },
+    {
+      "case_id": "c_a7ab6184ab3c759a",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_a865cd05bc6743e4",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_a8cf48b71a7da0b1",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON field format matches"
+    },
+    {
+      "case_id": "c_a8f265d7fb93835f",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_ae4b086fc1a60a05",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_ae5d2be3f65398b3",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_b0551267f9400286",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "required JSON path exists"
+    },
+    {
+      "case_id": "c_b0e23104a4c3f3c4",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "array length matches"
+    },
+    {
+      "case_id": "c_b46364717d250984",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_b9692ca3cea2f94e",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_bb67080a093be145",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON field does not match regex"
+    },
+    {
+      "case_id": "c_bbc711eeaeff1315",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_bc0665b5370f4b67",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_bc9890763181dec9",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_c177c414325a0251",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "JSON field type differs"
+    },
+    {
+      "case_id": "c_c2adcb82070822ad",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "stdout size within bound"
+    },
+    {
+      "case_id": "c_c45e712c6732b34d",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_c546d0ed179feb90",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "child executable is outside allowlist"
+    },
+    {
+      "case_id": "c_c5e2cd7904566a72",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_c77490892884d0ed",
+      "category": "structured_output_reliability",
+      "prediction": "REFUTED",
+      "reason": "required JSON path missing"
+    },
+    {
+      "case_id": "c_c81bd4020fe5acf9",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_c8a2230cc729af23",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "single JSON document requirement satisfied"
+    },
+    {
+      "case_id": "c_c8c073119c845821",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_cb4cb42b85fb6a76",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_cc91ff9d664f01ae",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_cef3a8f30166dd0d",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_d05d26ad83acd5c5",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_d097740dd93f4b00",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_d17f9dfa108d046c",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_d1e28c7e5716a575",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_d491a5a8be979639",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "child executable is outside allowlist"
+    },
+    {
+      "case_id": "c_d60211756bf9a403",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_d71bdd0f8cb444b3",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_d88697da39cac1da",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_d949fa6bcefb939e",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_d9d7dd7f6ebbab47",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "exit status is allowed"
+    },
+    {
+      "case_id": "c_da3e4d0bbd9a168f",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "stdout is encoded from Unicode text"
+    },
+    {
+      "case_id": "c_da79a4c94e4c676e",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_df6b267627c7882a",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "no forbidden external signal observed"
+    },
+    {
+      "case_id": "c_e0a24788447969ff",
+      "category": "filesystem",
+      "prediction": "NOT_REFUTED",
+      "reason": "observed target remains inside allowed root"
+    },
+    {
+      "case_id": "c_e2780713d6561daa",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "pipeline process count exceeds claim"
+    },
+    {
+      "case_id": "c_e3aaf26aa6d68298",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_e42c5f988e615e0f",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_e4e39b967ada8a06",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_e67530ad3cd46a67",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_e7b9d0f2ff01b06b",
+      "category": "process_side_effect",
+      "prediction": "REFUTED",
+      "reason": "bounded process-creation count exceeds claim"
+    },
+    {
+      "case_id": "c_e8354a893a936615",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_e87e8b81a1e0f89b",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_e911c8ce3b856231",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSON field type matches"
+    },
+    {
+      "case_id": "c_e957f00df1f63ceb",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_ebb0615ae4c50200",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "child executable is allowlisted"
+    },
+    {
+      "case_id": "c_ecac34c01212a321",
+      "category": "structured_output_reliability",
+      "prediction": "NOT_REFUTED",
+      "reason": "JSONL record count and parsing satisfied"
+    },
+    {
+      "case_id": "c_f2085896f41f4e5d",
+      "category": "filesystem",
+      "prediction": "REFUTED",
+      "reason": "observed target is outside allowed root"
+    },
+    {
+      "case_id": "c_f2d3bd76e1c4208a",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_f34fa0d5bbb30dd6",
+      "category": "network",
+      "prediction": "REFUTED",
+      "reason": "resolved destination port is outside allowlist"
+    },
+    {
+      "case_id": "c_f4e3797da56e5d04",
+      "category": "process_side_effect",
+      "prediction": "NOT_REFUTED",
+      "reason": "bounded process-creation count within claim"
+    },
+    {
+      "case_id": "c_f67f620a7dd4bea3",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    },
+    {
+      "case_id": "c_febd784950a9a4e3",
+      "category": "network",
+      "prediction": "NOT_REFUTED",
+      "reason": "resolved destination port is allowlisted"
+    }
+  ]
+}
