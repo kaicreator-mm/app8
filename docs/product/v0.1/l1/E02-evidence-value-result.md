@@ -2,7 +2,7 @@
 
 Status: NOT_RUN
 Gate: L1-EVIDENCE-VALUE
-Protocol blob: e474a817f0006827f4dbab6c07e53f4c5d9539ad
+Protocol blob: f31ac004371d0799e67d1e547dcde55dd83e03d8
 
 No data has been collected under this protocol.
 
