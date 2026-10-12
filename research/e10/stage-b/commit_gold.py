@@ -29,6 +29,27 @@ def fail(message):
     raise SystemExit(2)
 
 
+def reject_duplicate_keys(pairs):
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError(f"duplicate JSON key: {key}")
+        obj[key] = value
+    return obj
+
+
+def reject_nonfinite(value):
+    raise ValueError(f"unsupported JSON constant: {value}")
+
+
+def strict_json_loads(raw):
+    return json.loads(
+        raw,
+        object_pairs_hook=reject_duplicate_keys,
+        parse_constant=reject_nonfinite,
+    )
+
+
 def exact_fields(obj, expected, where):
     if not isinstance(obj, dict) or set(obj) != expected:
         fail(f"{where}: required/exclusive fields mismatch")
@@ -134,7 +155,7 @@ def main():
         fail("private gold file does not exist")
     raw = source.read_bytes()
     try:
-        doc = json.loads(raw)
+        doc = strict_json_loads(raw)
     except (ValueError, UnicodeDecodeError) as exc:
         fail(f"invalid gold JSON: {exc}")
 
