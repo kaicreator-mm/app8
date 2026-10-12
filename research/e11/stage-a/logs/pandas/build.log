@@ -1,0 +1,34 @@
+== build wheel from pinned source ==
+82c18c170b9aea7cbb96ef54b8005bed07c94220
+Processing /build
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): still running...
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pandas
+  Building wheel for pandas (pyproject.toml): started
+  Building wheel for pandas (pyproject.toml): finished with status 'done'
+  Created wheel for pandas: filename=pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl size=15621597 sha256=e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08
+  Stored in directory: /tmp/pip-ephem-wheel-cache-92rp695l/wheels/7f/5c/67/61a4ca28ccbc7df61f55a044560f100aa81c66ef20585de495
+Successfully built pandas
+== wheel identity ==
+e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08  /work/out/pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl
+== install built wheel ==
+Processing /work/out/pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl
+Collecting numpy>=2.0.2 (from pandas==0+untagged.1.g82c18c1)
+  Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting python-dateutil>=2.9.0 (from pandas==0+untagged.1.g82c18c1)
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting six>=1.5 (from python-dateutil>=2.9.0->pandas==0+untagged.1.g82c18c1)
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Using cached numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Installing collected packages: six, numpy, python-dateutil, pandas
+Successfully installed numpy-2.5.4 pandas-0+untagged.1.g82c18c1 python-dateutil-2.9.0.post0 six-1.17.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.

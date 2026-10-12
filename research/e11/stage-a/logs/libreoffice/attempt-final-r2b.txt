@@ -1,0 +1,41 @@
+== final exact error tail ==
+checking which package format to use... none
+checking which help to build... no
+checking if we need to build the help index tooling... yes
+checking whether to enable xapian-omega support for online help... no
+checking whether to include the XML-help support... yes
+checking for helppack integration... no integration
+checking which lockfile binary to use... internal
+checking for getopt.h... yes
+checking for paths.h... yes
+checking for sys/param.h... yes
+checking for utime... yes
+checking for utimes... yes
+checking for syslog.h... yes
+checking whether to turn warnings to errors... no
+checking whether to have assert() failures abort even without --enable-debug... no
+checking whether to use ooenv for the instdir installation... no
+checking whether to build the pagein binaries for oosplash... yes
+checking whether to enable CPDB support... no
+checking whether to enable CUPS support... yes
+checking whether cups support is present... checking for cupsPrintFiles in -lcups... yes
+checking for cups/cups.h... yes
+checking which fontconfig to use... external
+checking for fontconfig >= 2.12.0... yes
+checking whether we want to fetch tarballs... yes, if we use them
+checking whether to include MySpell dictionaries... no
+checking whether to use dicts from external paths... yes
+checking for spelling dictionary directory... file:///usr/share/hunspell
+checking for hyphenation patterns directory... file:///usr/share/hyphen
+checking for thesaurus directory... file:///usr/share/mythes
+checking whether to enable pch feature... no
+checking the GNU Make version... /usr/bin/make 4.3
+checking for --hash-style gcc linker support... gnu 
+checking for perl... /usr/bin/perl
+checking the Perl version... Perl 5
+checking for required Perl modules... failed to find some modules
+configure: error: 
+    The missing Perl modules are:  Archive::Zip
+    Install them as superuser/administrator with "cpan -i  Archive::Zip"
+Error running configure at ./autogen.sh line 338.
+autogen_exit=1

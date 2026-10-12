@@ -1,0 +1,5 @@
+== smoke: version/help invocation only ==
+exit_version=0
+exit_help=0
+SMOKE_EXIT=0
+SMOKE_OK (infrastructure check only — NOT SE11 capability evidence)

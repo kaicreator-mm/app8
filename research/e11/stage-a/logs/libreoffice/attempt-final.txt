@@ -1,0 +1,41 @@
+== final exact error tail ==
+checking whether ccache g++ defines __cxa_exception in cxxabi.h... no
+checking whether ccache g++ declares __cxa_get_globals in cxxabi.h... yes
+checking whether ccache g++ declares __cxa_current_exception_type in cxxabi.h... yes
+checking whether ccache g++ declares __cxa_throw in cxxabi.h... yes
+checking whether ccache g++ defines __si_class_type_info in cxxabi.h... yes
+checking whether ccache g++ defines __vmi_class_type_info in cxxabi.h... yes
+checking whether ccache g++ supports -Wsfinae-incomplete... no
+checking what the C++ library is... GNU libstdc++
+checking for gperf... /usr/bin/gperf
+checking whether gperf is new enough... yes (3.1)
+checking which libcmis to use... internal
+checking whether ccache g++ supports C++20... yes (-std=c++20)
+checking whether std::atomic can be used without link library... yes
+checking whether ccache g++ supports C++11 without Language Defect 757... yes
+checking whether ccache g++ supports -fno-sized-deallocation... yes
+checking whether ccache g++ supports C++2a constinit sorted vectors... no
+checking whether ccache g++ implements C++ DR P1155R3... yes
+checking whether ccache g++ supports C++20 std::atomic_ref... yes
+checking whether ccache g++ supports -Wdeprecated-copy-dtor... yes
+checking whether ccache g++ might report false -Werror=maybe-uninitialized... no
+checking whether ccache g++ might report false -Werror=stringop-overflow=... no
+checking whether /usr/bin/ccache g++  can compile SSE2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSSE3 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSE4.1 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSE4.2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX512 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile F16C intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile FMA intrinsics... yes
+checking if STL headers are visibility safe (GCC bug 22482)... yes
+checking if ccache g++ is -fvisibility-inlines-hidden safe (Clang bug 11250)... yes
+checking if ccache g++ has a visibility bug with class-level attributes (GCC bug 26905)... no
+checking if CET endbranch is recognized... yes
+checking whether ccache g++ supports -fno-enforce-eh-specs... yes
+checking for posix_fallocate... yes
+checking for java... no
+checking the installed JDK... configure: error: Java not found. You need at least JDK 8
+Error running configure at ./autogen.sh line 338.
+autogen_exit=1

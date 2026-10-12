@@ -1,0 +1,12 @@
+LIBREOFFICE_ATTEMPT_EXIT=3
+VERDICT: AUTOGEN_FAILED — exact error captured in logs/attempt-final.txt
+BLOCKED_ENVIRONMENT_CANDIDATE (if rc!=0): report verbatim in Stage-A manifest
+LIBREOFFICE_ROUND1_EXIT=137
+VERDICT_R1: AUTOGEN_FAILED_AGAIN — exact next dependency error captured
+LIBREOFFICE_ROUND2_EXIT=137
+VERDICT_R2: AUTOGEN_FAILED_AGAIN — exact next dependency error captured
+LIBREOFFICE_ROUND2_EXIT=137
+VERDICT_R2: AUTOGEN_FAILED_AGAIN — exact next dependency error captured
+container=598505e72b6444ff42795a058b54a42beaeeef7be5184bf33b515abdb1870f68
+LIBREOFFICE_ROUND2B_EXIT=1
+VERDICT_R2B: AUTOGEN_FAILED_AGAIN — exact next dependency error captured

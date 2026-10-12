@@ -1,0 +1,13 @@
+== smoke 1: --version ==
+exit=0
+minio.exe version DEVELOPMENT.GOGET (commit-id=DEVELOPMENT.GOGET)
+Runtime: go1.27.1 windows/amd64
+License: GNU AGPLv3 - https://www.gnu.org/licenses/agpl-3.0.html
+Copyright: 2015-0000 MinIO, Inc.
+== smoke 2: server startup readiness (loopback only) ==
+server_pid=427032
+health_live_http=200 polls=1s
+server_stopped
+== smoke data dir cleanup ==
+cleanup_ok: /c/xDev/kAiCreator/app8/e11a/minio/smoke-data removed
+SMOKE_OK (infrastructure check only — NOT SE11 capability evidence)
