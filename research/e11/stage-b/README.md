@@ -17,7 +17,7 @@ This tooling does not create the corpus.
 
 The curator/private context that sees `truth_class`, claim text, expected behavior and decisive fixtures must never become the tested LLM-B planning context.
 
-The private truth file stays outside Git until the reviewed protocol explicitly permits reveal.
+The private truth file must be outside **every Git worktree** until the reviewed protocol explicitly permits reveal. The commitment tool rejects Git-backed private input. Claim IDs are opaque `H0001`-style identifiers with no semantic category or label embedded.
 
 ## Required shape
 
@@ -38,9 +38,12 @@ Every private claim requires:
 - decisive fixture reference;
 - expected behavioral truth;
 - provenance;
+- per-claim target-applicability evidence reference (especially for DIVERGED release branches);
 - replay/reset requirements.
 
 Before corpus construction, an independently reviewed **Execution Target manifest** must freeze each asset's exact real target version/build/package, checksum or immutable digest, acquisition provenance, platform/runtime, and Source -> Execution mapping class. The sealed corpus binds to that manifest by SHA-256.
+
+The validator also rejects missing/unknown/extra fields, wrong types, non-opaque IDs, duplicate IDs, absent target applicability refs, or incorrect class balance. A ref is a provenance pointer, not by itself proof of applicability; the independent reviewer must inspect the sealed material against the final Execution Target manifest.
 
 The public commitment contains only:
 - raw private-file SHA-256 and byte count;
