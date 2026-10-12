@@ -99,6 +99,40 @@ class GoldToolTests(unittest.TestCase):
         d["capabilities"][0]["gold_leak"] = "CANARY_SECRET"
         self.execute(d, False)
 
+    def test_rejects_duplicate_json_keys(self):
+        with tempfile.TemporaryDirectory(prefix="e10-strict-json-") as td:
+            inp = pathlib.Path(td) / "private.json"
+            out = pathlib.Path(td) / "public.json"
+            doc = fake_gold()
+            raw = json.dumps(doc).replace(
+                '"schema_version":', '"schema_version": "shadow", "schema_version":', 1
+            )
+            inp.write_text(raw, encoding="utf-8")
+            cp = subprocess.run(
+                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(cp.returncode, 0)
+            self.assertFalse(out.exists())
+            self.assertIn("duplicate JSON key", cp.stderr)
+
+    def test_rejects_nonfinite_json_constants(self):
+        with tempfile.TemporaryDirectory(prefix="e10-strict-json-") as td:
+            inp = pathlib.Path(td) / "private.json"
+            out = pathlib.Path(td) / "public.json"
+            doc = fake_gold()
+            raw = json.dumps(doc).replace(
+                '"schema_version":', '"injected": NaN, "schema_version":', 1
+            )
+            inp.write_text(raw, encoding="utf-8")
+            cp = subprocess.run(
+                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(cp.returncode, 0)
+            self.assertFalse(out.exists())
+            self.assertIn("unsupported JSON constant", cp.stderr)
+
     def test_rejects_same_input_output_file(self):
         with tempfile.TemporaryDirectory(prefix="se10-tool-unit-test-") as tmp:
             private = pathlib.Path(tmp) / "private.json"
