@@ -34,7 +34,8 @@ SE11 #68/#67 ─┐                                       │
                ├─> #69 target freeze ─> #55 hidden ──┼─> SE12 ─> SE13 ─┐
      #66/#62 ─┘                                       │                 │
                                                        │                 │
-SE14 #71/#70 ─> independent labels ─> paired run ─────┤                 │
+SE14 #71/#70 ─> independent labels (can start early) ─┐
+SE10+SE11 terminal ─> evidence-backed paired index ────┼─> SE14 paired run ─┤                 │
                                                        │                 │
 SE15 #59 human A/B + #69 ─> non-pixel binding ─────────┤                 │
                                                        │                 │
@@ -61,7 +62,8 @@ SE10..SE16 terminals ───────────────────�
 | #61 / PR #60 | FRESH_REVIEW | current SE10 tooling | PASS + current tests | merge #60, #58 |
 | #66 / PR #62 | FRESH_REVIEW | current SE11 tooling | PASS + current tests | merge #62, hidden prep |
 | #68 / PR #67 | FRESH_REVIEW + LOCAL_REAL_HOST | current PS1 | PASS current HEAD | merge #67, #69 |
-| #71 / PR #70 | FRESH_REVIEW | current SE14 runner | PASS + current tests | merge #70, labels/run |
+| #71 / PR #70 | FRESH_REVIEW | current SE14 runner | PASS + current tests | merge #70; labels may freeze early |
+| SE14 paired-index freeze | PRODUCT_L1_EVIDENCE | SE10+SE11 evidence-backed Capability subject + independent ordinary-metadata audit | exact paired index + label receipt bound to its SHA | evaluated SE14 ranking |
 | #58 | INDEPENDENT_HUMAN | #60 merge | sealed Gold commitment | SE10 evaluation |
 | #69 | LOCAL_REAL_HOST | #67 merge | exact LO/runtime manifest + smoke | SE11/SE15 target |
 | #55 | INDEPENDENT_HUMAN | #62 + #69 | sealed 80-claim truth | SE11 execution |
@@ -100,6 +102,10 @@ AND raw evidence/scoring inputs are preserved
 ```
 
 After this point, optional robustness is deferred.
+
+### SE14 ordering clarification
+
+Independent relevance adjudication may start once the 64-item universe and 48-query corpus are frozen and before any rankings are visible. However, the final label-freeze receipt must bind the exact real paired-index bytes. Because the Capability arm requires evidence-backed Capability/currentness/readiness fields, the real paired-index freeze is downstream of the SE10/SE11 evidence-backed subject. No synthetic or hand-invented `capability_extra` may substitute for that authority.
 
 ## Current aggregate
 
