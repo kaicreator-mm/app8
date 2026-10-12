@@ -1,7 +1,7 @@
 # SE11 Protocol — Falsification and Behavioral Evidence Quality
 
-Status: DRAFT_FOR_FRESH_REVIEW
-Execution: NOT_AUTHORIZED
+Status: AMENDMENT_CANDIDATE_FOR_FRESH_REVIEW
+Execution: HOLD_FOR_IDENTITY_AMENDMENT_REVIEW
 Parent: Issue #25
 Owning task: Issue #27
 Product authority: main@908cee661f3747439bb0366b158903cb9b38b413
@@ -11,9 +11,46 @@ Pinned ADS: kaicreator-mm/ai-development-standard@7929012f36a2202dcc2edc7a414b81
 
 Can LLM-B create adversarial Evidence/Test Plans which, when executed against real software, distinguish supported Capability claims from false, overbroad or boundary-sensitive claims well enough to prevent unsupported promotion?
 
-## 2. Study corpus
+## 2. Study corpus and identity separation
 
-Use the same four frozen software revisions as SE10.
+Use the same four frozen **Knowledge Source identities** as SE10 for hypothesis/provenance construction.
+
+SE11 does **not** require the real execution target to be a binary built from the same exact Git commit. Before hidden-truth construction, freeze a separate **Execution Target identity** for each asset and an explicit Source -> Execution mapping.
+
+Required identities:
+
+- `KNOWLEDGE_SOURCE`: the frozen SE10 source/docs snapshot used to form claims and provenance;
+- `EXECUTION_TARGET`: the real software artifact against which behavioral truth is measured;
+- `SOURCE_EXECUTION_MAPPING`: the reviewed relationship between those two identities.
+
+Preferred Execution Target order:
+
+1. official publisher release binary/installer/package;
+2. official publisher package-registry artifact or container image;
+3. publisher-recommended build with durable provenance and cryptographic identity;
+4. reproducible source build only when no suitable official artifact exists, or when the claim is explicitly source-only / unreleased.
+
+Every Execution Target must record exact version/build/package identity, cryptographic checksum or immutable digest, acquisition provenance, OS/runtime requirements, and release/tag/source mapping where the publisher exposes one.
+
+When both Knowledge Source and Execution Target source commits/tags are known, also freeze their repository relation as `SAME`, `KNOWLEDGE_SOURCE_ANCESTOR`, `KNOWLEDGE_SOURCE_DESCENDANT`, `DIVERGED`, or `UNRESOLVED`.
+
+A source-built artifact is therefore **not** the default requirement.
+
+### 2.1 Mapping discipline
+
+The mapping must be frozen before hidden truth or LLM-B planning and classify each asset as one of:
+
+- `EXACT_SOURCE_BUILD`: execution artifact built from the frozen source commit;
+- `OFFICIAL_RELEASE_MAPPED`: official release with an authoritative release/tag/source relationship;
+- `OFFICIAL_RELEASE_VERSIONED`: official release identity is exact, but no authoritative commit-level mapping is published;
+- `PUBLISHER_RECOMMENDED_BUILD`: non-publisher artifact explicitly recommended/linked by the publisher;
+- `SOURCE_ONLY_REQUIRED`: claim depends on unreleased/source-only behavior and therefore requires an exact/reviewed source build.
+
+Claims must be scoped to the frozen Execution Target. A Knowledge Source statement that is not shown to apply to that target version may not be silently treated as expected runtime truth. Version mismatch is a first-class constraint/negative case, not grounds for post-outcome target substitution.
+
+If the relation is `DIVERGED` or `UNRESOLVED`, hidden-truth construction must establish target applicability **before LLM-B exposure** using release-specific publisher metadata/source/tag/help or deterministic execution evidence unavailable to LLM-B. Applicability determination is a **pre-freeze eligibility gate**, before selecting or labeling the fixed 80-claim corpus. The independent curator must construct the required 8/4/4/4 truth-class balance per asset entirely against the frozen Execution Target, not from unverifiable master-only claims.
+
+After the 80 claims and target manifest are frozen, **no claim may be replaced or excluded**, even if a later applicability check fails. Such a claim retains its original corpus ID, stays in the all-80 denominator, is reported as BLOCKED/INCONCLUSIVE with independent adjudication and contributes to the protocol's environmental BLOCKED threshold where applicable. No post-outcome reclassification, denominator shrinkage or silent favorable substitution is allowed. Version/currentness findings must be preserved as failure/constraint evidence rather than attributed to LLM-B reasoning without support.
 
 For each asset, an independent truth curator constructs 20 claims, for 80 total:
 
@@ -49,12 +86,14 @@ LLM-B must produce a bounded plan containing positive probes and explicit falsif
 
 ## 4. Real-execution rule
 
-Behavioral truth is determined by deterministic execution/observation on the pinned target software, not by LLM judgment.
+Behavioral truth is determined by deterministic execution/observation on the frozen **Execution Target**, not by LLM judgment and not by source-text assertion.
 
 Execution records must bind:
 
-- software/build revision;
-- executable/package identity;
+- Knowledge Source identity;
+- Execution Target version/build/package identity;
+- Source -> Execution mapping class and provenance;
+- executable/package checksum or immutable digest;
 - OS/runtime/environment;
 - binding/interface;
 - inputs/fixtures;
@@ -123,7 +162,11 @@ Before LLM-B run, freeze:
 - 80-claim corpus;
 - hidden truth ledger;
 - decisive fixtures;
-- target versions/environments;
+- Knowledge Source identities;
+- Execution Target identities;
+- Source -> Execution mapping classes/provenance and repository relation;
+- target-applicability evidence/eligibility disposition where relation is DIVERGED/UNRESOLVED;
+- target environments;
 - plan budget;
 - scoring code/rules;
 - thresholds.
@@ -153,8 +196,8 @@ SE11 does not prove Capability extraction quality, cross-projection consistency,
 ## 11. Protocol terminal
 
 ~~~text
-SE11_PROTOCOL = READY_FOR_FRESH_REVIEW
-SE11_EXECUTION = NOT_AUTHORIZED
+SE11_PROTOCOL = IDENTITY_AMENDMENT_CANDIDATE_FOR_FRESH_REVIEW
+SE11_EXECUTION = HOLD_FOR_IDENTITY_AMENDMENT_REVIEW
 PRODUCT_FREEZE = NO
 L2_READY = NO
 ~~~

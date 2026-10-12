@@ -542,6 +542,16 @@ Counterexamples, unsupported variants and observed constraints remain part of th
 
 Evidence binds software/provider identity, version/build where available, environment, binding, fixture/input scope and observation boundary.
 
+### SINV-005A — Knowledge Source and Execution Target are distinct identities
+
+The source/docs snapshot used to understand a Capability is a **Knowledge Source identity**. The real artifact used to validate behavior is an **Execution Target identity**. They may be the same revision, but are not required to be.
+
+Every behavioral Evidence package must preserve the explicit Knowledge Source -> Execution Target mapping, including version/build/package identity, provenance/currentness, and repository/release relationship where knowable.
+
+For ordinary released software, official publisher release binaries/packages are preferred over rebuilding from source. Exact-source builds are required only when a claim depends on source-only/unreleased behavior or no suitable official artifact exists.
+
+When source and execution release lines diverge, release-specific applicability must be established before treating source claims as expected runtime truth.
+
 ### SINV-006 — One factual authority, many consumers
 
 CLI/MCP/Skill/Docs/Search must derive from the same Capability/Evidence authority rather than each consumer independently inventing semantic truth.
