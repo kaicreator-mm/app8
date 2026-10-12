@@ -1,0 +1,9 @@
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME="Debian GNU/Linux"
+VERSION_ID="12"
+VERSION="12 (bookworm)"
+VERSION_CODENAME=bookworm
+Linux ca796f79d53c 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux
+Python 3.12.15
+gcc (Debian 12.2.0-14+deb12u1) 12.2.0
+g++ (Debian 12.2.0-14+deb12u1) 12.2.0

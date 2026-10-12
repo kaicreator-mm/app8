@@ -1,0 +1,5 @@
+pandas_version=0+untagged.1.g82c18c1
+pandas_file=/usr/local/lib/python3.12/site-packages/pandas/__init__.py
+python=3.12.15
+implementation=CPython
+platform=Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.36

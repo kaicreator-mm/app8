@@ -1,0 +1,5 @@
+== host-native MSVC path check ==
+信息: 用提供的模式无法找到文件。
+where-cl: not found (no MSVC on Windows host)
+信息: 用提供的模式无法找到文件。
+where-msbuild: not found

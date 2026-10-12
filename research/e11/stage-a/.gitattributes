@@ -1,0 +1,5 @@
+# SE11 Stage A evidence: commit and check out bytes verbatim.
+# Rationale: host core.autocrlf=true CRLF-normalized two PowerShell-generated
+# evidence files on first commit (blob != SHA256SUMS); -text disables all EOL
+# conversion for this evidence tree so blobs are byte-faithful to the host.
+* -text

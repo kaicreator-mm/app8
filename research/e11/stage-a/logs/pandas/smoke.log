@@ -1,0 +1,4 @@
+== smoke: import identity only ==
+exit=0
+SMOKE_EXIT=0
+SMOKE_OK (infrastructure check only — NOT SE11 capability evidence)

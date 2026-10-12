@@ -1,0 +1,31 @@
+== toolchain identity ==
+go version go1.27.1 windows/amd64
+windows
+amd64
+v1
+https://proxy.golang.org,direct
+== build (from pinned source) ==
+== binary identity ==
+-rwxr-xr-x 1 15549 197609 148042752 Oct 12 12:52 /c/xDev/kAiCreator/app8/e11a/minio/out/minio.exe
+94d0b2677e6ed5a719fe1fc5fccbd60669beecb9901a3bb6a8bc71507bd55981 */c/xDev/kAiCreator/app8/e11a/minio/out/minio.exe
+	path	github.com/minio/minio
+	mod	github.com/minio/minio	v0.0.0-20260212201848-7aac2a2c5b7c	
+	dep	github.com/gomodule/redigo	v1.9.2	h1:HrutZBLhSIU8abiSfW8pj8mPhOyMYjZT/wcA4/L9L9s=
+	dep	github.com/klauspost/filepathx	v1.1.1	h1:201zvAsL1PhZvmXTP+QLer3AavWrO3U1NILWpniHK4w=
+	dep	github.com/minio/filepath	v1.0.0	h1:fvkJu1+6X+ECRA6G3+JJETj4QeAYO9sV43I79H8ubDY=
+	dep	github.com/modern-go/concurrent	v0.0.0-20180306012644-bacd9c7ef1dd	h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
+	dep	github.com/modern-go/reflect2	v1.0.2	h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
+	dep	github.com/prometheus/client_model	v0.6.2	h1:oBsgwpGs7iVziMvrGhE53c/GrLUsZdHnqNwqPLxwZyk=
+== smoke 1: --version ==
+exit=0
+minio.exe version DEVELOPMENT.GOGET (commit-id=DEVELOPMENT.GOGET)
+Runtime: go1.27.1 windows/amd64
+License: GNU AGPLv3 - https://www.gnu.org/licenses/agpl-3.0.html
+Copyright: 2015-0000 MinIO, Inc.
+== smoke 2: server startup readiness (loopback only) ==
+server_pid=427032
+health_live_http=200 polls=1s
+server_stopped
+== smoke data dir cleanup ==
+cleanup_ok: /c/xDev/kAiCreator/app8/e11a/minio/smoke-data removed
+SMOKE_OK (infrastructure check only — NOT SE11 capability evidence)

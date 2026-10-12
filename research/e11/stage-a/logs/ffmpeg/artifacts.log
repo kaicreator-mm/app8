@@ -1,0 +1,6 @@
+== binary identity ==
+total 58192
+-rwxr-xr-x 1 root root 29911720 Oct 12 04:59 ffmpeg
+-rwxr-xr-x 1 root root 29674088 Oct 12 04:59 ffprobe
+fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023  /work/out/ffmpeg
+bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f  /work/out/ffprobe

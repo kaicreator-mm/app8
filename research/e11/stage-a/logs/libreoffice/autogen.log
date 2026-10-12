@@ -1,0 +1,213 @@
+== round 3: ./autogen.sh (default features, +Archive::Zip) ==
+Running './configure --srcdir=/build --enable-option-checking=fatal'
+********************************************************************
+*
+*   Running LibreOffice build configuration.
+*
+********************************************************************
+
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking for product name... LibreOfficeDev
+checking for package version... 27.2.0.0.alpha0+
+checking for product version... 27.2
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for grep... (cached) /usr/bin/grep
+checking for GNU Make... /usr/bin/make
+checking for sed... /usr/bin/sed
+checking whether to use link-time optimization... no
+checking whether to enable gcov... no
+configure: VCL platform has a usable dynamic loading API: yes
+configure: VCL platform uses freetype+fontconfig: yes
+configure: VCL platform uses headless plugin: yes
+configure: VCL platform uses X11: yes
+checking for explicit AFLAGS... no
+checking for explicit CFLAGS... no
+checking for explicit CXXFLAGS... no
+checking for explicit OBJCFLAGS... no
+checking for explicit OBJCXXFLAGS... no
+checking for explicit LDFLAGS... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to enable C11 features... none needed
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking whether byte ordering is bigendian... no
+checking for library containing dlsym... none required
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for library containing backtrace... none required
+checking whether to record build config... no
+checking whether build target is Release Build... no
+checking whether build should auto use hardening compiler flags... no
+checking whether to sign windows build... no
+checking for gawk... no
+checking for mawk... mawk
+checking for mawk... /usr/bin/mawk
+checking for bash... /bin/bash
+checking for pigz... no
+checking for gzip... /usr/bin/gzip
+checking for GNU or BSD tar... tar
+checking for tar's option to strip components... --strip-components
+checking how to build and package galleries... internal src images for desktop
+checking build with or without template files... enable all templates
+checking for ccache... /usr/bin/ccache
+checking gcc home... /usr
+checking for gcc... /usr/bin/gcc
+checking whether to build with Java support... yes
+checking whether to treat the installation as read-only... no
+checking for -isystem ... yes
+checking whether the compiler is actually Clang... no
+checking whether gcc is already ccached... no
+checking whether ccache gcc supports -ggdb2... yes
+checking the GCC version... gcc 13.3.0 (130300)
+checking whether to build with additional debug utilities... no
+checking whether to do a debug build... no
+checking whether to enable (the UNO parts of) embindtest... no
+checking for linker that is used... GNU ld (GNU Binutils for Ubuntu) 2.42
+checking for -Bsymbolic-functions linker support... found 
+checking for --gc-sections linker support... found 
+checking whether ccache gcc supports -Xclang -debug-info-kind=constructor... no
+checking whether to generate debug information... no
+checking whether to compile with optimization flags... yes
+checking whether to build with .NET support... yes
+checking for dotnet... no
+configure: WARNING: dotnet not found, disabling .NET support
+checking whether to enable Rust UNO support... no
+checking which package format to use... none
+checking which help to build... no
+checking if we need to build the help index tooling... yes
+checking whether to enable xapian-omega support for online help... no
+checking whether to include the XML-help support... yes
+checking for helppack integration... no integration
+checking which lockfile binary to use... internal
+checking for getopt.h... yes
+checking for paths.h... yes
+checking for sys/param.h... yes
+checking for utime... yes
+checking for utimes... yes
+checking for syslog.h... yes
+checking whether to turn warnings to errors... no
+checking whether to have assert() failures abort even without --enable-debug... no
+checking whether to use ooenv for the instdir installation... no
+checking whether to build the pagein binaries for oosplash... yes
+checking whether to enable CPDB support... no
+checking whether to enable CUPS support... yes
+checking whether cups support is present... checking for cupsPrintFiles in -lcups... yes
+checking for cups/cups.h... yes
+checking which fontconfig to use... external
+checking for fontconfig >= 2.12.0... yes
+checking whether we want to fetch tarballs... yes, if we use them
+checking whether to include MySpell dictionaries... no
+checking whether to use dicts from external paths... yes
+checking for spelling dictionary directory... file:///usr/share/hunspell
+checking for hyphenation patterns directory... file:///usr/share/hyphen
+checking for thesaurus directory... file:///usr/share/mythes
+checking whether to enable pch feature... no
+checking the GNU Make version... /usr/bin/make 4.3
+checking for --hash-style gcc linker support... gnu 
+checking for perl... /usr/bin/perl
+checking the Perl version... Perl 5
+checking for required Perl modules... all modules found
+checking for gcc-ar... gcc-ar
+checking for gcc-nm... gcc-nm
+checking for gcc-ranlib... gcc-ranlib
+checking for gcc-objdump... no
+checking for objdump... objdump
+checking for gcc-readelf... no
+checking for readelf... readelf
+checking for gcc-strip... no
+checking for strip... strip
+checking for g++... g++
+checking whether the compiler supports GNU C++... yes
+checking whether g++ accepts -g... yes
+checking for g++ option to enable C++11 features... none needed
+checking the GNU C++ compiler version... ok (g++ 13)
+checking how to run the C++ preprocessor... g++  -E
+checking whether g++ is broken with boost.thread... yes
+checking whether g++ is already ccached... no
+checking how to run the C++ preprocessor... g++  -E
+checking how to run the C preprocessor... /usr/bin/ccache gcc  -E
+checking size of long... 8
+checking size of short... 2
+checking size of int... 4
+checking size of long long... 8
+checking size of double... 8
+checking size of void*... 8
+checking size of size_t... 8
+checking alignment of short... 2
+checking alignment of int... 4
+checking alignment of long... 8
+checking alignment of double... 8
+checking for special C compiler options needed for large files... no
+checking for _FILE_OFFSET_BITS value needed for large files... no
+checking whether jumbo sheets are supported... yes
+checking whether to enable runtime optimizations... yes
+checking for valgrind/valgrind.h... no
+checking for sys/sdt.h... no
+checking for full RELRO linker support... yes
+checking whether ccache gcc supports -grecord-gcc-switches... yes
+checking whether ccache gcc supports -D_FORTIFY_SOURCE=2... no
+checking whether ccache gcc supports -D_GLIBCXX_ASSERTIONS... yes
+checking whether ccache gcc supports -fstack-clash-protection... yes
+checking whether ccache gcc supports -fcf-protection... yes
+checking whether ccache gcc supports -mno-avx... yes
+checking whether ccache gcc supports atomic functions... yes
+checking whether ccache g++ defines __base_class_type_info in cxxabi.h... yes
+checking whether ccache g++ defines __class_type_info in cxxabi.h... yes
+checking whether ccache g++ declares __cxa_allocate_exception in cxxabi.h... yes
+checking whether ccache g++ defines __cxa_eh_globals in cxxabi.h... no
+checking whether ccache g++ defines __cxa_exception in cxxabi.h... no
+checking whether ccache g++ declares __cxa_get_globals in cxxabi.h... yes
+checking whether ccache g++ declares __cxa_current_exception_type in cxxabi.h... yes
+checking whether ccache g++ declares __cxa_throw in cxxabi.h... yes
+checking whether ccache g++ defines __si_class_type_info in cxxabi.h... yes
+checking whether ccache g++ defines __vmi_class_type_info in cxxabi.h... yes
+checking whether ccache g++ supports -Wsfinae-incomplete... no
+checking what the C++ library is... GNU libstdc++
+checking for gperf... /usr/bin/gperf
+checking whether gperf is new enough... yes (3.1)
+checking which libcmis to use... internal
+checking whether ccache g++ supports C++20... yes (-std=c++20)
+checking whether std::atomic can be used without link library... yes
+checking whether ccache g++ supports C++11 without Language Defect 757... yes
+checking whether ccache g++ supports -fno-sized-deallocation... yes
+checking whether ccache g++ supports C++2a constinit sorted vectors... no
+checking whether ccache g++ implements C++ DR P1155R3... yes
+checking whether ccache g++ supports C++20 std::atomic_ref... yes
+checking whether ccache g++ supports -Wdeprecated-copy-dtor... yes
+checking whether ccache g++ might report false -Werror=maybe-uninitialized... no
+checking whether ccache g++ might report false -Werror=stringop-overflow=... no
+checking whether /usr/bin/ccache g++  can compile SSE2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSSE3 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSE4.1 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile SSE4.2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX2 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile AVX512 intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile F16C intrinsics... yes
+checking whether /usr/bin/ccache g++  can compile FMA intrinsics... yes
+checking if STL headers are visibility safe (GCC bug 22482)... yes
+checking if ccache g++ is -fvisibility-inlines-hidden safe (Clang bug 11250)... yes
+checking if ccache g++ has a visibility bug with class-level attributes (GCC bug 26905)... no
+checking if CET endbranch is recognized... yes
+checking whether ccache g++ supports -fno-enforce-eh-specs... yes
+checking for posix_fallocate... yes
+checking for java... no
+checking the installed JDK... configure: error: Java not found. You need at least JDK 8
+Error running configure at ./autogen.sh line 338.
+autogen_exit=1

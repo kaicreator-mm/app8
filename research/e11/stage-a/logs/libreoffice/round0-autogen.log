@@ -1,0 +1,114 @@
+== round 0: ./autogen.sh (default, no feature flags) ==
+Running './configure --srcdir=/build --enable-option-checking=fatal'
+********************************************************************
+*
+*   Running LibreOffice build configuration.
+*
+********************************************************************
+
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking for product name... LibreOfficeDev
+checking for package version... 27.2.0.0.alpha0+
+checking for product version... 27.2
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for egrep... /usr/bin/grep -E
+checking for grep... (cached) /usr/bin/grep
+checking for GNU Make... /usr/bin/make
+checking for sed... /usr/bin/sed
+checking whether to use link-time optimization... no
+checking whether to enable gcov... no
+configure: VCL platform has a usable dynamic loading API: yes
+configure: VCL platform uses freetype+fontconfig: yes
+configure: VCL platform uses headless plugin: yes
+configure: VCL platform uses X11: yes
+checking for explicit AFLAGS... no
+checking for explicit CFLAGS... no
+checking for explicit CXXFLAGS... no
+checking for explicit OBJCFLAGS... no
+checking for explicit OBJCXXFLAGS... no
+checking for explicit LDFLAGS... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to enable C11 features... none needed
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking whether byte ordering is bigendian... no
+checking for library containing dlsym... none required
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking for library containing backtrace... none required
+checking whether to record build config... no
+checking whether build target is Release Build... no
+checking whether build should auto use hardening compiler flags... no
+checking whether to sign windows build... no
+checking for gawk... no
+checking for mawk... mawk
+checking for mawk... /usr/bin/mawk
+checking for bash... /bin/bash
+checking for pigz... no
+checking for gzip... /usr/bin/gzip
+checking for GNU or BSD tar... tar
+checking for tar's option to strip components... --strip-components
+checking how to build and package galleries... internal src images for desktop
+checking build with or without template files... enable all templates
+checking for ccache... /usr/bin/ccache
+checking gcc home... /usr
+checking for gcc... /usr/bin/gcc
+checking whether to build with Java support... yes
+checking whether to treat the installation as read-only... no
+checking for -isystem ... yes
+checking whether the compiler is actually Clang... no
+checking whether gcc is already ccached... no
+checking whether ccache gcc supports -ggdb2... yes
+checking the GCC version... gcc 13.3.0 (130300)
+checking whether to build with additional debug utilities... no
+checking whether to do a debug build... no
+checking whether to enable (the UNO parts of) embindtest... no
+checking for linker that is used... GNU ld (GNU Binutils for Ubuntu) 2.42
+checking for -Bsymbolic-functions linker support... found 
+checking for --gc-sections linker support... found 
+checking whether ccache gcc supports -Xclang -debug-info-kind=constructor... no
+checking whether to generate debug information... no
+checking whether to compile with optimization flags... yes
+checking whether to build with .NET support... yes
+checking for dotnet... no
+configure: WARNING: dotnet not found, disabling .NET support
+checking whether to enable Rust UNO support... no
+checking which package format to use... none
+checking which help to build... no
+checking if we need to build the help index tooling... yes
+checking whether to enable xapian-omega support for online help... no
+checking whether to include the XML-help support... yes
+checking for helppack integration... no integration
+checking which lockfile binary to use... internal
+checking for getopt.h... yes
+checking for paths.h... yes
+checking for sys/param.h... yes
+checking for utime... yes
+checking for utimes... yes
+checking for syslog.h... yes
+checking whether to turn warnings to errors... no
+checking whether to have assert() failures abort even without --enable-debug... no
+checking whether to use ooenv for the instdir installation... no
+checking whether to build the pagein binaries for oosplash... yes
+checking whether to enable CPDB support... no
+checking whether to enable CUPS support... yes
+checking whether cups support is present... checking for cupsPrintFiles in -lcups... no
+checking for cups/cups.h... no
+configure: error: Could not find CUPS. Install libcups2-dev or cups-devel.
+Error running configure at ./autogen.sh line 338.
+autogen_exit=1

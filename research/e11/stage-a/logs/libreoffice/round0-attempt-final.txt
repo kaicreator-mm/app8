@@ -1,0 +1,41 @@
+== final exact error tail ==
+checking whether gcc is already ccached... no
+checking whether ccache gcc supports -ggdb2... yes
+checking the GCC version... gcc 13.3.0 (130300)
+checking whether to build with additional debug utilities... no
+checking whether to do a debug build... no
+checking whether to enable (the UNO parts of) embindtest... no
+checking for linker that is used... GNU ld (GNU Binutils for Ubuntu) 2.42
+checking for -Bsymbolic-functions linker support... found 
+checking for --gc-sections linker support... found 
+checking whether ccache gcc supports -Xclang -debug-info-kind=constructor... no
+checking whether to generate debug information... no
+checking whether to compile with optimization flags... yes
+checking whether to build with .NET support... yes
+checking for dotnet... no
+configure: WARNING: dotnet not found, disabling .NET support
+checking whether to enable Rust UNO support... no
+checking which package format to use... none
+checking which help to build... no
+checking if we need to build the help index tooling... yes
+checking whether to enable xapian-omega support for online help... no
+checking whether to include the XML-help support... yes
+checking for helppack integration... no integration
+checking which lockfile binary to use... internal
+checking for getopt.h... yes
+checking for paths.h... yes
+checking for sys/param.h... yes
+checking for utime... yes
+checking for utimes... yes
+checking for syslog.h... yes
+checking whether to turn warnings to errors... no
+checking whether to have assert() failures abort even without --enable-debug... no
+checking whether to use ooenv for the instdir installation... no
+checking whether to build the pagein binaries for oosplash... yes
+checking whether to enable CPDB support... no
+checking whether to enable CUPS support... yes
+checking whether cups support is present... checking for cupsPrintFiles in -lcups... no
+checking for cups/cups.h... no
+configure: error: Could not find CUPS. Install libcups2-dev or cups-devel.
+Error running configure at ./autogen.sh line 338.
+autogen_exit=1

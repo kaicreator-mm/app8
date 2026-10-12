@@ -1,0 +1,189 @@
+{
+  "stage": "SE11_STAGE_A",
+  "title": "Local Real-Host readiness / frozen executable identity",
+  "issue": 43,
+  "protocol_blob": "83abefb13e6a91e6b67a1c94937ca1bcce567aad",
+  "branch_base_commit": "b989075a5dcdc6f96d1289ddf841313c1226ff20",
+  "generated_utc": "2026-10-12T07:55:14Z",
+  "finalized_utc": "2026-10-12T08:20:00Z",
+  "superseded_commit": "82e26e3a33ebf1de559f2bbeaa917663a762af13 had two CRLF-normalized evidence blobs (host/host-identity.txt, logs/libreoffice/host-native-toolchain.txt) from host core.autocrlf=true; re-committed byte-faithfully via research/e11/stage-a/.gitattributes (* -text), and logs/libreoffice/attempt-audit.log completed with the round-3 terminal verdict tail",
+  "real_host": {
+    "os": "Microsoft Windows 11 专业版 10.0.26300 x64",
+    "cpu": "AMD Ryzen 7 7840HS, 8 cores / 16 threads",
+    "ram_gb": 55.2,
+    "orchestration_shell": "Git Bash (MINGW64) git 2.55.0.windows.5",
+    "container_runtime": "Docker 29.7.2 (WSL2 backend)",
+    "evidence_root_outside_repo": "C:/xDev/kAiCreator/app8/e11a",
+    "identity_logs": ["host/host-identity.txt", "host/docker-identity.txt", "host/docker-image-digests.txt"]
+  },
+  "hard_constraints": {
+    "HIDDEN_TRUTH": "NOT_CREATED_OR_NOT_VISIBLE_TO_PLANNER",
+    "DECISIVE_FIXTURES": "NOT_RUN",
+    "LLM_B_EVALUATED_PLAN": "NOT_RUN",
+    "SE11_RESULT": "NOT_RUN",
+    "NO_SOURCE_REVISION_SUBSTITUTION": "ENFORCED (local HEAD == pinned SHA verified per asset)",
+    "NO_FAKE_PASS": "ENFORCED (smoke = infrastructure check only, not capability evidence)",
+    "PRODUCT_FREEZE": "NO",
+    "L2_READY": "NO"
+  },
+  "source_freeze_verification": {
+    "fetch_mode": "git shallow fetch of exact pinned SHA (--depth 1), per-asset bare init",
+    "byte_faithful_checkout": "core.autocrlf=false, core.eol=lf; git status --porcelain empty vs HEAD asserted",
+    "note": "Tree hashes are intrinsic Git identities of the pinned commits; naturally identical to what SE10 verifies its source pack against. No SE10 pack files consulted."
+  },
+  "evidence_integrity_incidents": [
+    {
+      "incident": "libreoffice apt.log truncation",
+      "detail": "A background-task supervisor re-executed the round-2 LibreOffice attempt while the first instance was still running; the duplicate's script-start truncated the shared logs/apt.log (first instance's successful dpkg history lost). Duplicates were killed (container exit 137). The supervisor then re-invoked the same payload detached (scripts/attempt-libreoffice-round2b.sh, docker run -d + docker wait, container name se11-lo-r2b); that instance ran the full sequence to completion and its autogen/attempt-final outputs are the authoritative round-2 evidence (attempt.log: LIBREOFFICE_ROUND2B_EXIT=1).",
+      "effect": "apt.log reflects only the final instance's stream; the decisive configure evidence (autogen.log, attempt-final.txt) is coherent with the final instance."
+    },
+    {
+      "incident": "first build wave CRLF-smudged sources",
+      "detail": "Initial fetch inherited core.autocrlf=true; FFmpeg ./configure failed with 'cannot execute: required file not found'. All four sources were re-materialized byte-faithfully (autocrlf=false, eol=lf) and ALL committed build/smoke evidence comes from the byte-faithful trees.",
+      "effect": "Committed artifact hashes (minio 94d0b267..., pandas wheel e57b0784..., ffmpeg fb2e2c68...) correspond to byte-faithful checkouts."
+    }
+  ],
+  "assets": [
+    {
+      "asset": "FFmpeg",
+      "repo": "FFmpeg/FFmpeg",
+      "pinned_sha": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8",
+      "local_head": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8",
+      "tree": "e12649cf34daed3184ad91f6a94c3c6499ad748d",
+      "status": "READY",
+      "build_environment": {
+        "kind": "docker container",
+        "image": "ubuntu:24.04",
+        "image_digest": "sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+        "container_os": "Debian GNU/Linux 12-compatible Ubuntu 24.04 noble, WSL2 kernel 6.18.40.1-microsoft-standard-WSL2",
+        "toolchain": "gcc 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1), GNU Make, nasm; apt build-essential nasm yasm pkg-config",
+        "log_refs": ["logs/ffmpeg/container-os.txt", "logs/ffmpeg/apt.log"]
+      },
+      "build_command": "./configure --disable-doc --disable-ffplay && make -j16",
+      "configure_log": "logs/ffmpeg/configure.log",
+      "make_log": "logs/ffmpeg/make.log",
+      "artifacts": [
+        {"path": "ffmpeg", "sha256": "fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023", "size_bytes": 29911720},
+        {"path": "ffprobe", "sha256": "bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f", "size_bytes": 29674088}
+      ],
+      "artifact_identity_log": "logs/ffmpeg/artifacts.log",
+      "version_reported": "ffmpeg version 8.0.git (built with gcc 13, configuration: --disable-doc --disable-ffplay)",
+      "smoke": {
+        "kind": "non-evaluative executable invocation",
+        "commands": ["ffmpeg -version", "ffmpeg -hide_banner -h"],
+        "exit_status": {"version": 0, "help": 0},
+        "capability_claims_tested": "NONE",
+        "log_refs": ["logs/ffmpeg/smoke.log", "logs/ffmpeg/smoke-version.stdout", "logs/ffmpeg/smoke-help.stdout", "logs/ffmpeg/buildconf.txt"]
+      },
+      "se11_binding_path": "docker run -v <evidence_root>/ffmpeg:/work ubuntu:24.04@sha256:534baea6... with /work/out/ffmpeg (exact digest + binary sha256 above)",
+      "fixture_and_output_plan": {
+        "fixture_dir": "<evidence_root>/ffmpeg/fixtures (to be created in Stage B; none created in Stage A)",
+        "log_dir": "<evidence_root>/ffmpeg/logs",
+        "reset_method": "docker run --rm per invocation; fixture dir deleted and re-created per case; host source tree kept read-only"
+      }
+    },
+    {
+      "asset": "pandas",
+      "repo": "pandas-dev/pandas",
+      "pinned_sha": "82c18c170b9aea7cbb96ef54b8005bed07c94220",
+      "local_head": "82c18c170b9aea7cbb96ef54b8005bed07c94220",
+      "tree": "c3531d0e0dc0b9c1f75b8a5912b2f43eb203e493",
+      "status": "READY",
+      "build_environment": {
+        "kind": "docker container",
+        "image": "python:3.12-bookworm",
+        "image_digest": "sha256:5560e9ab8709f459489e5b8aa696eda8a07ef821e14bb122be62d91234bfa98b",
+        "container_os": "Debian GNU/Linux 12 (bookworm), WSL2 kernel 6.18.40.1-microsoft-standard-WSL2",
+        "toolchain": "CPython 3.12.15, gcc 12.2.0 (Debian 12.2.0-14+deb12u1), pip build isolation (meson-python/ninja/cython per pyproject)",
+        "log_refs": ["logs/pandas/container-os.txt"]
+      },
+      "build_command": "python -m pip wheel /build --no-deps -w /work/out && python -m pip install /work/out/pandas-*.whl",
+      "build_log": "logs/pandas/build.log",
+      "artifacts": [
+        {"path": "pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl", "sha256": "e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08", "note": "version string embeds pinned commit (shallow clone is tag-free, hence 0+untagged.1.g82c18c1)"}
+      ],
+      "artifact_identity_log": "logs/pandas/wheel-sha256.txt",
+      "install_identity": "logs/pandas/pip-show.txt (Version: 0+untagged.1.g82c18c1, Location: /usr/local/lib/python3.12/site-packages)",
+      "runtime_deps_installed_at_smoke": "numpy-2.5.4, python-dateutil-2.9.0.post0, six-1.17.0 (PyPI, unpinned — recorded in build.log; must be pinned before Stage C probes)",
+      "smoke": {
+        "kind": "non-evaluative import + identity print",
+        "commands": ["python scripts/smoke-pandas.py (from neutral cwd, imports installed wheel)"],
+        "exit_status": 0,
+        "stdout_identity": {"pandas_version": "0+untagged.1.g82c18c1", "python": "3.12.15", "implementation": "CPython", "platform": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.36"},
+        "capability_claims_tested": "NONE",
+        "log_refs": ["logs/pandas/smoke.log", "logs/pandas/smoke.stdout", "logs/pandas/smoke.stderr"]
+      },
+      "se11_binding_path": "docker run -v <evidence_root>/pandas:/work python:3.12-bookworm@sha256:5560e9ab... + installed wheel (sha256 above); import via site-packages only",
+      "fixture_and_output_plan": {
+        "fixture_dir": "<evidence_root>/pandas/fixtures (Stage B; none created in Stage A)",
+        "log_dir": "<evidence_root>/pandas/logs",
+        "reset_method": "docker run --rm per invocation; container filesystem discarded, wheel reinstalled per case"
+      }
+    },
+    {
+      "asset": "MinIO",
+      "repo": "minio/minio",
+      "pinned_sha": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+      "local_head": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+      "tree": "376b09b793c57170a905208e64590164d8ab7a3b",
+      "status": "READY",
+      "build_environment": {
+        "kind": "native Windows host",
+        "os": "Microsoft Windows 11 专业版 10.0.26300 x64",
+        "toolchain": "go1.27.1 windows/amd64, GOAMD64=v1, GOPROXY=https://proxy.golang.org,direct (deps resolved via go.sum)",
+        "log_refs": ["logs/minio/build.log"]
+      },
+      "build_command": "go build -trimpath -o out/minio.exe . (from clean checkout; git status verified empty pre-build)",
+      "build_log": "logs/minio/build.log",
+      "artifacts": [
+        {"path": "minio.exe", "sha256": "94d0b2677e6ed5a719fe1fc5fccbd60669beecb9901a3bb6a8bc71507bd55981", "size_bytes": 148042752}
+      ],
+      "artifact_source_binding": "go version -m: vcs.revision=7aac2a2c5b7c882e68c1ce017d8256be2feea27f, vcs.time=2026-02-12T20:18:48Z, vcs.modified=false (logs/minio/go-version-m.txt)",
+      "version_reported": "minio.exe version DEVELOPMENT.GOGET (commit-id=DEVELOPMENT.GOGET) — default build without release ldflags; binary-to-source binding is via embedded vcs.revision",
+      "smoke": {
+        "kind": "non-evaluative version + startup readiness on loopback",
+        "commands": [
+          "minio.exe --version",
+          "MINIO_ROOT_USER=minioadmin MINIO_ROOT_PASSWORD=minioadmin minio.exe server <smoke-data> --address 127.0.0.1:19500 --console-address 127.0.0.1:19501"
+        ],
+        "exit_status": {"version": 0},
+        "readiness": "GET http://127.0.0.1:19500/minio/health/live -> HTTP 200 (first poll, 1s)",
+        "cleanup": "server process killed; smoke-data dir deleted (cleanup_ok logged)",
+        "capability_claims_tested": "NONE",
+        "log_refs": ["logs/minio/smoke.log", "logs/minio/smoke-version.stdout", "logs/minio/smoke-server.stdout", "logs/minio/smoke-server.stderr"]
+      },
+      "se11_binding_path": "native invocation of C:/xDev/kAiCreator/app8/e11a/minio/out/minio.exe (sha256 above) with per-case data dir and loopback ports",
+      "fixture_and_output_plan": {
+        "fixture_dir": "<evidence_root>/minio/fixtures (Stage B; none created in Stage A; smoke-data was temporary and deleted)",
+        "log_dir": "<evidence_root>/minio/logs",
+        "reset_method": "per-case fresh data dir under a case root; process killed + dir deleted after each case"
+      }
+    },
+    {
+      "asset": "LibreOffice",
+      "repo": "LibreOffice/core",
+      "pinned_sha": "016fd5d049256dc849111f60870f15201fcd1526",
+      "local_head": "016fd5d049256dc849111f60870f15201fcd1526",
+      "tree": "a4626696016cd1cb87226ecb8cd5007976910e6e",
+      "submodule_note": "helpcontent2 gitlink present but submodule not fetched (out of Stage-A budget); identity unresolved",
+      "status": "BLOCKED_ENVIRONMENT",
+      "windows_native_path": "IMPOSSIBLE on this host: no MSVC (where cl / where msbuild not found) — logs/libreoffice/host-native-toolchain.txt; LO Windows builds require Visual Studio + Cygwin + JDK chain",
+      "container_attempt": {
+        "image": "ubuntu:24.04",
+        "image_digest": "sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+        "method": "bounded rounds with documented dependency waves and default-feature ./autogen.sh; per-round timeout 1500s; final round = round 2",
+        "round0_exact_error": "configure: error: Could not find CUPS. Install libcups2-dev or cups-devel. (Error running configure at ./autogen.sh line 338; autogen_exit=1)",
+        "round1_disposition": "INVALID_ATTEMPT: sole failed apt archive was openjdk-21-jdk-headless (connection failed to security.ubuntu.com), which aborted the whole apt transaction — libcups2-dev was never installed; superseded by round 2. Raw driver log preserved (logs/libreoffice/round1-driver.log).",
+        "round2_exact_error": "After libcups2-dev/GTK3/X11 were installed (configure passed the CUPS check: 'checking for cupsPrintFiles in -lcups... yes'), configure failed at: 'The missing Perl modules are: Archive::Zip' (autogen.sh line 338; autogen_exit=1).",
+        "round3_terminal_error": "TERMINAL round: after adding libarchive-zip-perl (Archive::Zip fixed), configure progressed through STL/ccache/visibility checks and failed at: 'checking for java... no; configure: error: Java not found. You need at least JDK 8' (autogen.sh line 338; autogen_exit=1). Three successive mandatory dependencies remediated (CUPS, Archive::Zip), each revealing the next; terminal by pre-declared stop rule.",
+        "rounds_verdict": "BLOCKED_ENVIRONMENT — within Stage-A budget the exact pinned revision does not reach a runnable binding on this host: the default-feature build path mandates a long dependency chain (CUPS -> Perl Archive::Zip -> JDK 8+) and, past it, a multi-hour tens-of-GB make. NO substitution performed; NO feature-reduced configure substituted for the default path.",
+        "log_refs": ["logs/libreoffice/attempt.log", "logs/libreoffice/round0-autogen.log", "logs/libreoffice/round0-attempt-final.txt", "logs/libreoffice/round0-apt.log", "logs/libreoffice/round1-driver.log", "logs/libreoffice/autogen.log", "logs/libreoffice/attempt-final.txt", "logs/libreoffice/apt.log", "logs/libreoffice/host-native-toolchain.txt", "logs/libreoffice/container-os.txt"]
+      },
+      "budget_facts": "source checkout 1.8 GB (54 GB free host disk); full LO core build is a multi-hour, tens-of-GB job on this 16-thread host — beyond Stage-A session budget; a configure success would still NOT be a runnable binding within this freeze",
+      "artifacts": [],
+      "substitution": "NONE — no distro LibreOffice, no newer upstream, no feature-reduced configure masquerading as the pinned revision",
+      "capability_claims_tested": "NONE",
+      "se11_binding_path": "UNAVAILABLE until a dedicated build session produces a pinned-revision binary; Stage B must treat LibreOffice claims as BLOCKED unless such a binding exists"
+    }
+  ]
+}
