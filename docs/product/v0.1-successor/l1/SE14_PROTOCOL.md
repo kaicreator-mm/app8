@@ -12,16 +12,29 @@ Does searching Evidence-backed Capability Metadata retrieve the right usable beh
 
 This directly closes Fresh Review #24 P2-1.
 
-## 2. Frozen evaluation corpus
+## 2. Frozen evaluation corpus and fair registry baseline
 
-Before execution, build a frozen index of at least 60 entries derived from the same underlying software inventory.
+Freeze >=60 entries from the same source-software inventory with exact software/source revisions and source/registry metadata blobs.
 
-Create two views over the same underlying items:
+Both arms index **the same underlying software, functions/tools, capabilities and versions** and must use comparable retriever/ranker capacity. Neither arm may receive manual relevance labels, hidden gold answers or privileged task data.
 
-- CAPABILITY view: semantic Capability metadata, variants, constraints, readiness/currentness and material negative boundaries;
-- REGISTRY baseline view: conventional tool/export name, short description, provider/software name and interface type, without privileged Capability/Evidence fields.
+**REGISTRY_BASELINE** receives all *normally available, non-app8-specific* registry/tool metadata, including when present:
 
-Use the same retrieval engine family and comparable embedding/lexical configuration for both views so the comparison tests representation/value rather than a stronger search stack.
+- tool/CLI/MCP/API operation name and human-readable description;
+- input/output and argument/parameter schema plus parameter descriptions;
+- categories, tags and keywords;
+- provider, software, interface type, install/package identity;
+- documented version/platform and auth/runtime requirements;
+- ordinary official help/usage examples exposed by registry entries;
+- native error descriptions where included in ordinary schemas.
+
+If a field is present in ordinary official registry/API schema/help data, do **not** strip it to weaken baseline. Missing source fields are noted in the manifest, not artificially generated to help either arm.
+
+**CAPABILITY_ARM** receives the same baseline metadata, plus only app8-generated semantic Capability identities, evidence-backed variants, independently observed behavioral constraints, negative evidence, readiness/currentness and binding-equivalence semantics. No extra hand-edited retrieval hints, privileged labels or richer model generation solely for this arm.
+
+Use identical retrieval family, embedding model, query processing, reranking, index parameters and tuning budgets. Tune both on a disjoint frozen development set or use shared default parameters. Fix the final test index/queries/labels before viewing either arm's results.
+
+**Fairness audit:** Publish field-by-field presence matrix and baseline metadata provenance for every entry. Independent reviewer must validate that no conventional baseline field was omitted to create an artificial gain.
 
 ## 3. Query set
 
