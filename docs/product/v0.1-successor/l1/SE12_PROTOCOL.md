@@ -23,22 +23,17 @@ Before execution, an independently reviewed subject manifest must bind:
 - exact Capability/Evidence blobs;
 - exact bindings and environments.
 
-### 2.1 Anti-cherry-pick subject selection
+### 2.1 Deterministic exact-12 selection (replaces discretionary strata)
 
-The 12 subjects may not be hand-picked for exporter convenience.
+**Frozen eligibility:** A candidate must have a stable ID, an EVIDENCED behavioral verdict, exact Evidence source refs, non-stale version/binding scope, and an executable binding. The eligible-pool manifest is frozen before any projection is generated.
 
-From the pool of SE10/SE11 Capabilities that reached the frozen eligible Evidence state, construct strata:
+**Selection algorithm:** Commit the UTF-8 seed `app8-SE12-v0.1-selection` and eligible-pool blob. Partition eligible candidates by source asset and its distinct software class. Retain only assets with at least 4 eligible candidates. Select the first 3 **distinct software classes**, ascending by canonical class ID; within each class select the first asset ascending by canonical repository/asset ID. If fewer than 3 such classes exist, verdict = BLOCKED (no fallback).
 
-- asset/software class;
-- simple vs variant-bearing Capability;
-- Capability with vs without material negative boundary;
-- single-binding vs multi-binding where available.
+Within each selected asset, rank its candidates ascending by SHA-256(seed + "|" + canonical Capability ID); break exact hash collisions by ascending canonical Capability ID. Take the first 4 from each asset: exactly 12. No discretionary quotas, swaps, oversampling, post-hoc substitutions, or replacement after looking at projector outputs.
 
-Within each stratum, select subjects by a deterministic hash ordering over the frozen Capability identity using a seed committed before any projection is generated. If a stratum lacks enough eligible cases, take all available cases and report the deficit; do not substitute easier cases from another stratum without explicit reviewed disposition.
+Before running a projector verify that the selected 12 contain >=3 material variants, >=3 material negative/unsupported boundaries and representation of all 3 distinct classes. If not, verdict = BLOCKED (do not cherry-pick a better set). Freeze the selected 12 IDs and their exact blobs.
 
-Selection occurs before any CLI/MCP/Skill projection output for the candidate set is inspected.
-
-Subject rebinding may choose only from frozen SE10/SE11 results and may not alter this protocol's scoring/thresholds.
+Any evidence-stale/invalid subject discovered afterward is reported as a study limitation and scored according to the predeclared denominator; no favorable replacement or subject reallocation is allowed.
 
 ## 3. Required consumers
 
@@ -79,30 +74,37 @@ For each Capability:
 
 At least two positive and one negative/boundary task per Capability are required.
 
-## 6. Primary metrics
+## 6. Primary metrics and denominator discipline
 
-- semantic-field agreement across consumers;
-- material-constraint preservation;
-- material-failure preservation;
-- execution concordance between CLI/MCP and frozen Capability behavior;
-- unsupported-projection explicitness;
-- consumer source-authority compliance;
-- semantic drift incident count.
+Primary subject denominator = **all 12 selected Capabilities**; representation-level field consistency has a denominator of 12 × required fields per required consumer, with unsupported/missing fields recorded as missing rather than silently excluded.
 
-A semantic drift incident is any consumer claim/action that materially broadens, narrows or changes Capability truth without a corresponding authority revision.
+Track per consumer:
+
+- CLI: real executable binding, assessed over **12**;
+- MCP: real executable binding, assessed over **12**;
+- Skill: assessable instructions, assessed over **12**;
+- Agent Docs: assessable documentation, assessed over **12**;
+- Search Metadata: assessable entry, assessed over **12**.
+
+A generated consumer that fails compilation, execution, or contract validation is **FAIL**, not UNSUPPORTED or BLOCKED. UNSUPPORTED is allowed only when the frozen Capability authority itself documents a hard representation limitation with matching Evidence; BLOCKED is only a documented external environmental restriction, independently adjudicated before generator outcome visibility. Both count as non-covered in the primary denominator.
+
+Also score semantic-field agreement, material-constraint/failure preservation, CLI/MCP execution concordance, explicit unsupported handling, source-authority compliance and semantic drift.
 
 ## 7. Frozen PASS thresholds
 
-PASS requires:
+PASS requires all of:
 
-- >= 0.95 semantic-field agreement;
-- >= 0.95 material-constraint preservation;
-- >= 0.95 material-failure preservation;
-- >= 0.95 CLI/MCP execution concordance on executable cases;
-- 100% explicit UNSUPPORTED/BLOCKED handling;
+- CLI executable coverage **>=9/12** and MCP executable coverage **>=9/12**; at least **9/12 common subjects** executable via both CLI and MCP;
+- Skill assessable coverage **12/12**, Agent Docs **12/12**, Search Metadata **12/12**;
+- >=0.95 semantic-field agreement over all required/assessable consumer fields, missing/unsupported representation recorded as miss where material;
+- >=0.95 material-constraint preservation and material-failure preservation;
+- >=0.95 CLI/MCP execution concordance across at least the 9 common executable subjects, with >=2 positive and >=1 negative task per subject;
+- 100% explicit UNSUPPORTED/BLOCKED handling, including proof of representation/environment eligibility;
 - 100% consumer-authority compliance;
 - zero high-severity semantic drift incident;
-- no consumer self-promotes stale/non-evidenced material to EXPORT_READY.
+- no stale/non-evidenced capability promoted to EXPORT_READY.
+
+If 9 shared executable cases cannot be assessed, this study **FAILS** the multi-consumer feasibility claim; it cannot PASS on the smaller subset. No target-level cherry-picking is permitted.
 
 ## 8. Anti-cheating
 
