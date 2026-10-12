@@ -50,14 +50,34 @@ def fake_gold():
     }
 
 
+def write_attestation(private, path, mutate=None):
+    obj = {
+        "schema_version": "se10-independent-gold-attestation-v1",
+        "gold_file_sha256": hashlib.sha256(private.read_bytes()).hexdigest(),
+        "author_identity_class": "INDEPENDENT_HUMAN_DOMAIN_CURATOR",
+        "reviewer_identity_class": "INDEPENDENT_HUMAN_GOLD_REVIEWER",
+        "review_status": "PASS",
+        "git_backed_private_gold": False,
+        "private_store_class": "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT",
+        "isolation_review_sha256": "3" * 64
+    }
+    if mutate:
+        mutate(obj)
+    path.write_text(json.dumps(obj), encoding="utf-8")
+
+
 class GoldToolTests(unittest.TestCase):
     def execute(self, doc, expected_success):
         with tempfile.TemporaryDirectory(prefix="se10-tool-unit-test-") as tmp:
             private = pathlib.Path(tmp) / "private.json"
             output = pathlib.Path(tmp) / "public.json"
+            attestation = pathlib.Path(tmp) / "attestation.json"
             private.write_text(json.dumps(doc), encoding="utf-8")
+            write_attestation(private, attestation)
             proc = subprocess.run(
-                [sys.executable, str(RUNNER), str(private), "--out", str(output)],
+                [sys.executable, str(RUNNER), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(output)],
                 text=True, capture_output=True, check=False
             )
             self.assertEqual(proc.returncode == 0, expected_success, proc.stderr)
@@ -165,8 +185,12 @@ class GoldToolTests(unittest.TestCase):
                 os.link(private, output)
             except OSError as exc:
                 self.skipTest(f"hardlink unsupported: {exc}")
+            attestation = pathlib.Path(tmp) / "attestation.json"
+            write_attestation(private, attestation)
             proc = subprocess.run(
-                [sys.executable, str(RUNNER), str(private), "--out", str(output)],
+                [sys.executable, str(RUNNER), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(output)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(proc.returncode, 0)
@@ -185,20 +209,64 @@ class GoldToolTests(unittest.TestCase):
             private = td / "private.json"
             output = td / "public.json"
             private.write_text(json.dumps(fake_gold()), encoding="utf-8")
+            attestation = td / "attestation.json"
+            write_attestation(private, attestation)
             proc = subprocess.run(
-                [sys.executable, str(runner), str(private), "--out", str(output)],
+                [sys.executable, str(runner), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(output)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(proc.returncode, 0)
             self.assertFalse(output.exists())
             self.assertIn("reviewed Git blob", proc.stderr)
 
+    def test_rejects_attestation_for_different_gold(self):
+        with tempfile.TemporaryDirectory(prefix="se10-attestation-") as tmp:
+            td = pathlib.Path(tmp)
+            private = td / "private.json"
+            output = td / "public.json"
+            attestation = td / "attestation.json"
+            private.write_text(json.dumps(fake_gold()), encoding="utf-8")
+            write_attestation(private, attestation, lambda x: x.__setitem__("gold_file_sha256", "0" * 64))
+            proc = subprocess.run(
+                [sys.executable, str(RUNNER), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(output)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertFalse(output.exists())
+            self.assertIn("bind exact private Gold", proc.stderr)
+
+    def test_rejects_failed_independent_attestation(self):
+        with tempfile.TemporaryDirectory(prefix="se10-attestation-") as tmp:
+            td = pathlib.Path(tmp)
+            private = td / "private.json"
+            output = td / "public.json"
+            attestation = td / "attestation.json"
+            private.write_text(json.dumps(fake_gold()), encoding="utf-8")
+            write_attestation(private, attestation, lambda x: x.__setitem__("review_status", "FAIL"))
+            proc = subprocess.run(
+                [sys.executable, str(RUNNER), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(output)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertFalse(output.exists())
+            self.assertIn("must PASS", proc.stderr)
+
     def test_rejects_same_input_output_file(self):
         with tempfile.TemporaryDirectory(prefix="se10-tool-unit-test-") as tmp:
             private = pathlib.Path(tmp) / "private.json"
             private.write_text(json.dumps(fake_gold()), encoding="utf-8")
+            attestation = pathlib.Path(tmp) / "attestation.json"
+            write_attestation(private, attestation)
             proc = subprocess.run(
-                [sys.executable, str(RUNNER), str(private), "--out", str(private)],
+                [sys.executable, str(RUNNER), str(private),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(private)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(proc.returncode, 0)
