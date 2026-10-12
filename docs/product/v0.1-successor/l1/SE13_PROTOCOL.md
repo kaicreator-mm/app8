@@ -25,9 +25,23 @@ Before any benchmark run, an independently reviewed benchmark manifest must pin:
 - time/token/tool-call budgets;
 - random seed/order.
 
-No task may have been used to author the tested Skill/docs/projection examples verbatim.
+## 3. Task construction and leakage control
 
-## 3. Study design
+Task authors work from the frozen Capability/Evidence authority and ordinary user-facing software goals, not from generated CLI/MCP/Skill examples.
+
+The 24 tasks must be frozen before Agent-run outputs are visible and balanced across:
+
+- assets/classes;
+- read/inspect vs mutate/produce behavior where applicable;
+- simple vs multi-step tasks;
+- tasks exercising material constraints/variants;
+- at least 6 tasks containing a plausible unsupported or boundary-sensitive choice.
+
+No task may copy a generated projection example verbatim. No task scorer or hidden fixture may be available to either Agent arm.
+
+If a projection was created using a task later selected for SE13, that task is excluded before any benchmark run and replaced using the same predeclared selection rule.
+
+## 4. Study design
 
 Paired two-arm evaluation:
 
@@ -40,13 +54,13 @@ Run each task three independent times per arm, yielding 72 runs per arm.
 
 Counterbalance arm ordering and task ordering. Where feasible, scoring is blind to arm.
 
-## 4. Primary outcome
+## 5. Primary outcome
 
 Task success rate according to frozen task-specific objective scorers.
 
 A task scorer must inspect actual outputs/state, not accept the Agent's self-report.
 
-## 5. Secondary outcomes
+## 6. Secondary outcomes
 
 Record:
 
@@ -60,15 +74,15 @@ Record:
 - unsupported-action attempts;
 - recovery success after failures.
 
-## 6. Fairness rules
+## 7. Fairness rules
 
 The APP8 arm may not receive hidden answer keys, decisive fixtures or task-specific scripts unavailable to baseline.
 
-Both arms may receive equivalent credentials and native software access.
+Both arms receive equivalent credentials and native software access.
 
 If app8 projections encode a task's literal expected answer, that task is invalid and must be excluded before running either arm.
 
-## 7. Frozen PASS thresholds
+## 8. Frozen PASS thresholds
 
 PASS requires:
 
@@ -80,17 +94,18 @@ PASS requires:
 
 Token/time cost are secondary and reported, not hidden. A success gain achieved only by an unbounded budget increase is invalid; both arms obey the frozen budget.
 
-## 8. Anti-cheating
+## 9. Anti-cheating
 
-Freeze benchmark manifest, tasks, scorers, model/harness identities and thresholds before first run.
+Freeze benchmark manifest, task-construction rule, tasks, scorers, model/harness identities and thresholds before first run.
 
 Preserve all failed runs. No selective rerun except a predeclared infrastructure-failure policy applied symmetrically to both arms.
 
-## 9. Outputs
+## 10. Outputs
 
 Produce:
 
 - benchmark manifest;
+- task-construction provenance;
 - exact arm packages;
 - all run traces;
 - objective scorer results;
@@ -100,11 +115,11 @@ Produce:
 - terminal;
 - What Was NOT Proven.
 
-## 10. What this study cannot prove
+## 11. What this study cannot prove
 
 SE13 cannot prove user demand, business moat, universal model benefit, long-term maintenance cost or safety. It tests Agent utility only on the frozen tasks/models/environments.
 
-## 11. Protocol terminal
+## 12. Protocol terminal
 
 ~~~text
 SE13_PROTOCOL = READY_FOR_FRESH_REVIEW
