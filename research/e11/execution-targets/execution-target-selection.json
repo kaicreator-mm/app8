@@ -125,7 +125,18 @@
               "Microsoft Visual C++ 2015-2022 Redistributable (x64)",
               "Microsoft Visual C++ v14 Redistributable (x64)"
             ],
-            "registry_name_suffix_policy": "OPTIONAL_EXACT_\" - <DisplayVersion>\""
+            "registry_name_suffix_policy": "EXACT_DISPLAY_VERSION_OR_IF_FOUR_COMPONENT_AND_REVISION_ZERO_FIRST_THREE_COMPONENTS",
+            "registry_name_suffix_examples": {
+              "accepted": [
+                "14.51.36247.0 -> 14.51.36247.0",
+                "14.51.36247.0 -> 14.51.36247"
+              ],
+              "rejected": [
+                "14.51.36247.1 -> 14.51.36247",
+                "14.51.36247.0 -> 14.51",
+                "14.51.36247.0 -> 14.51.36248"
+              ]
+            }
           }
         }
       }
