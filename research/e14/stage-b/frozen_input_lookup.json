@@ -1,0 +1,651 @@
+{
+  "schema_version": "se14-frozen-input-lookup-v1",
+  "source_pack_blob": "4b3c9b62b1899653524f19a286924f942605210a",
+  "corpus_blob": "348d24670c30e9d857e97b36b9d650a245896b01",
+  "query_blob": "176ee9e23fcfcd051443c087523fb6d2538c5d0c",
+  "config_blob": "2149627397d2a48c58bc8b5fd0d8c654fdfbc977",
+  "items": {
+    "F01": {
+      "asset": "FFmpeg",
+      "description": "Transcode media between formats",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F02": {
+      "asset": "FFmpeg",
+      "description": "Inspect media streams and metadata",
+      "native": "CLI",
+      "source_path": "doc/ffprobe.texi",
+      "source_blob": "254de54f0b134170154c5d5d289a0aa6ff47b8b6"
+    },
+    "F03": {
+      "asset": "FFmpeg",
+      "description": "Apply video filter graph",
+      "native": "CLI",
+      "source_path": "doc/filters.texi",
+      "source_blob": "04496d338feea803bbaec92ba0896ee4b5b12567"
+    },
+    "F04": {
+      "asset": "FFmpeg",
+      "description": "Apply audio filter graph",
+      "native": "CLI",
+      "source_path": "doc/filters.texi",
+      "source_blob": "04496d338feea803bbaec92ba0896ee4b5b12567"
+    },
+    "F05": {
+      "asset": "FFmpeg",
+      "description": "Select and map streams",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F06": {
+      "asset": "FFmpeg",
+      "description": "Stream-copy without re-encoding",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F07": {
+      "asset": "FFmpeg",
+      "description": "Choose input container format",
+      "native": "CLI",
+      "source_path": "doc/formats.texi",
+      "source_blob": "0722e3f5125c3c9d7f454588817ad9bbc59e6140"
+    },
+    "F08": {
+      "asset": "FFmpeg",
+      "description": "Choose output muxer",
+      "native": "CLI",
+      "source_path": "doc/muxers.texi",
+      "source_blob": "a2489760fcd9d95cc8eda1371b1d29e4f3ddaf5e"
+    },
+    "F09": {
+      "asset": "FFmpeg",
+      "description": "Read a specific demuxer/input format",
+      "native": "CLI",
+      "source_path": "doc/demuxers.texi",
+      "source_blob": "76100551931992472f6e138e95a503dffe286835"
+    },
+    "F10": {
+      "asset": "FFmpeg",
+      "description": "Use network/file protocols",
+      "native": "CLI",
+      "source_path": "doc/protocols.texi",
+      "source_blob": "1d43fa6327fb5b5ea0486e5a58c2fe2fc9547e2e"
+    },
+    "F11": {
+      "asset": "FFmpeg",
+      "description": "Seek before or during processing",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F12": {
+      "asset": "FFmpeg",
+      "description": "Limit output duration",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F13": {
+      "asset": "FFmpeg",
+      "description": "Set or map metadata",
+      "native": "CLI",
+      "source_path": "doc/ffmpeg.texi",
+      "source_blob": "5d2eb4d1e38d271baf908cea880ba323ce138129"
+    },
+    "F14": {
+      "asset": "FFmpeg",
+      "description": "Remux streams into another container",
+      "native": "example",
+      "source_path": "doc/examples/remux.c",
+      "source_blob": "1a88f7efe6c7bd7e5b7262c2dd8a3816ee459981"
+    },
+    "F15": {
+      "asset": "FFmpeg",
+      "description": "Programmatic transcoding example",
+      "native": "example",
+      "source_path": "doc/examples/transcode.c",
+      "source_blob": "5cad3e1aec23eed05912b19178159f33f7cca1d5"
+    },
+    "F16": {
+      "asset": "FFmpeg",
+      "description": "Programmatic audio filtering example",
+      "native": "example",
+      "source_path": "doc/examples/filter_audio.c",
+      "source_blob": "ad77bf1f897981e19aaac785a43629e32b347389"
+    },
+    "P01": {
+      "asset": "pandas",
+      "description": "Read tabular data into a DataFrame",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/02_read_write.rst",
+      "source_blob": "e46a0075edd05c36e87e493c74797fc17d4d0df8"
+    },
+    "P02": {
+      "asset": "pandas",
+      "description": "Write tabular data to external formats",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/02_read_write.rst",
+      "source_blob": "e46a0075edd05c36e87e493c74797fc17d4d0df8"
+    },
+    "P03": {
+      "asset": "pandas",
+      "description": "Select rows and columns",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/03_subset_data.rst",
+      "source_blob": "9805e3b6e995bfc3e89d3fab582b04b1eea2c38a"
+    },
+    "P04": {
+      "asset": "pandas",
+      "description": "Create plots from tabular data",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/04_plotting.rst",
+      "source_blob": "e9f83c602d086a26250346e6bdd57989990f8c3a"
+    },
+    "P05": {
+      "asset": "pandas",
+      "description": "Create derived columns",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/05_add_columns.rst",
+      "source_blob": "481c094870e129a86e9c7359a4e3ae2bb9c35a5f"
+    },
+    "P06": {
+      "asset": "pandas",
+      "description": "Calculate summary statistics",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/06_calculate_statistics.rst",
+      "source_blob": "1399ab66426f4801b566d165350c133f4d622e9a"
+    },
+    "P07": {
+      "asset": "pandas",
+      "description": "Reshape table layout",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/07_reshape_table_layout.rst",
+      "source_blob": "e4b34e3af57bfbd91757e323b6ca1cd8c9b0e02e"
+    },
+    "P08": {
+      "asset": "pandas",
+      "description": "Combine DataFrames",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/08_combine_dataframes.rst",
+      "source_blob": "024300bb8a9b008f5f433edea74fe4892f869dac"
+    },
+    "P09": {
+      "asset": "pandas",
+      "description": "Work with time-series data",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/09_timeseries.rst",
+      "source_blob": "820def3072b26d0629e4c4ba4d91d834489b7ae9"
+    },
+    "P10": {
+      "asset": "pandas",
+      "description": "Process string/text columns",
+      "native": "Python API",
+      "source_path": "doc/source/getting_started/intro_tutorials/10_text_data.rst",
+      "source_blob": "8493a071863c43cfd37ddd6b41358ced56e45442"
+    },
+    "P11": {
+      "asset": "pandas",
+      "description": "Group and aggregate records",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/groupby.rst",
+      "source_blob": "b7401f6ac20ca4e7c398169dcc32217dd1b889dd"
+    },
+    "P12": {
+      "asset": "pandas",
+      "description": "Merge and join tables",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/merging.rst",
+      "source_blob": "339b10aa7fd73a5ccb02b3a7b17102dc698b061d"
+    },
+    "P13": {
+      "asset": "pandas",
+      "description": "Pivot and reshape data",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/reshaping.rst",
+      "source_blob": "c43a425489c985da4428176a2f0d4c3759f83206"
+    },
+    "P14": {
+      "asset": "pandas",
+      "description": "Handle missing data",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/missing_data.rst",
+      "source_blob": "64b76ad4f0d31e6805199d20fe223a1eef723efd"
+    },
+    "P15": {
+      "asset": "pandas",
+      "description": "Index and label-select data",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/indexing.rst",
+      "source_blob": "b2a4a4115261ca3629a979b7919a3d653243f2e8"
+    },
+    "P16": {
+      "asset": "pandas",
+      "description": "Resample or transform time series",
+      "native": "Python API",
+      "source_path": "doc/source/user_guide/timeseries.rst",
+      "source_blob": "d574ade09985edff667998cbf0cf525095c991eb"
+    },
+    "M01": {
+      "asset": "MinIO",
+      "description": "Configure bucket lifecycle rules",
+      "native": "server/API",
+      "source_path": "docs/bucket/lifecycle/README.md",
+      "source_blob": "6888838f77eb0955f575754be289c43d75f5d086"
+    },
+    "M02": {
+      "asset": "MinIO",
+      "description": "Configure bucket notifications",
+      "native": "server/API",
+      "source_path": "docs/bucket/notifications/README.md",
+      "source_blob": "062f75fe60dc6f5466e3c06e50f8aad6a85a0254"
+    },
+    "M03": {
+      "asset": "MinIO",
+      "description": "Configure bucket replication",
+      "native": "server/API",
+      "source_path": "docs/bucket/replication/README.md",
+      "source_blob": "829d98f005cf276258d39014933d40ed5c12b68c"
+    },
+    "M04": {
+      "asset": "MinIO",
+      "description": "Configure object retention",
+      "native": "server/API",
+      "source_path": "docs/bucket/retention/README.md",
+      "source_blob": "c5087b22acd4a451b025cbcd5e2f36444ca0a018"
+    },
+    "M05": {
+      "asset": "MinIO",
+      "description": "Enable bucket versioning",
+      "native": "server/API",
+      "source_path": "docs/bucket/versioning/README.md",
+      "source_blob": "aeb9aa001804588e8be79492e3a45a7178f2cf90"
+    },
+    "M06": {
+      "asset": "MinIO",
+      "description": "Configure compression",
+      "native": "server config",
+      "source_path": "docs/compression/README.md",
+      "source_blob": "cc7bac663f95aaf49a8efcf0bf78a44cccbf827d"
+    },
+    "M07": {
+      "asset": "MinIO",
+      "description": "Configure server settings",
+      "native": "server config",
+      "source_path": "docs/config/README.md",
+      "source_blob": "9434752741b765ae9956452607411802c899d893"
+    },
+    "M08": {
+      "asset": "MinIO",
+      "description": "Use access-management plugin",
+      "native": "plugin",
+      "source_path": "docs/iam/access-management-plugin.md",
+      "source_blob": "f18b1e11ca2d4c2045fb661b8fa4ad46e16ab439"
+    },
+    "M09": {
+      "asset": "MinIO",
+      "description": "Use identity-management plugin",
+      "native": "plugin",
+      "source_path": "docs/iam/identity-management-plugin.md",
+      "source_blob": "01f80265d6f5a461d2b039b62fbb006ca40e40b2"
+    },
+    "M10": {
+      "asset": "MinIO",
+      "description": "Configure key management",
+      "native": "server config",
+      "source_path": "docs/kms/README.md",
+      "source_blob": "86d9d8c0556d67fe5630e9cb5a555f5061a1b37a"
+    },
+    "M11": {
+      "asset": "MinIO",
+      "description": "Configure event/lambda targets",
+      "native": "server config",
+      "source_path": "docs/lambda/README.md",
+      "source_blob": "7e571e850a479bda9211d1ebdc981ce2da8dfe14"
+    },
+    "M12": {
+      "asset": "MinIO",
+      "description": "Configure transport/security behavior",
+      "native": "server config",
+      "source_path": "docs/security/README.md",
+      "source_blob": "9d56e4b81bb28bdedfc680c6ec3e7d42d49513c4"
+    },
+    "M13": {
+      "asset": "MinIO",
+      "description": "Query objects with Select",
+      "native": "API",
+      "source_path": "docs/select/README.md",
+      "source_blob": "7aff355380009b54aa77a4b477fec5398a5400fb"
+    },
+    "M14": {
+      "asset": "MinIO",
+      "description": "Configure site replication",
+      "native": "server/API",
+      "source_path": "docs/site-replication/README.md",
+      "source_blob": "8edcc09deedf3098c08fa29232f1ab11a86cb85f"
+    },
+    "M15": {
+      "asset": "MinIO",
+      "description": "Use STS temporary credentials",
+      "native": "API",
+      "source_path": "docs/sts/README.md",
+      "source_blob": "62fa48b18584be1b5e21025c94c4486d191d9449"
+    },
+    "M16": {
+      "asset": "MinIO",
+      "description": "Assume a role through STS",
+      "native": "API",
+      "source_path": "docs/sts/assume-role.md",
+      "source_blob": "8b9600f7fc0a6c3ffed147d503555d262cd5ea18"
+    },
+    "L01": {
+      "asset": "LibreOffice",
+      "description": "Import or export CSV in Calc",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/scalc/guide/csv_files.xhp",
+      "source_blob": "5e3cce6fa92a59cabfa371ecfc9ec9968794d3de"
+    },
+    "L02": {
+      "asset": "LibreOffice",
+      "description": "Apply filters in Calc",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/scalc/guide/filters.xhp",
+      "source_blob": "ed67334ccb84f228ae1d4342a8b14a84a2464497"
+    },
+    "L03": {
+      "asset": "LibreOffice",
+      "description": "Enter formulas in Calc",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/scalc/guide/formula_enter.xhp",
+      "source_blob": "f2232906a11e882f2d0272263fbb59d917c849d7"
+    },
+    "L04": {
+      "asset": "LibreOffice",
+      "description": "Create a pivot table in Calc",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/scalc/guide/datapilot_createtable.xhp",
+      "source_blob": "dbbdafdf18b0b93dc20a7ec4dce781ca796270d9"
+    },
+    "L05": {
+      "asset": "LibreOffice",
+      "description": "Insert a table in Writer",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/swriter/guide/table_insert.xhp",
+      "source_blob": "ac7b1c40fc37d36ad7b2152ed154a9c3ebb1d761"
+    },
+    "L06": {
+      "asset": "LibreOffice",
+      "description": "Insert an image in Writer",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/swriter/guide/insert_graphic.xhp",
+      "source_blob": "2271ece0a73cebf2dbb04f5d779e3ef5f5570429"
+    },
+    "L07": {
+      "asset": "LibreOffice",
+      "description": "Print a selection in Writer",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/swriter/guide/print_selection.xhp",
+      "source_blob": "aaccf8316b7890bda9dd82f95a4986941ec30ca0"
+    },
+    "L08": {
+      "asset": "LibreOffice",
+      "description": "Enable automatic spell checking",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/swriter/guide/auto_spellcheck.xhp",
+      "source_blob": "3ed8f195171ecdf8dec17e6f6e59f33117f7da29"
+    },
+    "L09": {
+      "asset": "LibreOffice",
+      "description": "Rearrange slides in Impress",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/simpress/guide/arrange_slides.xhp",
+      "source_blob": "3adbc326626c0098f37e45729372ede0f56e4e70"
+    },
+    "L10": {
+      "asset": "LibreOffice",
+      "description": "Apply slide transitions",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/simpress/guide/animated_slidechange.xhp",
+      "source_blob": "78d8b5a3a2323a8041a7f1701d4b06dd5ac83a68"
+    },
+    "L11": {
+      "asset": "LibreOffice",
+      "description": "Print a presentation",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/simpress/guide/printing.xhp",
+      "source_blob": "1450c7d424a54f9c0e01fe9c5f5884e042624742"
+    },
+    "L12": {
+      "asset": "LibreOffice",
+      "description": "Insert a table in Impress",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/simpress/guide/table_insert.xhp",
+      "source_blob": "631a815e5f3e848e727aa95e100256ae1a1004c9"
+    },
+    "L13": {
+      "asset": "LibreOffice",
+      "description": "Save a document",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/shared/guide/doc_save.xhp",
+      "source_blob": "15c4d8c071087d364b7fade01d7e0b78d80c0d9c"
+    },
+    "L14": {
+      "asset": "LibreOffice",
+      "description": "Export a document to PDF",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/shared/guide/pdf_params.xhp",
+      "source_blob": "a107c81def3499aab0f9f52c2c10eb8dcba72e1c"
+    },
+    "L15": {
+      "asset": "LibreOffice",
+      "description": "Insert a chart",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/shared/guide/chart_insert.xhp",
+      "source_blob": "2c8876398b8dee88c060fce46a33ef8d199011c6"
+    },
+    "L16": {
+      "asset": "LibreOffice",
+      "description": "Manage document templates",
+      "native": "GUI/structured UI",
+      "source_path": "source/text/shared/guide/manage_templates.xhp",
+      "source_blob": "c88404b0d8497a51a16289dbfd4789e12b5a9973"
+    }
+  },
+  "queries": {
+    "Q01": {
+      "family": "plain",
+      "text": "convert a video file to another format"
+    },
+    "Q02": {
+      "family": "plain",
+      "text": "inspect the streams inside a media file"
+    },
+    "Q03": {
+      "family": "plain",
+      "text": "filter rows in a table"
+    },
+    "Q04": {
+      "family": "plain",
+      "text": "combine two tabular datasets"
+    },
+    "Q05": {
+      "family": "plain",
+      "text": "configure object retention in storage"
+    },
+    "Q06": {
+      "family": "plain",
+      "text": "enable object version history"
+    },
+    "Q07": {
+      "family": "plain",
+      "text": "insert a chart into a document"
+    },
+    "Q08": {
+      "family": "plain",
+      "text": "save a document"
+    },
+    "Q09": {
+      "family": "plain",
+      "text": "calculate grouped statistics from a table"
+    },
+    "Q10": {
+      "family": "plain",
+      "text": "apply an audio filter to media"
+    },
+    "Q11": {
+      "family": "plain",
+      "text": "configure storage event notifications"
+    },
+    "Q12": {
+      "family": "plain",
+      "text": "export a document as PDF"
+    },
+    "Q13": {
+      "family": "constraint",
+      "text": "copy existing media streams without re-encoding them"
+    },
+    "Q14": {
+      "family": "constraint",
+      "text": "select only particular media streams for output"
+    },
+    "Q15": {
+      "family": "constraint",
+      "text": "join tables while controlling how keys match"
+    },
+    "Q16": {
+      "family": "constraint",
+      "text": "work with missing values without silently treating them as normal values"
+    },
+    "Q17": {
+      "family": "constraint",
+      "text": "keep stored objects from being deleted before a retention period ends"
+    },
+    "Q18": {
+      "family": "constraint",
+      "text": "create temporary storage credentials instead of long-lived credentials"
+    },
+    "Q19": {
+      "family": "constraint",
+      "text": "print only selected text rather than the whole Writer document"
+    },
+    "Q20": {
+      "family": "constraint",
+      "text": "import a CSV into Calc while preserving the intended parsing behavior"
+    },
+    "Q21": {
+      "family": "constraint",
+      "text": "process a time series with time-based resampling"
+    },
+    "Q22": {
+      "family": "constraint",
+      "text": "choose a specific output container rather than relying on filename inference"
+    },
+    "Q23": {
+      "family": "constraint",
+      "text": "replicate storage data to another deployment with explicit replication configuration"
+    },
+    "Q24": {
+      "family": "constraint",
+      "text": "apply a slide transition without using pixel-coordinate automation"
+    },
+    "Q25": {
+      "family": "currentness",
+      "text": "for the installed FFmpeg version, how do I inspect the video and audio streams in a file"
+    },
+    "Q26": {
+      "family": "currentness",
+      "text": "in this installed pandas version, what operation resamples timestamp-indexed measurements"
+    },
+    "Q27": {
+      "family": "currentness",
+      "text": "on this MinIO server version, how can I obtain temporary access credentials"
+    },
+    "Q28": {
+      "family": "currentness",
+      "text": "in this installed LibreOffice release, how can I export a document as PDF"
+    },
+    "Q29": {
+      "family": "currentness",
+      "text": "does this FFmpeg version allow changing containers without re-encoding the streams"
+    },
+    "Q30": {
+      "family": "currentness",
+      "text": "on this pandas version, can I join two DataFrames using matching key columns"
+    },
+    "Q31": {
+      "family": "currentness",
+      "text": "on my installed MinIO server, can I configure object retention to prevent early deletion"
+    },
+    "Q32": {
+      "family": "currentness",
+      "text": "for this LibreOffice version, how do I rearrange slides in an existing presentation"
+    },
+    "Q33": {
+      "family": "variant",
+      "text": "choose between re-encoding and stream-copying media"
+    },
+    "Q34": {
+      "family": "variant",
+      "text": "choose a table combination method appropriate for joining datasets"
+    },
+    "Q35": {
+      "family": "variant",
+      "text": "choose between ordinary storage credentials and temporary STS credentials"
+    },
+    "Q36": {
+      "family": "variant",
+      "text": "choose a Calc operation for importing CSV rather than general document saving"
+    },
+    "Q37": {
+      "family": "variant",
+      "text": "choose a media input/demuxing behavior rather than an output muxer"
+    },
+    "Q38": {
+      "family": "variant",
+      "text": "choose between table pivoting and grouping/aggregation"
+    },
+    "Q39": {
+      "family": "variant",
+      "text": "choose a storage replication capability rather than simple versioning"
+    },
+    "Q40": {
+      "family": "variant",
+      "text": "choose a presentation table insertion action rather than Writer table insertion"
+    },
+    "Q41": {
+      "family": "negative",
+      "text": "add a visual filter to a video while guaranteeing that the existing compressed streams remain byte-for-byte unchanged"
+    },
+    "Q42": {
+      "family": "negative",
+      "text": "is there one pandas operation that both fills missing values and transforms the text in every column"
+    },
+    "Q43": {
+      "family": "negative",
+      "text": "can I guarantee retention against deletion by turning on bucket versioning alone"
+    },
+    "Q44": {
+      "family": "negative",
+      "text": "automate a LibreOffice document action without relying on screen coordinates or screenshots"
+    },
+    "Q45": {
+      "family": "negative",
+      "text": "inspect which streams are inside a video file, without creating an output media container"
+    },
+    "Q46": {
+      "family": "negative",
+      "text": "merge two data tables based on a shared customer ID, not by reshaping columns"
+    },
+    "Q47": {
+      "family": "negative",
+      "text": "issue short-lived storage credentials for a client without configuring cross-site replication"
+    },
+    "Q48": {
+      "family": "negative",
+      "text": "produce a PDF copy of a Writer file rather than simply saving the editable document"
+    }
+  }
+}
