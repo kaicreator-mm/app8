@@ -17,7 +17,7 @@ This tooling does not create the corpus.
 
 The curator/private context that sees `truth_class`, claim text, expected behavior and decisive fixtures must never become the tested LLM-B planning context.
 
-The private truth file must be outside **every Git worktree** until the reviewed protocol explicitly permits reveal. The commitment tool rejects Git-backed private input. Claim IDs are opaque **random UUIDv4** identifiers (`H_<32 lowercase hex>`) with no semantic category or label embedded.
+The private truth file must be outside **every Git worktree** until the reviewed protocol explicitly permits reveal. The commitment tool rejects Git-backed private input. Claim IDs are opaque UUIDv4-shaped identifiers (`H_<32 lowercase hex>`) cryptographically derived as HMAC-SHA256 over a private per-corpus 256-bit secret and non-semantic claim nonce. The private secret/nonce mapping never enters the public commitment; this mechanically prevents sequential/asset/truth-class allocation from leaking through public IDs.
 
 ## Required shape
 
@@ -38,12 +38,13 @@ Every private claim requires:
 - decisive fixture reference;
 - expected behavioral truth;
 - provenance;
-- per-claim target-applicability evidence reference (especially for DIVERGED release branches);
+- per-asset frozen Source→Execution mapping with exact relation and independently PASS-reviewed applicability evidence SHA-256;
+- per-claim structured target-applicability object with relation, evidence kind, exact evidence SHA-256 and independent PASS status (especially for DIVERGED release branches);
 - replay/reset requirements.
 
 Before corpus construction, an independently reviewed **Execution Target manifest** must freeze each asset's exact real target version/build/package, checksum or immutable digest, acquisition provenance, platform/runtime, and Source -> Execution mapping class. The sealed corpus binds to that manifest by SHA-256.
 
-The validator also rejects missing/unknown/extra fields, wrong types, non-opaque IDs, duplicate IDs, absent target applicability refs, or incorrect class balance. A ref is a provenance pointer, not by itself proof of applicability; the independent reviewer must inspect the sealed material against the final Execution Target manifest.
+The validator rejects missing/unknown/extra fields, wrong types, IDs that are not HMAC-bound to the private secret/nonce, duplicate IDs/nonces, unresolved Source→Execution mappings, placeholder/non-SHA applicability evidence, relation mismatches, non-PASS applicability reviews, use of exact-source evidence for a DIVERGED/ancestor/descendant mapping, or incorrect class balance. Cryptographic structure still does not prove semantic truth: the independent reviewer must inspect the sealed evidence against the final Execution Target manifest.
 
 The public commitment contains only:
 - raw private-file SHA-256 and byte count;
@@ -84,4 +85,6 @@ L2_READY=NO
 
 ## ID generation and blind isolation
 
-The independent curator must assign each claim an independently generated UUIDv4, for example `"H_" + uuid.uuid4().hex`. No sequential ID, truth-class prefix, asset-derived prefix, semantic slug, or predictable ordering may identify the verdict. Independently shuffle claim order before producing public commitments. The tool checks UUIDv4 structure, but cannot prove authorship, randomness quality or separation of curator and planner: these remain independent review requirements.
+Before authoring claims, the independent curator generates one cryptographically random 256-bit `id_secret_hex` and keeps it only inside the sealed private corpus. For every claim, choose a unique non-semantic `id_nonce`; `commit_hidden.py` derives the public ID with HMAC-SHA256(secret, nonce), truncates to 128 bits, and sets RFC4122 UUIDv4 version/variant bits. The validator recomputes every ID and rejects arbitrary/sequential UUID-shaped values.
+
+The public commitment emits only a SHA-256 of the private ID secret, never the secret or nonce mapping. Claim order should still be independently shuffled. This mechanism establishes opaque ID derivation, but not curator/planner separation or semantic truth; those remain independent-review requirements.
