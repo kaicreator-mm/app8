@@ -12,7 +12,7 @@ Rule: shortest trustworthy path to study terminals; no optional-tooling recursio
 | SE11 | tooling/target R1/R3 | #66 PASS; #68 R3 PASS; #69 target; #55 truth | Fresh reviewer + Windows host + independent curator | close reviews → merge → target/truth → execute | non-validity hardening |
 | SE12 | HOLD | needs frozen SE10/SE11 Capability/Evidence subject | Web/local | execute protocol once upstream terminal | architecture design |
 | SE13 | HOLD | needs SE12 projections | real benchmark | run frozen paired benchmark | production Agent design |
-| SE14 | tooling R1 | #71 PASS, independent labels | Fresh reviewer + independent labeler | merge #70 → freeze labels → run once | ranking feature work |
+| SE14 | tooling R1; labels can start early | #71 PASS; independent labels; real paired index waits on SE10+SE11 evidence-backed Capability subject | Fresh reviewer + independent adjudicators | merge #70 → adjudicate labels early → after SE10/11 freeze paired index → bind receipt → run once | ranking feature work / synthetic capability metadata |
 | SE15 | sample not frozen | two real independent curators + final LO target | 2 humans + real host | top-25 freeze → binding run | more Notepad research/UIA early inspection |
 | SE16 | instrument R1 | #53 PASS, then real 8-person cohort | Fresh reviewer + real users | merge #52 → freeze private recruitment state → execute | instrument feature expansion |
 
@@ -48,8 +48,10 @@ after #62/#69 -> #55
 after #52 merge -> #51 real users
 
 LANE_D_RESULTS:
-SE14 immediately after #70 + labels
+SE14 labels may start after Stage-A freeze
 SE10/SE11 terminals
+→ freeze real SE14 paired index + bind reviewed label receipt
+→ SE14 evaluated ranking
 → SE12
 → SE13
 ```
