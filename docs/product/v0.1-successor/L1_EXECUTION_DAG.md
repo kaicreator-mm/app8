@@ -57,10 +57,10 @@ Implementation Task DAG
 | Node | Phase class | Dependency | Minimum terminal | Downstream unlock |
 |---|---|---|---|---|
 | #53 / PR #52 | FRESH_REVIEW | current SE16 instrument | PASS on exact HEAD | merge #52, recruit |
-| #61 / PR #60 | FRESH_REVIEW | current SE10 tooling | PASS + current tests | merge #60, #58 |
-| #66 / PR #62 | FRESH_REVIEW | current SE11 tooling | PASS + current tests | merge #62, hidden prep |
-| #68 / PR #67 | FRESH_REVIEW + LOCAL_REAL_HOST | current PS1 | PASS current HEAD | merge #67, #69 |
-| #71 / PR #70 | FRESH_REVIEW | current SE14 runner | PASS + current tests | merge #70; labels may freeze early |
+| #61 / PR #60 | FRESH_REVIEW | current SE10 tooling; 17/17 regression PASS | Fresh terminal | merge #60, #58 |
+| #66 / PR #62 | FRESH_REVIEW | current SE11 tooling; 18/18 regression PASS | Fresh terminal | merge #62, hidden prep |
+| #68 / PR #67 | FRESH_REVIEW + LOCAL_REAL_HOST | R5 HEAD 1f9bcd1; PS5.1 real-host static PASS, match=1 | Fresh source terminal | merge #67, #69 |
+| #71 / PR #70 | FRESH_REVIEW | current SE14 runner; 16/16 regression PASS | Fresh terminal | merge #70; labels may freeze early |
 | SE14 paired-index freeze | PRODUCT_L1_EVIDENCE | SE10+SE11 evidence-backed Capability subject + independent ordinary-metadata audit | exact paired index + label receipt bound to its SHA | evaluated SE14 ranking |
 | #58 | INDEPENDENT_HUMAN | #60 merge | sealed Gold commitment | SE10 evaluation |
 | #69 | LOCAL_REAL_HOST | #67 merge | exact LO/runtime manifest + smoke | SE11/SE15 target |
