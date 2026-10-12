@@ -32,6 +32,8 @@ Preferred Execution Target order:
 
 Every Execution Target must record exact version/build/package identity, cryptographic checksum or immutable digest, acquisition provenance, OS/runtime requirements, and release/tag/source mapping where the publisher exposes one.
 
+When both Knowledge Source and Execution Target source commits/tags are known, also freeze their repository relation as `SAME`, `KNOWLEDGE_SOURCE_ANCESTOR`, `KNOWLEDGE_SOURCE_DESCENDANT`, `DIVERGED`, or `UNRESOLVED`.
+
 A source-built artifact is therefore **not** the default requirement.
 
 ### 2.1 Mapping discipline
@@ -45,6 +47,8 @@ The mapping must be frozen before hidden truth or LLM-B planning and classify ea
 - `SOURCE_ONLY_REQUIRED`: claim depends on unreleased/source-only behavior and therefore requires an exact/reviewed source build.
 
 Claims must be scoped to the frozen Execution Target. A Knowledge Source statement that is not shown to apply to that target version may not be silently treated as expected runtime truth. Version mismatch is a first-class constraint/negative case, not grounds for post-outcome target substitution.
+
+If the relation is `DIVERGED` or `UNRESOLVED`, hidden-truth construction must establish target applicability **before LLM-B exposure** using release-specific publisher metadata/source/tag/help or deterministic execution evidence unavailable to LLM-B. A claim whose applicability cannot be established is BLOCKED/INELIGIBLE for supported-truth expectations; it may not be counted as a falsification failure merely because the Knowledge Source was newer or from another release line.
 
 For each asset, an independent truth curator constructs 20 claims, for 80 total:
 
@@ -158,7 +162,8 @@ Before LLM-B run, freeze:
 - decisive fixtures;
 - Knowledge Source identities;
 - Execution Target identities;
-- Source -> Execution mapping classes/provenance;
+- Source -> Execution mapping classes/provenance and repository relation;
+- target-applicability evidence/eligibility disposition where relation is DIVERGED/UNRESOLVED;
 - target environments;
 - plan budget;
 - scoring code/rules;
