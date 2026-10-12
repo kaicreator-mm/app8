@@ -116,6 +116,40 @@ class HiddenToolTests(unittest.TestCase):
         d["claims"].pop()
         self.check_case(d, False)
 
+    def test_rejects_duplicate_json_keys(self):
+        with tempfile.TemporaryDirectory(prefix="e11-strict-json-") as td:
+            inp = pathlib.Path(td) / "private.json"
+            out = pathlib.Path(td) / "public.json"
+            doc = fake_hidden()
+            raw = json.dumps(doc).replace(
+                '"schema_version":', '"schema_version": "shadow", "schema_version":', 1
+            )
+            inp.write_text(raw, encoding="utf-8")
+            cp = subprocess.run(
+                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(cp.returncode, 0)
+            self.assertFalse(out.exists())
+            self.assertIn("duplicate JSON key", cp.stderr)
+
+    def test_rejects_nonfinite_json_constants(self):
+        with tempfile.TemporaryDirectory(prefix="e11-strict-json-") as td:
+            inp = pathlib.Path(td) / "private.json"
+            out = pathlib.Path(td) / "public.json"
+            doc = fake_hidden()
+            raw = json.dumps(doc).replace(
+                '"schema_version":', '"injected": NaN, "schema_version":', 1
+            )
+            inp.write_text(raw, encoding="utf-8")
+            cp = subprocess.run(
+                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                capture_output=True, text=True, check=False
+            )
+            self.assertNotEqual(cp.returncode, 0)
+            self.assertFalse(out.exists())
+            self.assertIn("unsupported JSON constant", cp.stderr)
+
     def test_source_same_as_output(self):
         with tempfile.TemporaryDirectory(prefix="se11-tool-unit-test-") as td:
             inp = pathlib.Path(td) / "private.json"
