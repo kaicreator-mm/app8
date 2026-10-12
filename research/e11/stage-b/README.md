@@ -42,7 +42,7 @@ Every private claim requires:
 - per-claim structured target-applicability object with relation, evidence kind, exact evidence SHA-256 and independent PASS status (especially for DIVERGED release branches);
 - replay/reset requirements.
 
-Before corpus construction, an independently reviewed **Execution Target manifest** must freeze each asset's exact real target version/build/package, checksum or immutable digest, acquisition provenance, platform/runtime, and Source -> Execution mapping class. The sealed corpus binds to that manifest by SHA-256.
+Before corpus construction, an independently reviewed **Execution Target manifest** must freeze each asset's exact real target version/build/package, checksum or immutable digest, acquisition provenance, platform/runtime, and Source -> Execution mapping class. The commitment CLI requires the manifest as a separate input, recomputes its SHA-256 from exact bytes, requires schema `se11-execution-target-manifest-v1`, and rejects any hidden-corpus mapping that differs from the supplied manifest.
 
 The validator rejects missing/unknown/extra fields, wrong types, IDs that are not HMAC-bound to the private secret/nonce, duplicate IDs/nonces, unresolved Source→Execution mappings, placeholder/non-SHA applicability evidence, relation mismatches, non-PASS applicability reviews, use of exact-source evidence for a DIVERGED/ancestor/descendant mapping, or incorrect class balance. Cryptographic structure still does not prove semantic truth: the independent reviewer must inspect the sealed evidence against the final Execution Target manifest.
 
@@ -68,6 +68,7 @@ The historical Stage-A `BLOCKED_ENVIRONMENT` finding applies to the attempted ex
 
 ```bash
 python research/e11/stage-b/commit_hidden.py /secure/path/se11-hidden.json \
+  --execution-target-manifest /reviewed/path/se11-execution-target-manifest.json \
   --out /tmp/se11-public-commitment.json
 ```
 
