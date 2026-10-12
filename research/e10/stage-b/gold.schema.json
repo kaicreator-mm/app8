@@ -51,7 +51,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "^G[0-9]{4,6}$"
           },
           "asset": {
             "enum": [
@@ -94,31 +95,40 @@
           "variants": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "constraints": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "negative_boundaries": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "failure_semantics": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "binding_equivalence_group": {
-            "type": [
-              "string",
-              "null"
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "minLength": 1
+              }
             ]
           },
           "ambiguity": {
