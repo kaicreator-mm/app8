@@ -48,7 +48,9 @@ The mapping must be frozen before hidden truth or LLM-B planning and classify ea
 
 Claims must be scoped to the frozen Execution Target. A Knowledge Source statement that is not shown to apply to that target version may not be silently treated as expected runtime truth. Version mismatch is a first-class constraint/negative case, not grounds for post-outcome target substitution.
 
-If the relation is `DIVERGED` or `UNRESOLVED`, hidden-truth construction must establish target applicability **before LLM-B exposure** using release-specific publisher metadata/source/tag/help or deterministic execution evidence unavailable to LLM-B. A claim whose applicability cannot be established is BLOCKED/INELIGIBLE for supported-truth expectations; it may not be counted as a falsification failure merely because the Knowledge Source was newer or from another release line.
+If the relation is `DIVERGED` or `UNRESOLVED`, hidden-truth construction must establish target applicability **before LLM-B exposure** using release-specific publisher metadata/source/tag/help or deterministic execution evidence unavailable to LLM-B. Applicability determination is a **pre-freeze eligibility gate**, before selecting or labeling the fixed 80-claim corpus. The independent curator must construct the required 8/4/4/4 truth-class balance per asset entirely against the frozen Execution Target, not from unverifiable master-only claims.
+
+After the 80 claims and target manifest are frozen, **no claim may be replaced or excluded**, even if a later applicability check fails. Such a claim retains its original corpus ID, stays in the all-80 denominator, is reported as BLOCKED/INCONCLUSIVE with independent adjudication and contributes to the protocol's environmental BLOCKED threshold where applicable. No post-outcome reclassification, denominator shrinkage or silent favorable substitution is allowed. Version/currentness findings must be preserved as failure/constraint evidence rather than attributed to LLM-B reasoning without support.
 
 For each asset, an independent truth curator constructs 20 claims, for 80 total:
 
