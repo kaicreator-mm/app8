@@ -10,8 +10,11 @@ Source-pack blob: 4b3c9b62b1899653524f19a286924f942605210a
 
 Reduce mechanical error in the independent-human SE10 gold freeze without allowing an LLM to author semantic gold.
 
+The private gold file must be outside **every Git worktree**, including this repository. The commitment tool rejects a Git-backed private input. IDs are opaque `G0001`–style identifiers (never semantic labels), and every anchor must match the frozen `source_anchor_allowlist.json` path/blob pair. For LibreOffice, source paths are disambiguated by a `LibreOffice/core:` or `LibreOffice/help:` prefix.
+
 The private gold file stays outside Git. This directory contains only:
 - the gold JSON schema;
+- the exact 76-entry frozen source-anchor allowlist;
 - a validator / SHA-256 commitment generator;
 - a gitignore guard for private material.
 
@@ -35,6 +38,10 @@ ChatGPT/LLMs must not fill those semantic gold fields.
 
 The tool refuses:
 - wrong source-pack blob;
+- source anchors outside the exact frozen 76-path/blob allowlist;
+- semantic or duplicate reference IDs;
+- private gold stored in any Git repository;
+- unknown/extra fields and incorrect field types;
 - `model_generated_gold != false`;
 - `predictor_gold_visibility != false`;
 - unknown assets;
