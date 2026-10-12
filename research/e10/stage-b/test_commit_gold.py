@@ -100,7 +100,7 @@ class GoldToolTests(unittest.TestCase):
         self.execute(d, False)
 
     def test_rejects_duplicate_json_keys(self):
-        with tempfile.TemporaryDirectory(prefix="e10-strict-json-") as td:
+        with tempfile.TemporaryDirectory(prefix="se10-strict-json-") as td:
             inp = pathlib.Path(td) / "private.json"
             out = pathlib.Path(td) / "public.json"
             doc = fake_gold()
@@ -117,7 +117,7 @@ class GoldToolTests(unittest.TestCase):
             self.assertIn("duplicate JSON key", cp.stderr)
 
     def test_rejects_nonfinite_json_constants(self):
-        with tempfile.TemporaryDirectory(prefix="e10-strict-json-") as td:
+        with tempfile.TemporaryDirectory(prefix="se10-strict-json-") as td:
             inp = pathlib.Path(td) / "private.json"
             out = pathlib.Path(td) / "public.json"
             doc = fake_gold()
