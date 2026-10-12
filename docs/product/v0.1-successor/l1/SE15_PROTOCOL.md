@@ -1,7 +1,7 @@
 # SE15 Protocol — Non-Pixel Capability Exportability
 
-Status: DRAFT_FOR_FRESH_REVIEW
-Execution: NOT_AUTHORIZED
+Status: AMENDMENT_CANDIDATE_FOR_FRESH_REVIEW
+Execution: HOLD_FOR_IDENTITY_AMENDMENT_REVIEW
 Parent: Issue #25
 Owning task: Issue #31
 Product authority: main@908cee661f3747439bb0366b158903cb9b38b413
@@ -17,15 +17,40 @@ PIXEL_DERIVED_AUTOMATION = FORBIDDEN
 SEMANTIC_STRUCTURED_UI = ALLOWED
 ~~~
 
-## 2. Frozen portfolio
+## 2. Frozen portfolio and source/execution identity separation
 
-Use these five target identities:
+Use these five **Knowledge Source / asset identities** for candidate discovery and provenance:
 
 - FFmpeg/FFmpeg@f2bf7a2440d1e49023e4b3ed0e224a8806d388b8
 - pandas-dev/pandas@82c18c170b9aea7cbb96ef54b8005bed07c94220
 - minio/minio@7aac2a2c5b7c882e68c1ce017d8256be2feea27f
 - LibreOffice/core@016fd5d049256dc849111f60870f15201fcd1526
-- Microsoft Windows Notepad package/app identity on the Windows execution host, exercised only through Windows UI Automation/accessibility semantics for the structured-UI lane.
+- Microsoft Windows Notepad official help/package identity on the Windows execution host.
+
+For binding/execution, freeze a separate **Execution Target identity** per asset. An Execution Target does **not** need to be built from the exact Knowledge Source commit.
+
+Preferred Execution Target order:
+
+1. official publisher release binary/installer/package;
+2. official publisher package-registry artifact or container image;
+3. publisher-recommended build with durable provenance and cryptographic identity;
+4. reproducible source build only when no suitable official artifact exists or a selected Capability is explicitly source-only/unreleased.
+
+Every target must record exact version/build/package identity, checksum or immutable digest, acquisition provenance, platform/runtime, and any publisher-provided release/tag/source mapping.
+
+Freeze a Source -> Execution mapping class before binding work:
+
+- `EXACT_SOURCE_BUILD`;
+- `OFFICIAL_RELEASE_MAPPED`;
+- `OFFICIAL_RELEASE_VERSIONED`;
+- `PUBLISHER_RECOMMENDED_BUILD`;
+- `SOURCE_ONLY_REQUIRED`.
+
+A Knowledge Source claim that is not applicable to the chosen Execution Target version must be recorded as a version/currentness boundary; the target may not be changed after binding outcomes become visible merely to rescue coverage.
+
+For ordinary released capabilities, source compilation is **not** required when a suitable official release artifact exists.
+
+The Notepad execution target remains the exact official Microsoft package/app identity frozen on the Windows host and is exercised only through Windows UI Automation/accessibility semantics for the structured-UI lane.
 
 Before inspecting Notepad's UIA tree, the execution manifest must freeze:
 
@@ -114,7 +139,7 @@ If Notepad exposes no actionable semantic tree for a selected Capability, preser
 
 ## 9. Anti-cheating
 
-Freeze exact source/software/host/Notepad/UIA identities, 25-subject ranking and selection ledger, route definitions, remediation protocol, blocked taxonomy and thresholds before binding work.
+Freeze exact Knowledge Source identities, Execution Target identities, Source -> Execution mapping classes/provenance, host/Notepad/UIA identities, 25-subject ranking and selection ledger, route definitions, remediation protocol, blocked taxonomy and thresholds before binding work.
 
 Do not remove hard cases, change candidate ranks, or redefine Capability after difficulty or accessibility outcomes become visible.
 
@@ -139,8 +164,8 @@ SE15 does not prove universal software coverage, long-term maintenance cost, ext
 ## 12. Protocol terminal
 
 ~~~text
-SE15_PROTOCOL = READY_FOR_FRESH_REVIEW
-SE15_EXECUTION = NOT_AUTHORIZED
+SE15_PROTOCOL = IDENTITY_AMENDMENT_CANDIDATE_FOR_FRESH_REVIEW
+SE15_EXECUTION = HOLD_FOR_IDENTITY_AMENDMENT_REVIEW
 PRODUCT_FREEZE = NO
 L2_READY = NO
 ~~~
