@@ -10,6 +10,14 @@
     "model_generated_gold",
     "predictor_gold_visibility",
     "human_author_declaration",
+    "human_author_identity_class",
+    "human_reviewer_identity_class",
+    "independence_declaration",
+    "isolation_statement",
+    "adjudication_procedure_sha256",
+    "adjudication_code_sha256",
+    "private_store_class",
+    "private_store_independent_reviewed",
     "capabilities"
   ],
   "properties": {
@@ -26,8 +34,7 @@
       "const": false
     },
     "human_author_declaration": {
-      "type": "string",
-      "minLength": 1
+      "const": "I attest that this semantic Gold was authored by an independent human without model-generated Gold."
     },
     "capabilities": {
       "type": "array",
@@ -46,6 +53,7 @@
           "negative_boundaries",
           "failure_semantics",
           "binding_equivalence_group",
+          "duplicate_identity_disposition",
           "ambiguity"
         ],
         "properties": {
@@ -133,9 +141,43 @@
           },
           "ambiguity": {
             "type": "boolean"
+          },
+          "duplicate_identity_disposition": {
+            "enum": [
+              "UNIQUE",
+              "EQUIVALENT_GROUP_MEMBER",
+              "AMBIGUOUS_POSSIBLE_DUPLICATE"
+            ]
           }
         }
       }
+    },
+    "human_author_identity_class": {
+      "const": "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
+    },
+    "human_reviewer_identity_class": {
+      "const": "INDEPENDENT_HUMAN_GOLD_REVIEWER"
+    },
+    "independence_declaration": {
+      "const": "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS"
+    },
+    "isolation_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adjudication_procedure_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "adjudication_code_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "private_store_class": {
+      "const": "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
+    },
+    "private_store_independent_reviewed": {
+      "const": true
     }
   }
 }
