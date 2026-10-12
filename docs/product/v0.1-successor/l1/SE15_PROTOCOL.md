@@ -38,6 +38,8 @@ Preferred Execution Target order:
 
 Every target must record exact version/build/package identity, checksum or immutable digest, acquisition provenance, platform/runtime, and any publisher-provided release/tag/source mapping.
 
+When both source identities are available, freeze the Knowledge Source -> Execution Target source relation as `SAME`, `KNOWLEDGE_SOURCE_ANCESTOR`, `KNOWLEDGE_SOURCE_DESCENDANT`, `DIVERGED`, or `UNRESOLVED`.
+
 Freeze a Source -> Execution mapping class before binding work:
 
 - `EXACT_SOURCE_BUILD`;
@@ -47,6 +49,8 @@ Freeze a Source -> Execution mapping class before binding work:
 - `SOURCE_ONLY_REQUIRED`.
 
 A Knowledge Source claim that is not applicable to the chosen Execution Target version must be recorded as a version/currentness boundary; the target may not be changed after binding outcomes become visible merely to rescue coverage.
+
+For `DIVERGED` or `UNRESOLVED` mappings, capability-sample eligibility must be checked before binding inspection using release-specific publisher provenance. A candidate whose user-facing behavior cannot be shown applicable to the frozen Execution Target is preserved as an explicit currentness/version limitation rather than silently substituted after outcomes.
 
 For ordinary released capabilities, source compilation is **not** required when a suitable official release artifact exists.
 
