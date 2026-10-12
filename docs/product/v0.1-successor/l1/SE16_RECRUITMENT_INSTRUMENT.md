@@ -49,6 +49,67 @@ Before interview, record:
 
 Never publish credentials, private email, proprietary artifacts, recordings, personal identifiers, or private company information without explicit permission.
 
+## 3A. Participant ID, deduplication and private evidence storage
+
+These controls are frozen **before first participant contact**.
+
+### Pseudonymous participant ID
+
+- Generate an independent random UUIDv4.
+- Public/study ID format: `P_<32 lowercase UUIDv4 hex>`.
+- The ID contains no employer, role, geography, recruitment source, score, interview order or other semantic information.
+- Sequential IDs and researcher-chosen semantic IDs are forbidden.
+
+### Private duplicate-enrolment key
+
+Duplicate detection uses a keyed digest, never a raw identifier in Git.
+
+1. Privately select one verified stable identity value already legitimately available for recruitment/eligibility verification, such as the participant's contact address or stable professional-profile URL.
+2. Canonicalize only for deduplication: trim surrounding whitespace; lowercase the scheme/host for URLs or the complete email address; do not infer aliases, strip plus-addressing, merge domains, or perform fuzzy identity matching.
+3. Compute:
+   `HMAC-SHA256(SE16_DEDUP_SECRET, "app8-se16-v1\n" + canonical_identity)`.
+4. `SE16_DEDUP_SECRET` is a fresh cryptographically random 256-bit study secret, stored separately from participant evidence and never committed, logged, pasted into issues, or shared with scorers.
+5. Store only the HMAC key in the private participant index. Public GitHub receives neither the raw stable identity nor the HMAC.
+6. Exact HMAC collision = duplicate candidate pending private human verification. Ambiguous/fuzzy similarity is **not** silently merged; retain as a documented eligibility uncertainty until independently resolved.
+
+The HMAC is only a duplicate-enrolment control. It is not identity proof, consent proof, or evidence of a valid workflow.
+
+### Private evidence store
+
+All identifying/proprietary participant evidence is stored outside every Git worktree in an access-controlled private store. Before recruitment, freeze a **private store descriptor** containing:
+
+- storage-system/host identity;
+- absolute private root or opaque storage object identity;
+- encryption-at-rest status;
+- OS/service access-control identities permitted to read/write;
+- backup/retention policy;
+- evidence-file naming policy;
+- dedup-secret storage location class (must be separate from the evidence root);
+- deletion/withdrawal procedure;
+- descriptor version and timestamp.
+
+The descriptor itself may contain sensitive paths/accounts, so public GitHub records only its SHA-256 commitment plus the non-sensitive policy class. The independent pre-recruitment reviewer verifies the private descriptor without publishing its sensitive contents.
+
+Required policy:
+
+- minimum access: interviewer/eligibility custodian only as required; scorers receive pseudonymous evidence extracts/opaque refs and no unnecessary identity data;
+- no credentials or authentication tokens in participant evidence;
+- raw recordings only when explicitly consented, otherwise do not create them;
+- public evidence must be redacted/pseudonymous and use opaque private refs;
+- withdrawal before aggregate freeze removes future study use of private evidence where legally/operationally possible and records only a non-identifying withdrawal tombstone needed to prevent accidental re-enrolment;
+- no deletion may be used after outcome visibility to improve the positive fraction; withdrawals/exclusions remain counted in recruitment-flow accounting according to the frozen protocol.
+
+Before first contact, publicly commit:
+
+```text
+PARTICIPANT_ID_METHOD=UUIDV4_OPAQUE
+DEDUP_METHOD=HMAC_SHA256_PRIVATE_SECRET
+PRIVATE_STORE_DESCRIPTOR_SHA256=<64 lowercase hex>
+DEDUP_SECRET_PUBLIC=NO
+RAW_IDENTITY_PUBLIC=NO
+PRIVATE_STORE_POLICY_REVIEWED=YES
+```
+
 ## 4. Neutral interview script
 
 Capture current workflow before describing proposed app8 features.
@@ -176,8 +237,10 @@ Before first participant contact:
 - [ ] proof/evidence schema frozen;
 - [ ] double-scoring/adjudication procedure frozen;
 - [ ] aggregate thresholds frozen;
-- [ ] private evidence storage location/access policy frozen;
-- [ ] participant-ID and deduplication method frozen;
+- [ ] private evidence-store descriptor created outside Git, independently reviewed and its SHA-256 publicly committed;
+- [ ] UUIDv4 participant-ID method frozen;
+- [ ] HMAC-SHA256 deduplication method + separate secret-storage class frozen;
+- [ ] no raw identity or dedup HMAC appears in public GitHub;
 - [ ] no participant outcomes visible.
 
 ## 10. Stage status
