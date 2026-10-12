@@ -7,6 +7,9 @@
   "required": [
     "schema_version",
     "stage_a_merge",
+    "source_execution_mappings",
+    "id_scheme",
+    "id_secret_hex",
     "truth_visible_to_llm_b",
     "decisive_fixtures_visible_to_llm_b",
     "execution_target_manifest_sha256",
@@ -40,6 +43,8 @@
         "additionalProperties": false,
         "required": [
           "id",
+          "id_nonce",
+          "target_applicability",
           "asset",
           "truth_class",
           "claim_text",
@@ -47,8 +52,7 @@
           "decisive_fixture_ref",
           "expected_behavior",
           "provenance",
-          "reset_requirements",
-          "target_applicability_evidence_ref"
+          "reset_requirements"
         ],
         "properties": {
           "id": {
@@ -96,9 +100,44 @@
             "type": "string",
             "minLength": 1
           },
-          "target_applicability_evidence_ref": {
+          "id_nonce": {
             "type": "string",
             "minLength": 1
+          },
+          "target_applicability": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mapping_relation",
+              "evidence_kind",
+              "evidence_sha256",
+              "independent_review_status"
+            ],
+            "properties": {
+              "mapping_relation": {
+                "enum": [
+                  "SAME",
+                  "KNOWLEDGE_SOURCE_ANCESTOR",
+                  "KNOWLEDGE_SOURCE_DESCENDANT",
+                  "DIVERGED",
+                  "UNRESOLVED"
+                ]
+              },
+              "evidence_kind": {
+                "enum": [
+                  "EXACT_SOURCE_IDENTITY",
+                  "RELEASE_SPECIFIC_SOURCE",
+                  "DETERMINISTIC_TARGET_PROBE"
+                ]
+              },
+              "evidence_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "independent_review_status": {
+                "const": "PASS"
+              }
+            }
           }
         }
       }
@@ -109,6 +148,153 @@
     },
     "source_execution_mapping_frozen": {
       "const": true
+    },
+    "id_scheme": {
+      "const": "HMAC_SHA256_UUIDV4_V1"
+    },
+    "id_secret_hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_execution_mappings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "FFmpeg",
+        "pandas",
+        "MinIO",
+        "LibreOffice"
+      ],
+      "properties": {
+        "FFmpeg": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            }
+          }
+        },
+        "pandas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            }
+          }
+        },
+        "MinIO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            }
+          }
+        },
+        "LibreOffice": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            }
+          }
+        }
+      }
     }
   }
 }
