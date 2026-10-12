@@ -226,6 +226,38 @@ Recruitment failure to reach 8 valid participants = BLOCKED, not PASS.
 - retain all exclusions and reasons in recruitment flow;
 - do not replace negative participants with favorable participants after interviews begin to improve the positive rate.
 
+## 8A. Primary cohort and stopping rule
+
+The primary SE16 gate uses a **pre-registered fixed cohort**, not sequential recruitment until the desired outcome appears.
+
+Before first outreach:
+
+1. Select and freeze exactly two primary target segments from the four protocol-defined segments.
+2. Freeze a target of **8 valid primary participants**:
+   - at least 3 valid participants from each selected primary segment;
+   - the remaining 2 may come from either selected segment or another protocol-defined segment;
+   - never more than 2 valid participants from the same employer/project.
+3. Freeze outreach sources/channels and eligibility screening procedure before outcomes.
+4. The **first 8 valid eligible participants that satisfy the frozen segment/employer constraints** form the primary cohort. Positive/negative interview results may not affect whether an otherwise valid participant enters that cohort.
+5. Recruitment ends for the primary gate when the eighth valid participant is frozen. The PASS/FAIL calculation uses exactly those 8 valid participants.
+6. If the sampling plan cannot produce 8 valid participants within the pre-registered recruitment window/outreach budget, primary verdict = `BLOCKED_RECRUITMENT`; do not extend the window/budget after observing positivity.
+7. Additional participants after the primary cohort are explicitly `SECONDARY_EXPLORATORY`. They may inform product learning but **cannot rescue or replace** the primary SE16 gate result.
+
+Before first outreach publicly commit the non-sensitive sampling plan:
+
+```text
+PRIMARY_VALID_COHORT_SIZE=8
+PRIMARY_SEGMENTS=<two frozen protocol segment IDs>
+PRIMARY_SEGMENT_MINIMUM=3_EACH
+MAX_VALID_PER_EMPLOYER_PROJECT=2
+RECRUITMENT_WINDOW_OR_BUDGET=<frozen value>
+OUTREACH_CHANNEL_SET=<frozen non-sensitive identifiers>
+OPTIONAL_STOPPING=FORBIDDEN
+POST_PRIMARY_PARTICIPANTS=SECONDARY_EXPLORATORY_ONLY
+```
+
+If privacy-sensitive outreach details are required, store them in the private pre-recruitment descriptor and publicly commit its SHA-256.
+
 ## 9. Pre-recruitment freeze checklist
 
 Before first participant contact:
@@ -237,6 +269,8 @@ Before first participant contact:
 - [ ] proof/evidence schema frozen;
 - [ ] double-scoring/adjudication procedure frozen;
 - [ ] aggregate thresholds frozen;
+- [ ] primary cohort size, two primary segments, outreach channel set and recruitment window/budget frozen;
+- [ ] optional stopping prohibited; post-primary participants secondary-only;
 - [ ] private evidence-store descriptor created outside Git, independently reviewed and its SHA-256 publicly committed;
 - [ ] UUIDv4 participant-ID method frozen;
 - [ ] HMAC-SHA256 deduplication method + separate secret-storage class frozen;
