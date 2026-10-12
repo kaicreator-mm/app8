@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-se10-gold-v1",
+  "title": "SE10 Independent Human Gold",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_pack_blob",
+    "model_generated_gold",
+    "predictor_gold_visibility",
+    "human_author_declaration",
+    "human_author_identity_class",
+    "human_reviewer_identity_class",
+    "independence_declaration",
+    "isolation_statement",
+    "adjudication_procedure_sha256",
+    "adjudication_code_sha256",
+    "private_store_class",
+    "private_store_independent_reviewed",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "se10-gold-v1"
+    },
+    "source_pack_blob": {
+      "const": "4b3c9b62b1899653524f19a286924f942605210a"
+    },
+    "model_generated_gold": {
+      "const": false
+    },
+    "predictor_gold_visibility": {
+      "const": false
+    },
+    "human_author_declaration": {
+      "const": "I attest that this semantic Gold was authored by an independent human without model-generated Gold."
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 48,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "asset",
+          "canonical_identity",
+          "purpose",
+          "source_anchors",
+          "variants",
+          "constraints",
+          "negative_boundaries",
+          "failure_semantics",
+          "binding_equivalence_group",
+          "duplicate_identity_disposition",
+          "ambiguity"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^G[0-9]{4,6}$"
+          },
+          "asset": {
+            "enum": [
+              "FFmpeg",
+              "pandas",
+              "MinIO",
+              "LibreOffice"
+            ]
+          },
+          "canonical_identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_anchors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "blob"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "blob": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                }
+              }
+            }
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "negative_boundaries": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "failure_semantics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "binding_equivalence_group": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "minLength": 1
+              }
+            ]
+          },
+          "ambiguity": {
+            "type": "boolean"
+          },
+          "duplicate_identity_disposition": {
+            "enum": [
+              "UNIQUE",
+              "EQUIVALENT_GROUP_MEMBER",
+              "AMBIGUOUS_POSSIBLE_DUPLICATE"
+            ]
+          }
+        }
+      }
+    },
+    "human_author_identity_class": {
+      "const": "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
+    },
+    "human_reviewer_identity_class": {
+      "const": "INDEPENDENT_HUMAN_GOLD_REVIEWER"
+    },
+    "independence_declaration": {
+      "const": "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS"
+    },
+    "isolation_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adjudication_procedure_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "adjudication_code_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "private_store_class": {
+      "const": "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
+    },
+    "private_store_independent_reviewed": {
+      "const": true
+    }
+  }
+}

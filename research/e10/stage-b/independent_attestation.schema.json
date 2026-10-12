@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-se10-independent-gold-attestation-v1",
+  "title": "SE10 Independent Gold Attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "gold_file_sha256",
+    "author_identity_class",
+    "reviewer_identity_class",
+    "review_status",
+    "git_backed_private_gold",
+    "private_store_class",
+    "isolation_review_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "se10-independent-gold-attestation-v1"
+    },
+    "gold_file_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "author_identity_class": {
+      "const": "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
+    },
+    "reviewer_identity_class": {
+      "const": "INDEPENDENT_HUMAN_GOLD_REVIEWER"
+    },
+    "review_status": {
+      "const": "PASS"
+    },
+    "git_backed_private_gold": {
+      "const": false
+    },
+    "private_store_class": {
+      "const": "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
+    },
+    "isolation_review_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
