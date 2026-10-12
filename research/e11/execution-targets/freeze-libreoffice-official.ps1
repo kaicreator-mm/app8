@@ -16,6 +16,10 @@ $Url = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/win/x8
 $ExpectedSha = "C6298B10CFA1748BCBEDAD94C62CE771E240E5021BFD6D7A967CD571B04B5312"
 $Version = "26.8.1.1"
 $ProductCode = "{87B289F9-6172-4C3D-A091-EE36A40E1287}"
+$VcRuntimeDisplayNameBases = @(
+    "Microsoft Visual C++ 2015-2022 Redistributable (x64)",
+    "Microsoft Visual C++ v14 Redistributable (x64)"
+)
 New-Item -ItemType Directory -Force -Path $EvidenceRoot | Out-Null
 $msi = Join-Path $EvidenceRoot "LibreOffice_26.8.1_Win_x86-64.msi"
 $state = "PACKAGE_DOWNLOADED_VERIFIED_NOT_INSTALLED"
@@ -52,7 +56,6 @@ foreach ($registryRoot in @(
     if (Test-Path $registryRoot) {
         $vcRuntime += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
             Where-Object {
-                $canonicalName = "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
                 $displayName = Get-OptionalPropertyValue $_ "DisplayName"
                 $displayVersion = Get-OptionalPropertyValue $_ "DisplayVersion"
                 $publisher = Get-OptionalPropertyValue $_ "Publisher"
@@ -60,10 +63,16 @@ foreach ($registryRoot in @(
                 if ($null -eq $displayName -or $null -eq $displayVersion -or $null -eq $publisher -or $null -eq $productCode) {
                     return $false
                 }
-                $nameMatches = (
-                    [string]$displayName -eq $canonicalName -or
-                    [string]$displayName -eq ($canonicalName + " - " + [string]$displayVersion)
-                )
+                $nameMatches = $false
+                foreach ($baseName in $VcRuntimeDisplayNameBases) {
+                    if (
+                        [string]$displayName -eq $baseName -or
+                        [string]$displayName -eq ($baseName + " - " + [string]$displayVersion)
+                    ) {
+                        $nameMatches = $true
+                        break
+                    }
+                }
                 $nameMatches -and
                 [string]$publisher -eq "Microsoft Corporation" -and
                 [string]$displayVersion -match "^[0-9]+(\.[0-9]+){1,3}$" -and
@@ -73,7 +82,7 @@ foreach ($registryRoot in @(
     }
 }
 if ($Install -and $vcRuntime.Count -ne 1) {
-    throw "VC_RUNTIME_DEPENDENCY_AMBIGUOUS_OR_MISSING: expected exactly one Microsoft Visual C++ 2015-2022 Redistributable (x64), found $($vcRuntime.Count); DO NOT AUTO-INSTALL OR SUBSTITUTE"
+    throw "VC_RUNTIME_DEPENDENCY_AMBIGUOUS_OR_MISSING: expected exactly one supported Microsoft Visual C++ v14 x64 Redistributable registry identity, found $($vcRuntime.Count); DO NOT AUTO-INSTALL OR SUBSTITUTE"
 }
 
 if ($Install) {
@@ -164,6 +173,8 @@ $manifest = [ordered]@{
     installation_policy = "DIRECT_OFFICIAL_MSI_ONLY"
     winget_install_allowed = $false
     vc_runtime_dependency_package = "Microsoft.VCRedist.2015+.x64"
+    vc_runtime_registry_identity_policy = "MICROSOFT_V14_X64_EXACT_NAME_FAMILY"
+    vc_runtime_accepted_display_name_bases = @($VcRuntimeDisplayNameBases)
     vc_runtime_installed = @($vcRuntime)
     vc_runtime_exact_identity_frozen = ($vcRuntime.Count -gt 0)
     install_status = $state
