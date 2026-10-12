@@ -32,7 +32,7 @@ Existing exact-source builds from SE11 Stage A remain valid and are reused; the 
 - `ffmpeg` SHA-256: `fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023`
 - `ffprobe` SHA-256: `bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f`
 - Relation: `SAME`
-- Runtime readiness: `READY`
+- Runtime readiness: `HISTORICAL_READY_REUSE_REQUIRES_CURRENT_BINARY_HASH_AND_CONTAINER`
 
 Reuse is valid **only within the original Ubuntu 24.04 x86_64 Docker/WSL2-compatible execution lane** (container image digest `sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55`). Before evaluated execution, prove the exact artifact bytes remain available on the real host and freeze the compatible container/runtime. The ELF binary must **not** be treated as directly runnable on the Windows host. If the original artifact was deleted, artifact re-materialization and smoke must be independently evidenced; previous hash alone does not prove current availability.
 
@@ -44,7 +44,7 @@ Reuse is valid **only within the original Ubuntu 24.04 x86_64 Docker/WSL2-compat
 - Wheel SHA-256: `e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08`
 - Wheel identity: `pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl`
 - Relation: `SAME`
-- Runtime readiness: `READY`
+- Runtime readiness: `HISTORICAL_READY_REUSE_REQUIRES_CURRENT_WHEEL_HASH_CONTAINER_AND_PINNED_DEPS`
 
 The frozen wheel is `cp312-cp312-linux_x86_64` and runs **only in a compatible CPython 3.12 Linux x86_64 environment**, not the Windows Python installation. Preserve the original `python:3.12-bookworm` image digest `sha256:5560e9ab8709f459489e5b8aa696eda8a07ef821e14bb122be62d91234bfa98b`. Before evaluated execution, re-verify the exact wheel bytes and freeze/pin runtime dependencies (Stage-A smoke had unpinned numpy/python-dateutil/six). If wheel/artifact or compatible container no longer exists, do not claim READY from historical evidence alone.
 
@@ -56,7 +56,7 @@ The frozen wheel is `cp312-cp312-linux_x86_64` and runs **only in a compatible C
 - Binary SHA-256: `94d0b2677e6ed5a719fe1fc5fccbd60669beecb9901a3bb6a8bc71507bd55981`
 - Embedded VCS revision: `7aac2a2c5b7c882e68c1ce017d8256be2feea27f`
 - Relation: `SAME`
-- Runtime readiness: `READY`
+- Runtime readiness: `HISTORICAL_READY_REUSE_REQUIRES_CURRENT_EXE_HASH`
 
 This is a **Windows x64 native** `minio.exe` produced by Go 1.27.1 for windows/amd64. Reuse only if the original binary SHA-256 is verified on the actual Windows execution host; do not try to execute it as Linux ELF in the FFmpeg/pandas containers. If no longer preserved, re-materialization requires fresh provenance and smoke evidence.
 
@@ -115,14 +115,15 @@ Before hidden-truth expectations or SE15 binding coverage are scored:
 
 Required local completion is limited to:
 
-1. download/install the exact official MSI above or install the exact winget package version resolving to the same MSI/hash;
+1. use **only the exact official MSI above** for the supported install path; winget is provenance evidence only and is not an alternate install path for the frozen run;
 2. verify downloaded package SHA-256;
 3. record installed product version/ProductCode and principal executable identities/checksums;
-4. record Windows/runtime identity;
-5. perform only non-evaluative `--version` / headless startup or equivalent readiness smoke;
-6. preserve raw logs.
+4. verify the required x64 VC runtime dependency is already present, and record its exact installed DisplayName/DisplayVersion/ProductCode; if absent, BLOCK instead of silently installing/substituting it;
+5. record Windows/runtime identity;
+6. perform only non-evaluative `--version` / headless startup or equivalent readiness smoke;
+7. preserve raw logs.
 
-No LibreOffice source build is required for this ordinary release target.
+No LibreOffice source build is required for this ordinary release target. The winget manifest declares dependency `Microsoft.VCRedist.2015+.x64`; PR #67 therefore selects the MSI only, while #69 must freeze the **observed exact installed VC runtime identity/version/ProductCode** as part of the final runtime manifest. Until that happens, `LIBREOFFICE_RUNTIME_READY=NO`.
 
 ## 4. Cross-host compatibility gate
 
