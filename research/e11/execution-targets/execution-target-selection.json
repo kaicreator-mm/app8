@@ -1,0 +1,118 @@
+{
+  "schema_version": "app8-execution-target-selection-v1",
+  "status": "CANDIDATE_FOR_FRESH_REVIEW",
+  "depends_on": {
+    "identity_amendment_pr": 64,
+    "identity_amendment_review": 65
+  },
+  "historical_stage_a_merge": "0279968580d50e51843b09aa2b6e266b9967ff93",
+  "targets": [
+    {
+      "asset": "FFmpeg",
+      "knowledge_source": {
+        "repository": "FFmpeg/FFmpeg",
+        "commit": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8"
+      },
+      "execution_target": {
+        "mapping_class": "EXACT_SOURCE_BUILD",
+        "repository_relation": "SAME",
+        "artifact_type": "source-built-binary",
+        "artifacts": [
+          {
+            "name": "ffmpeg",
+            "sha256": "fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023"
+          },
+          {
+            "name": "ffprobe",
+            "sha256": "bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f"
+          }
+        ],
+        "readiness": "READY_REUSE"
+      }
+    },
+    {
+      "asset": "pandas",
+      "knowledge_source": {
+        "repository": "pandas-dev/pandas",
+        "commit": "82c18c170b9aea7cbb96ef54b8005bed07c94220"
+      },
+      "execution_target": {
+        "mapping_class": "EXACT_SOURCE_BUILD",
+        "repository_relation": "SAME",
+        "artifact_type": "wheel",
+        "package": "pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl",
+        "sha256": "e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08",
+        "readiness": "READY_REUSE"
+      }
+    },
+    {
+      "asset": "MinIO",
+      "knowledge_source": {
+        "repository": "minio/minio",
+        "commit": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f"
+      },
+      "execution_target": {
+        "mapping_class": "EXACT_SOURCE_BUILD",
+        "repository_relation": "SAME",
+        "artifact_type": "windows-binary",
+        "package": "minio.exe",
+        "sha256": "94d0b2677e6ed5a719fe1fc5fccbd60669beecb9901a3bb6a8bc71507bd55981",
+        "embedded_vcs_revision": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+        "readiness": "READY_REUSE"
+      }
+    },
+    {
+      "asset": "LibreOffice",
+      "knowledge_source": {
+        "repository": "LibreOffice/core",
+        "commit": "016fd5d049256dc849111f60870f15201fcd1526"
+      },
+      "execution_target": {
+        "mapping_class": "OFFICIAL_RELEASE_MAPPED",
+        "repository_relation": "DIVERGED",
+        "publisher": "The Document Foundation",
+        "product_release": "26.8.1",
+        "package_version": "26.8.1.1",
+        "architecture": "x86_64",
+        "artifact_type": "official-msi",
+        "installer_url": "https://download.documentfoundation.org/libreoffice/stable/26.8.1/win/x86_64/LibreOffice_26.8.1_Win_x86-64.msi",
+        "installer_sha256": "c6298b10cfa1748bcbedad94c62ce771e240e5021bfd6d7a967cd571b04b5312",
+        "product_code": "{87B289F9-6172-4C3D-A091-EE36A40E1287}",
+        "winget": {
+          "package_identifier": "TheDocumentFoundation.LibreOffice",
+          "package_version": "26.8.1.1",
+          "manifest_repository": "microsoft/winget-pkgs",
+          "manifest_path": "manifests/t/TheDocumentFoundation/LibreOffice/26.8.1.1/TheDocumentFoundation.LibreOffice.installer.yaml",
+          "manifest_blob": "7fab0752ca301762c433c28a7901be3a3bb9cdca",
+          "release_date": "2026-10-08"
+        },
+        "release_source": {
+          "tag": "libreoffice-26.8.1.1",
+          "annotated_tag_object": "f3b61cf45f5198919f352f5163cd1dc2c000ba28",
+          "commit": "bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1"
+        },
+        "relation_evidence": {
+          "compare_base": "bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1",
+          "compare_head": "016fd5d049256dc849111f60870f15201fcd1526",
+          "merge_base": "e6d16d8cd2b4e8b4535e1c5827e3c676fb83ad02",
+          "status": "diverged",
+          "ahead_by": 3317,
+          "behind_by": 352
+        },
+        "target_applicability_required": true,
+        "source_build_required": false,
+        "readiness": "PENDING_OFFICIAL_INSTALL_AND_NON_EVALUATIVE_SMOKE"
+      }
+    }
+  ],
+  "hard_constraints": {
+    "target_substitution_after_outcome": false,
+    "source_only_claim_requires_compatible_target": true,
+    "diverged_mapping_requires_preoutcome_applicability": true,
+    "hidden_truth": "HOLD",
+    "se11_stage_c": "HOLD",
+    "se15_binding_execution": "HOLD",
+    "product_freeze": "NO",
+    "l2_ready": "NO"
+  }
+}
