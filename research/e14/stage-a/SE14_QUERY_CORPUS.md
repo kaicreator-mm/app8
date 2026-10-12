@@ -38,14 +38,14 @@ These 48 natural-language queries are frozen before relevance judgments and befo
 
 ## Platform/version/currentness (8)
 
-25. find the current documented way in this pinned FFmpeg revision to inspect media metadata
-26. which pinned pandas capability supports time-series operations
-27. find the pinned MinIO capability for STS temporary credentials
-28. which LibreOffice help capability in the frozen revision covers PDF export
-29. find a media operation whose behavior is tied to the frozen FFmpeg source revision
-30. find a tabular-data operation valid for the frozen pandas revision
-31. find a storage operation whose source is the frozen MinIO revision
-32. find a Writer/Calc/Impress operation backed by the frozen LibreOffice help revision
+25. for the installed FFmpeg version, how do I inspect the video and audio streams in a file
+26. in this installed pandas version, what operation resamples timestamp-indexed measurements
+27. on this MinIO server version, how can I obtain temporary access credentials
+28. in this installed LibreOffice release, how can I export a document as PDF
+29. does this FFmpeg version allow changing containers without re-encoding the streams
+30. on this pandas version, can I join two DataFrames using matching key columns
+31. on my installed MinIO server, can I configure object retention to prevent early deletion
+32. for this LibreOffice version, how do I rearrange slides in an existing presentation
 
 ## Variant-selection (8)
 
@@ -60,18 +60,19 @@ These 48 natural-language queries are frozen before relevance judgments and befo
 
 ## Negative-boundary/readiness (8)
 
-41. find a capability that should not claim it can preserve arbitrary media without re-encoding when filters are required
-42. find a table operation that should not pretend missing-data handling and text processing are the same job
-43. find a storage capability that should not be presented as object retention if it only enables versioning
-44. find a LibreOffice action that should not use screenshots or coordinate clicks as its binding
-45. avoid selecting an output muxer when the request is only to inspect media streams
-46. avoid returning generic DataFrame reshaping when the request specifically needs a keyed merge
-47. avoid returning site replication when the request is temporary credential issuance
-48. avoid returning document saving when the request specifically requires PDF export
+41. add a visual filter to a video while guaranteeing that the existing compressed streams remain byte-for-byte unchanged
+42. is there one pandas operation that both fills missing values and transforms the text in every column
+43. can I guarantee retention against deletion by turning on bucket versioning alone
+44. automate a LibreOffice document action without relying on screen coordinates or screenshots
+45. inspect which streams are inside a video file, without creating an output media container
+46. merge two data tables based on a shared customer ID, not by reshaping columns
+47. issue short-lived storage credentials for a client without configuring cross-site replication
+48. produce a PDF copy of a Writer file rather than simply saving the editable document
 
 ## Anti-cheating
 
 - no expected provider/tool/item is encoded unless the user intent naturally names the software class;
+- user-language queries avoid experiment-only tokens such as pinned source SHA, frozen corpus, Capability-arm identity, or internal reference IDs;
 - no query rewrite may use later relevance labels;
 - no query replacement after ranked outputs are viewed;
 - independent adjudicators must create graded relevance labels before search results are exposed;
