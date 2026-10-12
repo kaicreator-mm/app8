@@ -4,7 +4,9 @@
   "issue": 43,
   "protocol_blob": "83abefb13e6a91e6b67a1c94937ca1bcce567aad",
   "branch_base_commit": "b989075a5dcdc6f96d1289ddf841313c1226ff20",
-  "generated_utc": "2026-10-12T05:05:19Z",
+  "generated_utc": "2026-10-12T07:55:14Z",
+  "finalized_utc": "2026-10-12T08:20:00Z",
+  "superseded_commit": "82e26e3a33ebf1de559f2bbeaa917663a762af13 had two CRLF-normalized evidence blobs (host/host-identity.txt, logs/libreoffice/host-native-toolchain.txt) from host core.autocrlf=true; re-committed byte-faithfully via research/e11/stage-a/.gitattributes (* -text), and logs/libreoffice/attempt-audit.log completed with the round-3 terminal verdict tail",
   "real_host": {
     "os": "Microsoft Windows 11 专业版 10.0.26300 x64",
     "cpu": "AMD Ryzen 7 7840HS, 8 cores / 16 threads",

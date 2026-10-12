@@ -20,7 +20,7 @@ ea6dbfa173db7591d1ad5f9e7df1e6ef62bc7af9e16a56f9cf031a940a18589d *./logs/ffmpeg/
 4b4c52ee0a50941e4dce71247be0743ee6f49780808c7d8e30840556837c5e68 *./logs/libreoffice/apt-r2-attached-killed.log
 0f1cb0eea8f3871a56d508df1fa4c06e4f20057f069c00a8a4e106ea047912a9 *./logs/libreoffice/apt-r2b.log
 e7328f6094823acbacb170df110d98e0d1f6e8e5077e853232b967ee6b4dfda1 *./logs/libreoffice/apt.log
-0d7d2bbf6e007daa8dcf44012657bd439fc0f7b0b6196926d9349bf136055cd5 *./logs/libreoffice/attempt-audit.log
+be01d5b1184775316930ed8fd4544ee3f81d3a64bc4258b19c8d3dc5cdb7e275 *./logs/libreoffice/attempt-audit.log
 15ad6c4f9b5f3dc068be92385e10d05bf6fedef98006035dd4e112f32ff1f2b9 *./logs/libreoffice/attempt-final-r2b.txt
 a80c752acb6cced75a4f8138ea2b5298003f33e479c07d7d7e190eacfc55802f *./logs/libreoffice/attempt-final.txt
 be01d5b1184775316930ed8fd4544ee3f81d3a64bc4258b19c8d3dc5cdb7e275 *./logs/libreoffice/attempt.log

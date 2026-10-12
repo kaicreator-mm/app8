@@ -122,6 +122,31 @@ and none will be reused as decisive fixtures in Stage B/C.
   evidence in this package comes from the re-materialized (byte-faithful) trees.
   minio/pandas artifact hashes differ between the two waves because Go/CPython
   embed source bytes; the committed hashes are the byte-faithful wave.
+- Round-1 CLI kill + zombie container: the round-1 `docker run` CLI was
+  SIGKILLed (exit 137) when its session ended, but the container survived and
+  kept running (`cp -a /work/src /build` for 20+ min) while still bound to the
+  mounted evidence log dir; it was killed (`docker kill`) before it could
+  overwrite round-2 log files with stale round-1 content.
+- Round-2 attached run killed by host ~6.5 min in: the container was destroyed
+  mid-apt-download and the CLI returned 137
+  (`logs/libreoffice/apt-r2-attached-killed.log` truncated at `Get:192`,
+  `driver-round2-attached.log`). This host has a prior history of containers
+  dying 137. Rounds 2b/3 therefore re-invoked the identical payload detached
+  (`docker run -d` + `docker wait`), decoupling container survival from any
+  Windows-side CLI lifetime; both completed normally.
+- Evidence blob CRLF normalization (caught in verification): commit `82e26e3`
+  was created with host `core.autocrlf=true`, so two PowerShell-generated
+  evidence files (`host/host-identity.txt`,
+  `logs/libreoffice/host-native-toolchain.txt`) were stored CRLF-normalized —
+  their blobs no longer matched `SHA256SUMS.txt`. Fixed by committing
+  byte-faithful blobs under `research/e11/stage-a/.gitattributes` (`* -text`,
+  no EOL conversion for the whole evidence tree) and re-verifying all
+  SHA256SUMS entries. The same `autocrlf=true` had earlier smudged the source
+  trees (first incident above) — evidence directories must never rely on
+  host EOL config.
+- `logs/libreoffice/attempt-audit.log` in `82e26e3` was copied before the
+  round-3 wrapper appended its final three lines; completed in this commit
+  (round-3 container id, `LIBREOFFICE_ROUND3_EXIT=1`, terminal verdict).
 
 ## Reproducibility
 
@@ -135,7 +160,12 @@ bash scripts/fetch-source.sh libreoffice LibreOffice/core 016fd5d049256dc849111f
 bash scripts/build-smoke-minio.sh
 bash scripts/build-smoke-pandas-docker.sh
 bash scripts/build-smoke-ffmpeg-docker.sh
-bash scripts/attempt-libreoffice-docker.sh
+# LibreOffice bounded dependency-chain rounds (round 3 is terminal):
+bash scripts/attempt-libreoffice-docker.sh      # round 0: CUPS missing
+bash scripts/attempt-libreoffice-round1.sh      # round 1: invalidated (apt abort)
+bash scripts/attempt-libreoffice-round2.sh      # round 2 attached (was host-killed here)
+bash scripts/attempt-libreoffice-round2b.sh     # round 2b detached: Archive::Zip missing
+bash scripts/attempt-libreoffice-round3.sh      # round 3 detached terminal: JDK 8+ required
 ~~~
 
 Source packs live outside this repo (re-creatable from the pinned SHAs above);
