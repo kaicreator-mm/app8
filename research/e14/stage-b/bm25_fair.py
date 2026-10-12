@@ -74,7 +74,7 @@ def tokenize(value):
 
 
 def flatten(value):
-    """Serialize only ordinary field VALUES, identically for both arms."""
+    """Serialize ordinary metadata keys and values identically for both arms."""
     if value is None:
         return ""
     if isinstance(value, str):
