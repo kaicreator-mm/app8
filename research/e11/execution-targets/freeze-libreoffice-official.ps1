@@ -63,19 +63,34 @@ foreach ($registryRoot in @(
                 if ($null -eq $displayName -or $null -eq $displayVersion -or $null -eq $publisher -or $null -eq $productCode) {
                     return $false
                 }
+                $versionText = [string]$displayVersion
+                $versionIsValid = $versionText -match "^[0-9]+(\.[0-9]+){1,3}$"
+                $acceptedNameSuffixes = @($versionText)
+                if ($versionIsValid) {
+                    $versionParts = @($versionText -split "\.")
+                    if ($versionParts.Count -eq 4 -and $versionParts[3] -eq "0") {
+                        $acceptedNameSuffixes += (($versionParts[0..2]) -join ".")
+                    }
+                }
                 $nameMatches = $false
                 foreach ($baseName in $VcRuntimeDisplayNameBases) {
-                    if (
-                        [string]$displayName -eq $baseName -or
-                        [string]$displayName -eq ($baseName + " - " + [string]$displayVersion)
-                    ) {
+                    if ([string]$displayName -eq $baseName) {
                         $nameMatches = $true
+                        break
+                    }
+                    foreach ($acceptedSuffix in $acceptedNameSuffixes) {
+                        if ([string]$displayName -eq ($baseName + " - " + $acceptedSuffix)) {
+                            $nameMatches = $true
+                            break
+                        }
+                    }
+                    if ($nameMatches) {
                         break
                     }
                 }
                 $nameMatches -and
                 [string]$publisher -eq "Microsoft Corporation" -and
-                [string]$displayVersion -match "^[0-9]+(\.[0-9]+){1,3}$" -and
+                $versionIsValid -and
                 [string]$productCode -match "^\{[0-9A-Fa-f-]{36}\}$"
             } |
             Select-Object @{Name="DisplayName";Expression={ Get-OptionalPropertyValue $_ "DisplayName" }}, @{Name="DisplayVersion";Expression={ Get-OptionalPropertyValue $_ "DisplayVersion" }}, @{Name="PSChildName";Expression={ Get-OptionalPropertyValue $_ "PSChildName" }}, @{Name="Publisher";Expression={ Get-OptionalPropertyValue $_ "Publisher" }})
@@ -173,7 +188,7 @@ $manifest = [ordered]@{
     installation_policy = "DIRECT_OFFICIAL_MSI_ONLY"
     winget_install_allowed = $false
     vc_runtime_dependency_package = "Microsoft.VCRedist.2015+.x64"
-    vc_runtime_registry_identity_policy = "MICROSOFT_V14_X64_EXACT_NAME_FAMILY"
+    vc_runtime_registry_identity_policy = "MICROSOFT_V14_X64_EXACT_NAME_FAMILY_WITH_BOUNDED_ZERO_REVISION_SUFFIX_NORMALIZATION"
     vc_runtime_accepted_display_name_bases = @($VcRuntimeDisplayNameBases)
     vc_runtime_installed = @($vcRuntime)
     vc_runtime_exact_identity_frozen = ($vcRuntime.Count -gt 0)
