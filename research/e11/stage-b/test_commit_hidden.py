@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 
 BASE = pathlib.Path(__file__).resolve().parent
 RUNNER = BASE / "commit_hidden.py"
@@ -21,7 +22,7 @@ def fake_hidden():
         for category, count in BALANCE.items():
             for _ in range(count):
                 records.append({
-                    "id": f"H{index:04d}",
+                    "id": "H_" + uuid.uuid4().hex,
                     "asset": asset,
                     "truth_class": category,
                     "claim_text": "TEST_ONLY_SYNTHETIC_SECRET",
