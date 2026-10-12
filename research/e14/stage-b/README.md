@@ -10,7 +10,7 @@ Stage-A PR HEAD used: `6c3ea68c8f1c50766895088dc3a2092b457bb5aa`
 This directory contains a machine-readable snapshot of exactly **64 frozen source-anchored entries** and **48 frozen natural-language query texts**, and the same deterministic BM25 ranker for both arms.
 
 - `frozen_input_lookup.json`: derives strictly from Stage-A PR #56 source paths/blobs and query texts; MUST be refreshed/re-reviewed if #56 changes.
-- `bm25_fair.py`: deterministic NFKC, lowercase, letter/digit tokenizer, BM25-Okapi `k1=1.2` / `b=0.75`, top 5, canonical ID tie-break. Only **values** of ordinary fields are used, not handcrafted arm-specific keywords.
+- `bm25_fair.py`: deterministic NFKC, lowercase, letter/digit tokenizer, BM25-Okapi `k1=1.2` / `b=0.75`, top 5, canonical ID tie-break. Ordinary field names and values are indexed, including nested schema/property keys; neither arm receives handcrafted hints.
 - `test_bm25_fair.py`: synthetic structural tests only.
 
 No graded relevance labels, ordinary baseline metadata extraction, app8 Capability metadata, real search rankings, scores, or experiment result exist in this PR.
