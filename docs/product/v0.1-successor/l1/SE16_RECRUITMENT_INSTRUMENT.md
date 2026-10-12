@@ -64,13 +64,15 @@ These controls are frozen **before first participant contact**.
 
 Duplicate detection uses a keyed digest, never a raw identifier in Git.
 
-1. Privately select one verified stable identity value already legitimately available for recruitment/eligibility verification, such as the participant's contact address or stable professional-profile URL.
-2. Canonicalize only for deduplication: trim surrounding whitespace; lowercase the scheme/host for URLs or the complete email address; do not infer aliases, strip plus-addressing, merge domains, or perform fuzzy identity matching.
-3. Compute:
-   `HMAC-SHA256(SE16_DEDUP_SECRET, "app8-se16-v1\n" + canonical_identity)`.
-4. `SE16_DEDUP_SECRET` is a fresh cryptographically random 256-bit study secret, stored separately from participant evidence and never committed, logged, pasted into issues, or shared with scorers.
-5. Store only the HMAC key in the private participant index. Public GitHub receives neither the raw stable identity nor the HMAC.
-6. Exact HMAC collision = duplicate candidate pending private human verification. Ambiguous/fuzzy similarity is **not** silently merged; retain as a documented eligibility uncertainty until independently resolved.
+1. Privately collect **all verified stable identifiers already legitimately available** for recruitment/eligibility verification from this bounded type set: `EMAIL`, `PROFESSIONAL_PROFILE_URL`, `EMPLOYER_DIRECTORY_ID`, `PROJECT_ACCOUNT_ID`. Do not collect an identifier only for dedup if it is otherwise unnecessary/unlawful.
+2. Canonicalize deterministically by identifier type: trim surrounding whitespace; lowercase the complete email address; for URLs lowercase scheme/host only and preserve path/query bytes; directory/account IDs are trimmed but otherwise byte-preserved. Do not infer aliases, strip plus-addressing, merge domains, or use fuzzy matching.
+3. Compute one keyed digest **per available verified identifier**:
+   `HMAC-SHA256(SE16_DEDUP_SECRET, "app8-se16-v1\n" + identifier_type + "\n" + canonical_identity)`.
+4. The participant's private dedup identity is the **set of all such HMACs**, not a researcher-selected single identifier. If any HMAC intersects an existing participant's set, mark `POTENTIAL_DUPLICATE` and require private human linkage resolution before eligibility can become VALID.
+5. `SE16_DEDUP_SECRET` is a fresh cryptographically random 256-bit study secret, stored separately from participant evidence and never committed, logged, pasted into issues, or shared with scorers.
+6. Store only the typed HMAC set and linkage disposition in the private participant index. Public GitHub receives neither raw stable identifiers nor HMACs.
+7. Linkage resolution is bounded: `CONFIRMED_SAME_HUMAN`, `CONFIRMED_DISTINCT_HUMANS`, or `UNRESOLVED`. `CONFIRMED_SAME_HUMAN` may contribute at most one valid participant; `UNRESOLVED` is ineligible for the primary cohort. No fuzzy similarity score can auto-merge or auto-clear a candidate.
+8. If a new identifier is learned later, it must be HMAC-indexed and checked against the full private index before final primary-cohort freeze. A duplicate discovered after interview remains a recruitment-flow exclusion and cannot be replaced using outcome knowledge.
 
 The HMAC is only a duplicate-enrolment control. It is not identity proof, consent proof, or evidence of a valid workflow.
 
@@ -232,13 +234,20 @@ The primary SE16 gate uses a **pre-registered fixed cohort**, not sequential rec
 
 Before first outreach:
 
+0. Freeze the **candidate queue and outcome-blind recruitment firewall**:
+   - create a bounded candidate pool from the frozen outreach channels without using any SE16 interview/pilot outcome;
+   - assign each candidate an opaque recruitment ID and freeze a cryptographically random permutation/queue plus channel-allocation quotas;
+   - freeze outreach cadence/batch size and the rule for moving to the next queued candidate after non-response/ineligibility;
+   - interviewer/scorer outcome data is not visible to the recruitment coordinator or eligibility queue operator until the eighth valid primary participant is irrevocably frozen;
+   - recruitment/eligibility staff may see only data necessary for consent, eligibility and dedup, never POSITIVE/negative scoring, semantic-pain answers, pilot-commitment strength or aggregate positivity;
+   - any emergency deviation from the queue for legal/safety/contact-invalidity reasons must be recorded before the substitute is contacted and may not use interview outcome information.
 1. Select and freeze exactly two primary target segments from the four protocol-defined segments.
 2. Freeze a target of **8 valid primary participants**:
    - at least 3 valid participants from each selected primary segment;
    - the remaining 2 may come from either selected segment or another protocol-defined segment;
    - never more than 2 valid participants from the same employer/project.
-3. Freeze outreach sources/channels and eligibility screening procedure before outcomes.
-4. The **first 8 valid eligible participants that satisfy the frozen segment/employer constraints** form the primary cohort. Positive/negative interview results may not affect whether an otherwise valid participant enters that cohort.
+3. Freeze outreach sources/channels, per-channel allocation, candidate queue/randomization seed commitment, outreach cadence/batch rule and eligibility screening procedure before outcomes.
+4. The **first 8 valid eligible participants encountered by the frozen queue/segment/employer procedure** form the primary cohort. Interview outcome cannot change queue order, channel allocation, contact cadence, eligibility disposition, or whether an otherwise valid candidate enters the cohort. Positive/negative interview results may not affect whether an otherwise valid participant enters that cohort.
 5. Recruitment ends for the primary gate when the eighth valid participant is frozen. The PASS/FAIL calculation uses exactly those 8 valid participants.
 6. If the sampling plan cannot produce 8 valid participants within the pre-registered recruitment window/outreach budget, primary verdict = `BLOCKED_RECRUITMENT`; do not extend the window/budget after observing positivity.
 7. Additional participants after the primary cohort are explicitly `SECONDARY_EXPLORATORY`. They may inform product learning but **cannot rescue or replace** the primary SE16 gate result.
@@ -252,6 +261,10 @@ PRIMARY_SEGMENT_MINIMUM=3_EACH
 MAX_VALID_PER_EMPLOYER_PROJECT=2
 RECRUITMENT_WINDOW_OR_BUDGET=<frozen value>
 OUTREACH_CHANNEL_SET=<frozen non-sensitive identifiers>
+OUTREACH_CHANNEL_ALLOCATION=<frozen quotas>
+CANDIDATE_QUEUE_COMMITMENT_SHA256=<64 lowercase hex>
+OUTREACH_CADENCE_BATCH_RULE=<frozen value>
+RECRUITMENT_OUTCOME_FIREWALL=ENFORCED_UNTIL_PRIMARY_COHORT_FREEZE
 OPTIONAL_STOPPING=FORBIDDEN
 POST_PRIMARY_PARTICIPANTS=SECONDARY_EXPLORATORY_ONLY
 ```
@@ -273,7 +286,9 @@ Before first participant contact:
 - [ ] optional stopping prohibited; post-primary participants secondary-only;
 - [ ] private evidence-store descriptor created outside Git, independently reviewed and its SHA-256 publicly committed;
 - [ ] UUIDv4 participant-ID method frozen;
-- [ ] HMAC-SHA256 deduplication method + separate secret-storage class frozen;
+- [ ] HMAC-SHA256 typed multi-identifier deduplication method + separate secret-storage class frozen;
+- [ ] candidate queue/randomization commitment, channel allocation and outreach cadence/batch rule frozen;
+- [ ] recruitment/eligibility outcome firewall frozen until primary cohort lock;
 - [ ] no raw identity or dedup HMAC appears in public GitHub;
 - [ ] no participant outcomes visible.
 
