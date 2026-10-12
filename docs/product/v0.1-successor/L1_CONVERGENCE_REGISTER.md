@@ -8,13 +8,13 @@ Rule: shortest trustworthy path to study terminals; no optional-tooling recursio
 
 | Study | Current state | Exact remaining blocker | Owner class | Minimum next step | Deferred now |
 |---|---|---|---|---|---|
-| SE10 | tooling R1; 17/17 regression PASS | #61 Fresh terminal on PR #60, then real Gold | Fresh reviewer + independent humans | merge #60 → execute #58 | extra tooling robustness |
-| SE11 | hidden tooling 18/18 PASS; target R5 local static PASS | #66 Fresh terminal; #68 R5 Fresh source terminal; then #69 target + #55 truth | Fresh reviewer + Windows host + independent curator | merge #62/#67 → execute #69 → #55 | non-validity hardening |
+| SE10 | tooling merged; 17/17 regression PASS | #58 real independent human Gold | independent humans | execute #58 → SE10 evaluation | extra tooling robustness |
+| SE11 | tooling/selection merged; target R5 static PASS | #69 real host target, then #55 hidden truth | Windows host + independent human curator | execute #69 → #55 → SE11 evaluation | non-validity hardening |
 | SE12 | HOLD | needs frozen SE10/SE11 Capability/Evidence subject | Web/local | execute protocol once upstream terminal | architecture design |
 | SE13 | HOLD | needs SE12 projections | real benchmark | run frozen paired benchmark | production Agent design |
-| SE14 | tooling R1; 16/16 regression PASS; labels can start early | #71 Fresh terminal; independent labels; real paired index waits on SE10+SE11 evidence-backed Capability subject | Fresh reviewer + independent adjudicators | merge #70 → adjudicate labels early → after SE10/11 freeze paired index → bind receipt → run once | ranking feature work / synthetic capability metadata |
+| SE14 | runner merged; 16/16 regression PASS; labels active | independent labels; real paired index waits on SE10+SE11 evidence-backed Capability subject | independent adjudicators | adjudicate labels → after SE10/11 freeze paired index → bind receipt → run once | ranking feature work / synthetic capability metadata |
 | SE15 | sample not frozen | two real independent curators + final LO target | 2 humans + real host | top-25 freeze → binding run | more Notepad research/UIA early inspection |
-| SE16 | instrument R1 | #53 PASS, then real 8-person cohort | Fresh reviewer + real users | merge #52 → freeze private recruitment state → execute | instrument feature expansion |
+| SE16 | instrument merged / reviewed | freeze private recruitment state + real 8-person cohort | real external users | execute frozen recruitment → terminal | instrument feature expansion |
 
 ## No-more-tooling rule
 
@@ -31,21 +31,16 @@ Without both fields, defer it.
 
 ```text
 LANE_A_FRESH:
-#53 terminal candidate
-#61 terminal candidate (17/17 PASS)
-#66 terminal candidate (18/18 PASS)
-#71 terminal candidate (16/16 PASS)
+COMPLETE — #53/#61/#66/#68/#71 PASS and closed
 
 LANE_B_WINDOWS:
-#68 R5 local static PASS; Fresh source terminal pending
-→ #67 merge
-→ #69 same Windows candidate host
+#69 same Windows candidate host — REAL_HOST execution active
 
 LANE_C_HUMAN:
-after #60 merge -> #58
-after #62/#69 -> #55
-#59 two human curators when frozen source set is accepted
-after #52 merge -> #51 real users
+#58 real independent human Gold — ACTIVE
+#55 independent hidden truth — HOLD only on #69
+#59 two independent human curators — ACTIVE
+#51 real external users — ACTIVE
 
 LANE_D_RESULTS:
 SE14 labels may start after Stage-A freeze
