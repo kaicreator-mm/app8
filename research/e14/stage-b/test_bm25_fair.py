@@ -82,6 +82,22 @@ class TestFrozenBM25(unittest.TestCase):
         self.assertEqual(len({x[0] for x in docs}), 64)
         self.assertTrue(all(doc[2].startswith(doc[1]) for doc in docs))
 
+    def test_registry_schema_keys_are_searchable(self):
+        sample = fake_index()
+        sample["items"][0]["registry_fields"]["input_schema"] = {
+            "properties": {"customer_id": {"type": "string"}}
+        }
+        docs = validate_index(sample, fake_lookup())
+        baseline = dict((item_id, base) for item_id, base, _ in docs)["F01"]
+        self.assertIn("input_schema", tokenize(baseline))
+        self.assertIn("properties", tokenize(baseline))
+        self.assertIn("customer", tokenize(baseline))
+        self.assertIn("id", tokenize(baseline))
+
+    def test_baseline_prefix_is_identical_in_capability_arm(self):
+        docs = validate_index(fake_index(), fake_lookup())
+        self.assertTrue(all(cap.startswith(base) for _, base, cap in docs))
+
     def test_rejects_missing_metadata_field(self):
         sample = fake_index()
         sample["items"][0]["registry_fields"].pop("help_examples")
