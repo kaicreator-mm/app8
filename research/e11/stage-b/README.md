@@ -5,6 +5,7 @@ Owning issue: #55
 Parent execution issue: #43
 Protocol blob: 83abefb13e6a91e6b67a1c94937ca1bcce567aad
 Stage-A evidence merge: 0279968580d50e51843b09aa2b6e266b9967ff93
+Identity-model amendment: PR #64 (must receive independent PASS+merge before this tooling is used for corpus freeze)
 
 ## Purpose
 
@@ -39,8 +40,11 @@ Every private claim requires:
 - provenance;
 - replay/reset requirements.
 
+Before corpus construction, an independently reviewed **Execution Target manifest** must freeze each asset's exact real target version/build/package, checksum or immutable digest, acquisition provenance, platform/runtime, and Source -> Execution mapping class. The sealed corpus binds to that manifest by SHA-256.
+
 The public commitment contains only:
 - raw private-file SHA-256 and byte count;
+- Execution Target manifest SHA-256;
 - total count;
 - per-asset count;
 - aggregate class counts already fixed by protocol;
@@ -52,7 +56,9 @@ It intentionally emits no per-ID truth class or semantic content.
 
 ## LibreOffice boundary
 
-The tooling requires 20 LibreOffice records because the protocol freezes 20 per asset. A curator must not populate a valid runnable binding/decisive fixture unless a reviewed exact-pinned LibreOffice runnable exists. Stage-A BLOCKED cannot be bypassed by a distro/newer binary.
+The tooling requires 20 LibreOffice records because the protocol freezes 20 per asset. After the identity amendment is reviewed, LibreOffice may bind to a frozen **official LibreOffice release binary/package** with durable checksum/provenance and an explicit Source -> Execution mapping. An exact source build is required only if a claim is explicitly source-only/unreleased or no suitable official artifact exists.
+
+The historical Stage-A `BLOCKED_ENVIRONMENT` finding applies to the attempted exact-commit source build; it must not be misrepresented as proof that an official release Execution Target is blocked.
 
 ## Workflow
 
