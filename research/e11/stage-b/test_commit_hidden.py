@@ -30,25 +30,29 @@ def fake_hidden():
             "execution_target_ref": "TEST_ONLY_FFMPEG_TARGET",
             "relation": "SAME",
             "applicability_review_sha256": "1" * 64,
-            "applicability_review_status": "PASS"
+            "applicability_review_status": "PASS",
+            "approved_applicability_evidence": []
         },
         "pandas": {
             "execution_target_ref": "TEST_ONLY_PANDAS_TARGET",
             "relation": "SAME",
             "applicability_review_sha256": "2" * 64,
-            "applicability_review_status": "PASS"
+            "applicability_review_status": "PASS",
+            "approved_applicability_evidence": []
         },
         "MinIO": {
             "execution_target_ref": "TEST_ONLY_MINIO_TARGET",
             "relation": "SAME",
             "applicability_review_sha256": "3" * 64,
-            "applicability_review_status": "PASS"
+            "applicability_review_status": "PASS",
+            "approved_applicability_evidence": []
         },
         "LibreOffice": {
             "execution_target_ref": "TEST_ONLY_LIBREOFFICE_RELEASE_TARGET",
             "relation": "DIVERGED",
             "applicability_review_sha256": "4" * 64,
-            "applicability_review_status": "PASS"
+            "applicability_review_status": "PASS",
+            "approved_applicability_evidence": []
         }
     }
     records = []
@@ -58,6 +62,12 @@ def fake_hidden():
             for _ in range(count):
                 nonce = f"TEST_NONCE_{index:04d}"
                 relation = mappings[asset]["relation"]
+                evidence_kind = "RELEASE_SPECIFIC_SOURCE" if relation == "DIVERGED" else "EXACT_SOURCE_IDENTITY"
+                evidence_sha = f"{index:064x}"
+                mappings[asset]["approved_applicability_evidence"].append({
+                    "evidence_kind": evidence_kind,
+                    "evidence_sha256": evidence_sha
+                })
                 records.append({
                     "id": derived_id(secret, nonce),
                     "id_nonce": nonce,
@@ -71,8 +81,8 @@ def fake_hidden():
                     "reset_requirements": "TEST_ONLY_SYNTHETIC",
                     "target_applicability": {
                         "mapping_relation": relation,
-                        "evidence_kind": "RELEASE_SPECIFIC_SOURCE" if relation == "DIVERGED" else "EXACT_SOURCE_IDENTITY",
-                        "evidence_sha256": f"{index:064x}",
+                        "evidence_kind": evidence_kind,
+                        "evidence_sha256": evidence_sha,
                         "independent_review_status": "PASS"
                     }
                 })
@@ -90,7 +100,6 @@ def fake_hidden():
         "curator_isolation_declaration": "TEST_ONLY_SYNTHETIC_NO_REAL_HIDDEN_TRUTH",
         "claims": records
     }
-
 
 def write_manifest_and_bind(doc, path, mutator=None):
     manifest = {
@@ -161,6 +170,11 @@ class HiddenToolTests(unittest.TestCase):
     def test_placeholder_applicability_hash_rejected(self):
         d = fake_hidden()
         d["claims"][0]["target_applicability"]["evidence_sha256"] = "x"
+        self.check_case(d, False)
+
+    def test_unapproved_well_formed_applicability_hash_rejected(self):
+        d = fake_hidden()
+        d["claims"][0]["target_applicability"]["evidence_sha256"] = "f" * 64
         self.check_case(d, False)
 
     def test_diverged_exact_source_evidence_rejected(self):
