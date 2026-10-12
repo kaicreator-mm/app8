@@ -112,7 +112,16 @@
         "target_applicability_required": true,
         "source_build_required": false,
         "readiness": "PENDING_OFFICIAL_INSTALL_AND_NON_EVALUATIVE_SMOKE",
-        "runtime_lane": "windows-x86_64-native-msi"
+        "runtime_lane": "windows-x86_64-native-msi",
+        "installation_policy": {
+          "supported_path": "DIRECT_OFFICIAL_MSI_ONLY",
+          "winget_role": "PROVENANCE_ONLY_NOT_INSTALL_PATH",
+          "required_runtime_dependency": {
+            "package_identifier": "Microsoft.VCRedist.2015+.x64",
+            "exact_installed_identity_freeze": "REQUIRED_IN_ISSUE_69",
+            "absent_behavior": "BLOCK_NO_AUTO_INSTALL_OR_SUBSTITUTION"
+          }
+        }
       }
     }
   ],
