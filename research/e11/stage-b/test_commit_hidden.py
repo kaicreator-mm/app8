@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Synthetic STRUCTURAL tests only — not the sealed independent SE11 truth corpus."""
 import hashlib
+import hmac
 import json
 import pathlib
 import subprocess
 import sys
 import tempfile
 import unittest
-import uuid
 
 BASE = pathlib.Path(__file__).resolve().parent
 RUNNER = BASE / "commit_hidden.py"
@@ -15,14 +15,51 @@ ASSETS = ("FFmpeg", "pandas", "MinIO", "LibreOffice")
 BALANCE = {"TRUE": 8, "MATERIALLY_FALSE": 4, "OVERBROAD": 4, "NEAR_MISS": 4}
 
 
+def derived_id(secret_hex, nonce):
+    digest = bytearray(hmac.new(bytes.fromhex(secret_hex), nonce.encode("utf-8"), hashlib.sha256).digest()[:16])
+    digest[6] = (digest[6] & 0x0F) | 0x40
+    digest[8] = (digest[8] & 0x3F) | 0x80
+    return "H_" + bytes(digest).hex()
+
+
 def fake_hidden():
+    secret = "ab" * 32
+    mappings = {
+        "FFmpeg": {
+            "execution_target_ref": "TEST_ONLY_FFMPEG_TARGET",
+            "relation": "SAME",
+            "applicability_review_sha256": "1" * 64,
+            "applicability_review_status": "PASS"
+        },
+        "pandas": {
+            "execution_target_ref": "TEST_ONLY_PANDAS_TARGET",
+            "relation": "SAME",
+            "applicability_review_sha256": "2" * 64,
+            "applicability_review_status": "PASS"
+        },
+        "MinIO": {
+            "execution_target_ref": "TEST_ONLY_MINIO_TARGET",
+            "relation": "SAME",
+            "applicability_review_sha256": "3" * 64,
+            "applicability_review_status": "PASS"
+        },
+        "LibreOffice": {
+            "execution_target_ref": "TEST_ONLY_LIBREOFFICE_RELEASE_TARGET",
+            "relation": "DIVERGED",
+            "applicability_review_sha256": "4" * 64,
+            "applicability_review_status": "PASS"
+        }
+    }
     records = []
     index = 1
     for asset in ASSETS:
         for category, count in BALANCE.items():
             for _ in range(count):
+                nonce = f"TEST_NONCE_{index:04d}"
+                relation = mappings[asset]["relation"]
                 records.append({
-                    "id": "H_" + uuid.uuid4().hex,
+                    "id": derived_id(secret, nonce),
+                    "id_nonce": nonce,
                     "asset": asset,
                     "truth_class": category,
                     "claim_text": "TEST_ONLY_SYNTHETIC_SECRET",
@@ -31,7 +68,12 @@ def fake_hidden():
                     "expected_behavior": "TEST_ONLY_SYNTHETIC",
                     "provenance": "TEST_ONLY_SYNTHETIC",
                     "reset_requirements": "TEST_ONLY_SYNTHETIC",
-                    "target_applicability_evidence_ref": "TEST_ONLY_SYNTHETIC"
+                    "target_applicability": {
+                        "mapping_relation": relation,
+                        "evidence_kind": "RELEASE_SPECIFIC_SOURCE" if relation == "DIVERGED" else "EXACT_SOURCE_IDENTITY",
+                        "evidence_sha256": f"{index:064x}",
+                        "independent_review_status": "PASS"
+                    }
                 })
                 index += 1
     return {
@@ -39,6 +81,9 @@ def fake_hidden():
         "stage_a_merge": "0279968580d50e51843b09aa2b6e266b9967ff93",
         "execution_target_manifest_sha256": "a" * 64,
         "source_execution_mapping_frozen": True,
+        "source_execution_mappings": mappings,
+        "id_scheme": "HMAC_SHA256_UUIDV4_V1",
+        "id_secret_hex": secret,
         "truth_visible_to_llm_b": False,
         "decisive_fixtures_visible_to_llm_b": False,
         "curator_isolation_declaration": "TEST_ONLY_SYNTHETIC_NO_REAL_HIDDEN_TRUTH",
@@ -65,6 +110,8 @@ class HiddenToolTests(unittest.TestCase):
                 self.assertEqual(obj["claim_count"], 80)
                 self.assertEqual(obj["hidden_file_sha256"], hashlib.sha256(inp.read_bytes()).hexdigest())
                 self.assertEqual(obj["execution_target_manifest_sha256"], "a" * 64)
+                self.assertEqual(obj["id_scheme"], "HMAC_SHA256_UUIDV4_V1")
+                self.assertEqual(obj["source_execution_relations"]["LibreOffice"], "DIVERGED")
             else:
                 self.assertFalse(out.exists(), "invalid corpus must not yield a public commitment")
 
@@ -88,12 +135,28 @@ class HiddenToolTests(unittest.TestCase):
 
     def test_missing_applicability(self):
         d = fake_hidden()
-        d["claims"][0].pop("target_applicability_evidence_ref")
+        d["claims"][0].pop("target_applicability")
         self.check_case(d, False)
 
-    def test_blank_applicability(self):
+    def test_placeholder_applicability_hash_rejected(self):
         d = fake_hidden()
-        d["claims"][0]["target_applicability_evidence_ref"] = "  "
+        d["claims"][0]["target_applicability"]["evidence_sha256"] = "x"
+        self.check_case(d, False)
+
+    def test_diverged_exact_source_evidence_rejected(self):
+        d = fake_hidden()
+        lo = next(c for c in d["claims"] if c["asset"] == "LibreOffice")
+        lo["target_applicability"]["evidence_kind"] = "EXACT_SOURCE_IDENTITY"
+        self.check_case(d, False)
+
+    def test_mapping_relation_mismatch_rejected(self):
+        d = fake_hidden()
+        d["claims"][0]["target_applicability"]["mapping_relation"] = "DIVERGED"
+        self.check_case(d, False)
+
+    def test_predictable_uuid_shape_without_hmac_binding_rejected(self):
+        d = fake_hidden()
+        d["claims"][0]["id"] = "H_00000000000040008000000000000001"
         self.check_case(d, False)
 
     def test_wrong_manifest_hash(self):
