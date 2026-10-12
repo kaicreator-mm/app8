@@ -40,10 +40,15 @@ foreach ($registryRoot in @(
     if (Test-Path $registryRoot) {
         $vcRuntime += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
             Where-Object {
-                $_.DisplayName -like "Microsoft Visual C++ 2015-2022 Redistributable (x64)*" -and
+                $canonicalName = "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+                $nameMatches = (
+                    $_.DisplayName -eq $canonicalName -or
+                    $_.DisplayName -eq ($canonicalName + " - " + $_.DisplayVersion)
+                )
+                $nameMatches -and
                 $_.Publisher -eq "Microsoft Corporation" -and
-                $_.DisplayVersion -match "^[0-9]+(\\.[0-9]+){1,3}$" -and
-                $_.PSChildName -match "^\\{[0-9A-Fa-f-]{36}\\}$"
+                $_.DisplayVersion -match "^[0-9]+(\.[0-9]+){1,3}$" -and
+                $_.PSChildName -match "^\{[0-9A-Fa-f-]{36}\}$"
             } |
             Select-Object DisplayName, DisplayVersion, PSChildName, Publisher)
     }
