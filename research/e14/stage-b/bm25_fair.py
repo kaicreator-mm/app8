@@ -86,7 +86,7 @@ def flatten(value):
     if isinstance(value, list):
         return " ".join(flatten(v) for v in value)
     if isinstance(value, dict):
-        return " ".join(flatten(value[k]) for k in sorted(value))
+        return " ".join(f"{k} {flatten(value[k])}" for k in sorted(value))
     fail(f"unserializable metadata value of type {type(value).__name__}")
 
 
@@ -147,8 +147,8 @@ def validate_index(payload, frozen_lookup):
             fail("baseline must expose every ordinary field, including explicit null for missing")
         if not isinstance(extra, dict) or set(extra) != set(CAPABILITY_EXTRA_FIELDS):
             fail("capability arm contains missing/unauthorized extra fields")
-        baseline = " ".join(flatten(base[field]) for field in BASELINE_FIELDS)
-        capability_extra = " ".join(flatten(extra[field]) for field in CAPABILITY_EXTRA_FIELDS)
+        baseline = " ".join(f"{field} {flatten(base[field])}" for field in BASELINE_FIELDS)
+        capability_extra = " ".join(f"{field} {flatten(extra[field])}" for field in CAPABILITY_EXTRA_FIELDS)
         # The ordinary baseline bytes are reused verbatim, not rebuilt independently.
         capability = baseline + " " + capability_extra
         ids.add(item_id)
