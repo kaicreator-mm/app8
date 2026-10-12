@@ -119,7 +119,13 @@
           "required_runtime_dependency": {
             "package_identifier": "Microsoft.VCRedist.2015+.x64",
             "exact_installed_identity_freeze": "REQUIRED_IN_ISSUE_69",
-            "absent_behavior": "BLOCK_NO_AUTO_INSTALL_OR_SUBSTITUTION"
+            "absent_behavior": "BLOCK_NO_AUTO_INSTALL_OR_SUBSTITUTION",
+            "runtime_family": "MICROSOFT_VISUAL_CPP_V14_X64",
+            "accepted_registry_display_name_bases": [
+              "Microsoft Visual C++ 2015-2022 Redistributable (x64)",
+              "Microsoft Visual C++ v14 Redistributable (x64)"
+            ],
+            "registry_name_suffix_policy": "OPTIONAL_EXACT_\" - <DisplayVersion>\""
           }
         }
       }
