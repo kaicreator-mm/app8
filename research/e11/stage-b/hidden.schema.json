@@ -47,12 +47,14 @@
           "decisive_fixture_ref",
           "expected_behavior",
           "provenance",
-          "reset_requirements"
+          "reset_requirements",
+          "target_applicability_evidence_ref"
         ],
         "properties": {
           "id": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "^H[0-9]{4,6}$"
           },
           "asset": {
             "enum": [
@@ -91,6 +93,10 @@
             "minLength": 1
           },
           "reset_requirements": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_applicability_evidence_ref": {
             "type": "string",
             "minLength": 1
           }
