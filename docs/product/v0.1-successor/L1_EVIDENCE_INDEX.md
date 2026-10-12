@@ -137,6 +137,9 @@ The protocol must include:
 - hidden or independently curated truth where feasible;
 - real execution/observation;
 - negative/refutation evidence;
+- separate Knowledge Source identity and real Execution Target identity;
+- explicit Source -> Execution mapping, version/build/package provenance and currentness;
+- release/source relationship and target-applicability disposition when source and execution release lines diverge;
 - software/version/environment/binding identity;
 - frozen scoring before reveal.
 
@@ -228,7 +231,11 @@ Allowed routes include:
 - minimal forks/adapters;
 - structured semantic UI automation/accessibility interfaces.
 
-Protocol must freeze a representative asset portfolio and top-Capability set before measuring:
+Protocol must freeze a representative asset portfolio and top-Capability set before measuring.
+
+For each asset, Knowledge Source identity and Execution Target identity are frozen separately. Official publisher release binaries/packages are preferred for ordinary released behavior; source builds are not required unless the Capability is source-only/unreleased or no suitable official artifact exists. Diverged source/release lines require pre-binding target-applicability disposition.
+
+Before measuring:
 
 - directly bindable;
 - bindable with thin adapter;
