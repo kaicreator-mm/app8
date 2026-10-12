@@ -1,0 +1,112 @@
+# L1 Execution DAG — app8 v0.1 Successor
+
+Status: ACTIVE_CONVERGENCE  
+Phase: PRODUCT_L1_EVIDENCE  
+Controller: Issue #72  
+Formal Implementation Task DAG: NOT_YET_AUTHORIZED
+
+This artifact makes the existing Product/L1 execution graph explicit. It is **not** the implementation Task DAG.
+
+## Phase boundary
+
+```text
+CURRENT:
+PRD
+→ L1 Evidence protocols
+→ L1 Execution DAG
+→ study execution / terminals
+→ Final Product Review
+→ Product Freeze
+
+NEXT, only after Product Freeze:
+L2 Architecture Evidence
+→ L1→L2 transfer / architecture freeze
+→ Implementation Task DAG
+→ L3 / implementation
+```
+
+## Critical graph
+
+```text
+SE10 #61/#60 ──> #58 human Gold ──> SE10 evaluation ──┐
+                                                       │
+SE11 #68/#67 ─┐                                       │
+               ├─> #69 target freeze ─> #55 hidden ──┼─> SE12 ─> SE13 ─┐
+     #66/#62 ─┘                                       │                 │
+                                                       │                 │
+SE14 #71/#70 ─> independent labels ─> paired run ─────┤                 │
+                                                       │                 │
+SE15 #59 human A/B + #69 ─> non-pixel binding ─────────┤                 │
+                                                       │                 │
+SE16 #53/#52 ─> fixed private cohort ─> 8 real users ─┘                 │
+                                                                         │
+SE10..SE16 terminals ────────────────────────────────────────────────────┘
+                                  ↓
+                     Final Independent Product Review
+                                  ↓
+                         Product Freeze = YES
+                                  ↓
+                         L1→L2 transfer audit
+                                  ↓
+                       L2 Architecture Evidence
+                                  ↓
+                    Implementation Task DAG
+```
+
+## Node register
+
+| Node | Phase class | Dependency | Minimum terminal | Downstream unlock |
+|---|---|---|---|---|
+| #53 / PR #52 | FRESH_REVIEW | current SE16 instrument | PASS on exact HEAD | merge #52, recruit |
+| #61 / PR #60 | FRESH_REVIEW | current SE10 tooling | PASS + current tests | merge #60, #58 |
+| #66 / PR #62 | FRESH_REVIEW | current SE11 tooling | PASS + current tests | merge #62, hidden prep |
+| #68 / PR #67 | FRESH_REVIEW + LOCAL_REAL_HOST | current PS1 | PASS current HEAD | merge #67, #69 |
+| #71 / PR #70 | FRESH_REVIEW | current SE14 runner | PASS + current tests | merge #70, labels/run |
+| #58 | INDEPENDENT_HUMAN | #60 merge | sealed Gold commitment | SE10 evaluation |
+| #69 | LOCAL_REAL_HOST | #67 merge | exact LO/runtime manifest + smoke | SE11/SE15 target |
+| #55 | INDEPENDENT_HUMAN | #62 + #69 | sealed 80-claim truth | SE11 execution |
+| #59 | 2×INDEPENDENT_HUMAN | source freeze | exact top-25 commitment | SE15 binding |
+| #51 | REAL_EXTERNAL_USERS | #52 merge | fixed 8-person primary cohort evidence | SE16 terminal |
+| SE12 | WEB/LOCAL protocol execution | SE10+SE11 terminal subject | protocol terminal | SE13 |
+| SE13 | REAL benchmark | SE12 artifacts | paired benchmark terminal | final review |
+
+## Finding classification
+
+Only these remain on the Product/L1 critical path:
+
+```text
+A = EVIDENCE_VALIDITY_BLOCKER
+B = EXECUTION_BLOCKER
+```
+
+The following do not reopen L1 unless an independent reviewer proves they affect the frozen study result:
+
+```text
+C = OPTIONAL_HARDENING
+D = L2/L3_IMPLEMENTATION_CONCERN
+```
+
+## Stop rule
+
+For an experiment tool:
+
+```text
+can execute frozen study
+AND preserves blind/independent boundary
+AND exact inputs/targets are bound
+AND validity-relevant corruption fails closed
+AND raw evidence/scoring inputs are preserved
+=> L1_TOOLING_SUFFICIENT=YES
+```
+
+After this point, optional robustness is deferred.
+
+## Current aggregate
+
+```text
+L1_PROTOCOLS_MERGED=7/7
+L1_STUDY_RESULT_GATES_PASS=0/7
+PRODUCT_FREEZE=NO
+L2_READY=NO
+IMPLEMENTATION_TASK_DAG=NOT_AUTHORIZED
+```
