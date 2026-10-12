@@ -28,30 +28,28 @@ L2 Architecture Evidence
 ## Critical graph
 
 ```text
-SE10 #61/#60 ──> #58 human Gold ──> SE10 evaluation ──┐
-                                                       │
-SE11 #68/#67 ─┐                                       │
-               ├─> #69 target freeze ─> #55 hidden ──┼─> SE12 ─> SE13 ─┐
-     #66/#62 ─┘                                       │                 │
-                                                       │                 │
-SE14 #71/#70 ─> independent labels (can start early) ─┐
-SE10+SE11 terminal ─> evidence-backed paired index ────┼─> SE14 paired run ─┤                 │
-                                                       │                 │
-SE15 #59 human A/B + #69 ─> non-pixel binding ─────────┤                 │
-                                                       │                 │
-SE16 #53/#52 ─> fixed private cohort ─> 8 real users ─┘                 │
-                                                                         │
-SE10..SE16 terminals ────────────────────────────────────────────────────┘
-                                  ↓
-                     Final Independent Product Review
-                                  ↓
-                         Product Freeze = YES
-                                  ↓
-                         L1→L2 transfer audit
-                                  ↓
-                       L2 Architecture Evidence
-                                  ↓
-                    Implementation Task DAG
+SE10: #61/#60 -> #58 human Gold -> SE10 evaluation -> SE10 terminal
+SE11: #66/#62 + #68/#67 -> #69 target freeze -> #55 hidden truth -> SE11 terminal
+
+SE14 preparation:
+  #71/#70 -> independent labels may start early
+  SE10 terminal + SE11 terminal -> evidence-backed paired index
+  independent labels + exact paired index -> reviewed label receipt -> SE14 paired run -> SE14 terminal
+
+SE15: #59 human A/B + #69 -> non-pixel binding -> SE15 terminal
+SE16: #53/#52 -> fixed private cohort -> 8 real users -> SE16 terminal
+
+SE10..SE16 terminals
+        ->
+Final Independent Product Review
+        ->
+Product Freeze = YES
+        ->
+L1->L2 transfer audit
+        ->
+L2 Architecture Evidence
+        ->
+Implementation Task DAG
 ```
 
 ## Node register
