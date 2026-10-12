@@ -36,13 +36,20 @@ Before inspecting Notepad's UIA tree, the execution manifest must freeze:
 
 A host lacking Notepad may install the official Microsoft Notepad package before the environment manifest is frozen. After UIA inspection begins, the fifth target may not be replaced.
 
-## 3. Frozen Capability sample
+## 3. Frozen Capability sample and operational ranking
 
-Before binding attempts, an independent semantic reviewer selects the top 5 user-meaningful Capabilities per asset from official user-facing material, for 25 total.
+Exactly 5 user-meaningful Capabilities per asset are selected **before any binding/UIA inspection**.
 
-For Notepad, selection is based on ordinary user-visible product behavior/documentation before inspecting which UIA controls happen to be easy to automate.
+Two independent curators rank each asset's user-facing candidate set using only the frozen official docs/tutorials/help. Candidate ID is the canonical intent label + sorted source-anchor refs. Score each candidate before resolving curator disagreement:
 
-Selection occurs before inspecting whether a preferred binding is easy or difficult.
+- documented prominence: 0–3 (front-page/common tutorial/task workflow > niche reference);
+- user job completeness: 0–3 (user-observable outcome vs raw API call);
+- independent example support: 0–2 (two or more user-facing workflows = 2; one = 1);
+- ordinary actionability: 0–2 (concrete inputs/outcome reproducible = 2).
+
+Rank by descending sum; tie-break by ascending canonical Candidate ID, then ascending source-anchor ID. Curators must publish individual rankings and a combined score ledger; disagreement >2 points invokes third blind curator using same rubric, median of three scores decides. Select exactly top 5 per asset. No convenience-based replacement.
+
+For Notepad, all rankings must precede inspection of UIA controls or machine accessibility/actionability. Freeze complete 25-subject list and curator ledger.
 
 ## 4. Allowed success routes
 
@@ -69,9 +76,9 @@ A success may not rely on:
 
 Output artifact inspection of images/video is allowed when validating software results; it is not UI-control discovery.
 
-## 6. Binding classification
+## 6. Binding classification and environment BLOCKED taxonomy
 
-Each Capability is classified as exactly one:
+Each frozen Capability is one of:
 
 - DIRECT_NATIVE;
 - THIN_ADAPTER;
@@ -80,34 +87,36 @@ Each Capability is classified as exactly one:
 - UNSUPPORTED;
 - BLOCKED_ENVIRONMENT.
 
-For successful classes, record implementation effort band and stability/currentness risks.
+**UNSUPPORTED** includes intrinsic absent/unrecoverable binding, hard interface mismatch, unsuccessful patch/adapter, and any execution or stability failure attributable to that Capability. A difficult binding is never a host BLOCKED classification.
 
-## 7. Primary metrics
+**BLOCKED_ENVIRONMENT** is permitted only for independently evidenced external obstacles beyond the Capability's interface, e.g., real-host hardware unavailable, OS installation prohibited by host policy, upstream distribution permanently unavailable, or externally imposed access/network/credential denial unrelated to binding feasibility. Routine setup errors, missing package that can be installed, permission requests under operator control, and generated adapter failures are NOT BLOCKED.
 
-- useful bindable coverage = successful Capabilities / non-blocked frozen Capabilities;
-- per-asset coverage;
-- route distribution;
-- unsupported rate;
-- structured-semantic UI success rate for Notepad;
-- pixel-policy violations.
+Required remediation before BLOCKED: (1) one documented retry on the same frozen host, (2) an independent setup diagnosis, (3) attempt normal supported installation/configuration when authorized, (4) evidence explaining why further remediation would violate the frozen environment/policy or is objectively unavailable. A second reviewer adjudicates each BLOCKED classification from exact logs **blind to aggregate coverage score**.
+
+## 7. Primary metrics and denominators
+
+**Primary pooled useful coverage uses ALL 25 frozen Capabilities** as denominator, including BLOCKED_ENVIRONMENT as non-success. Per-asset primary coverage denominator is always 5; no denominator shrinkage is allowed.
+
+Also report an explicitly secondary non-blocked coverage metric, blocked cases count, route distribution, unsupported rate, Notepad structured-semantic UI success rate and pixel-policy violations.
 
 ## 8. Frozen PASS thresholds
 
 PASS requires:
 
-- pooled useful bindable coverage >= 0.70;
-- at least 4 of 5 assets achieve >= 0.60 coverage;
-- no pixel-policy violation;
-- at least one successful structured-semantic UI Capability on Notepad if its accessibility tree exposes actionable semantics;
-- no more than 20% of total cases BLOCKED_ENVIRONMENT.
+- successful bindings >=18/25 (at least 0.70, integer-rounded upward);
+- at least 4/5 assets have >=3/5 successful bindings;
+- zero pixel-policy violation;
+- at least one successful STRUCTURED_SEMANTIC_UI Capability on Notepad **if** its pinned accessibility tree exposes actionable semantics, with no substitute route;
+- BLOCKED_ENVIRONMENT <=5/25, all with independently adjudicated required remediation evidence;
+- zero reclassification of intrinsic/binding failure as BLOCKED.
 
-If Notepad exposes no actionable semantic tree for a selected Capability, report negative evidence; do not substitute a screenshot route or another GUI target.
+If Notepad exposes no actionable semantic tree for a selected Capability, preserve negative evidence; no screenshot/coordinate fallback or GUI target substitution.
 
 ## 9. Anti-cheating
 
-Freeze portfolio, exact environment versions, 25-Capability sample and route definitions before binding attempts.
+Freeze exact source/software/host/Notepad/UIA identities, 25-subject ranking and selection ledger, route definitions, remediation protocol, blocked taxonomy and thresholds before binding work.
 
-Do not remove hard cases or redefine user-meaningful capability after seeing accessibility/binding difficulty.
+Do not remove hard cases, change candidate ranks, or redefine Capability after difficulty or accessibility outcomes become visible.
 
 ## 10. Outputs
 
