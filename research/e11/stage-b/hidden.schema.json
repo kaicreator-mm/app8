@@ -1,0 +1,404 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-se11-hidden-v1",
+  "title": "SE11 Isolated Hidden Truth Corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "stage_a_merge",
+    "source_execution_mappings",
+    "id_scheme",
+    "id_secret_hex",
+    "truth_visible_to_llm_b",
+    "decisive_fixtures_visible_to_llm_b",
+    "execution_target_manifest_sha256",
+    "source_execution_mapping_frozen",
+    "curator_isolation_declaration",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "se11-hidden-v1"
+    },
+    "stage_a_merge": {
+      "const": "0279968580d50e51843b09aa2b6e266b9967ff93"
+    },
+    "truth_visible_to_llm_b": {
+      "const": false
+    },
+    "decisive_fixtures_visible_to_llm_b": {
+      "const": false
+    },
+    "curator_isolation_declaration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 80,
+      "maxItems": 80,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "id_nonce",
+          "target_applicability",
+          "asset",
+          "truth_class",
+          "claim_text",
+          "binding_id",
+          "decisive_fixture_ref",
+          "expected_behavior",
+          "provenance",
+          "reset_requirements"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^H_[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$"
+          },
+          "asset": {
+            "enum": [
+              "FFmpeg",
+              "pandas",
+              "MinIO",
+              "LibreOffice"
+            ]
+          },
+          "truth_class": {
+            "enum": [
+              "TRUE",
+              "MATERIALLY_FALSE",
+              "OVERBROAD",
+              "NEAR_MISS"
+            ]
+          },
+          "claim_text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "binding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decisive_fixture_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_behavior": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provenance": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reset_requirements": {
+            "type": "string",
+            "minLength": 1
+          },
+          "id_nonce": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_applicability": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mapping_relation",
+              "evidence_kind",
+              "evidence_sha256",
+              "independent_review_status"
+            ],
+            "properties": {
+              "mapping_relation": {
+                "enum": [
+                  "SAME",
+                  "KNOWLEDGE_SOURCE_ANCESTOR",
+                  "KNOWLEDGE_SOURCE_DESCENDANT",
+                  "DIVERGED",
+                  "UNRESOLVED"
+                ]
+              },
+              "evidence_kind": {
+                "enum": [
+                  "EXACT_SOURCE_IDENTITY",
+                  "RELEASE_SPECIFIC_SOURCE",
+                  "DETERMINISTIC_TARGET_PROBE"
+                ]
+              },
+              "evidence_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "independent_review_status": {
+                "const": "PASS"
+              }
+            }
+          }
+        }
+      }
+    },
+    "execution_target_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_execution_mapping_frozen": {
+      "const": true
+    },
+    "id_scheme": {
+      "const": "HMAC_SHA256_UUIDV4_V1"
+    },
+    "id_secret_hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_execution_mappings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "FFmpeg",
+        "pandas",
+        "MinIO",
+        "LibreOffice"
+      ],
+      "properties": {
+        "FFmpeg": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status",
+            "approved_applicability_evidence"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            },
+            "approved_applicability_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "evidence_kind",
+                  "evidence_sha256"
+                ],
+                "properties": {
+                  "evidence_kind": {
+                    "enum": [
+                      "EXACT_SOURCE_IDENTITY",
+                      "RELEASE_SPECIFIC_SOURCE",
+                      "DETERMINISTIC_TARGET_PROBE"
+                    ]
+                  },
+                  "evidence_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pandas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status",
+            "approved_applicability_evidence"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            },
+            "approved_applicability_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "evidence_kind",
+                  "evidence_sha256"
+                ],
+                "properties": {
+                  "evidence_kind": {
+                    "enum": [
+                      "EXACT_SOURCE_IDENTITY",
+                      "RELEASE_SPECIFIC_SOURCE",
+                      "DETERMINISTIC_TARGET_PROBE"
+                    ]
+                  },
+                  "evidence_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "MinIO": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status",
+            "approved_applicability_evidence"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            },
+            "approved_applicability_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "evidence_kind",
+                  "evidence_sha256"
+                ],
+                "properties": {
+                  "evidence_kind": {
+                    "enum": [
+                      "EXACT_SOURCE_IDENTITY",
+                      "RELEASE_SPECIFIC_SOURCE",
+                      "DETERMINISTIC_TARGET_PROBE"
+                    ]
+                  },
+                  "evidence_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "LibreOffice": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "execution_target_ref",
+            "relation",
+            "applicability_review_sha256",
+            "applicability_review_status",
+            "approved_applicability_evidence"
+          ],
+          "properties": {
+            "execution_target_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "relation": {
+              "enum": [
+                "SAME",
+                "KNOWLEDGE_SOURCE_ANCESTOR",
+                "KNOWLEDGE_SOURCE_DESCENDANT",
+                "DIVERGED",
+                "UNRESOLVED"
+              ]
+            },
+            "applicability_review_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "applicability_review_status": {
+              "const": "PASS"
+            },
+            "approved_applicability_evidence": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "evidence_kind",
+                  "evidence_sha256"
+                ],
+                "properties": {
+                  "evidence_kind": {
+                    "enum": [
+                      "EXACT_SOURCE_IDENTITY",
+                      "RELEASE_SPECIFIC_SOURCE",
+                      "DETERMINISTIC_TARGET_PROBE"
+                    ]
+                  },
+                  "evidence_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
