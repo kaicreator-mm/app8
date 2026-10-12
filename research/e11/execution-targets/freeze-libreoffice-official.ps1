@@ -79,9 +79,9 @@ foreach ($registryRoot in @(
             Select-Object DisplayName, DisplayVersion, PSChildName, InstallLocation)
     }
 }
-$installed = @($uninstall | Where-Object { $_.DisplayVersion -like "26.8.1*" })
+$installed = @($uninstall | Where-Object { $_.DisplayVersion -eq $Version -and $_.PSChildName -eq $ProductCode })
 if ($Install -and $installed.Count -eq 0) {
-    throw "LibreOffice installed release 26.8.1 not found in registry"
+    throw "Exact LibreOffice package version/ProductCode not found in registry: $Version / $ProductCode"
 }
 $smoke = [ordered]@{ executed = $false; exit_code = $null; log = $null }
 if ($Install -and $state -eq "INSTALLED") {
@@ -95,7 +95,7 @@ if ($Install -and $state -eq "INSTALLED") {
 $os = Get-CimInstance Win32_OperatingSystem
 $manifest = [ordered]@{
     schema_version = "app8-lo-execution-runtime-candidate-v1"
-    stage = "SE11_STAGE_A_OFFICIAL_RELEASE_SUBSTITUTION_AFTER_AMENDMENT"
+    stage = "OFFICIAL_EXECUTION_TARGET_IDENTITY_FREEZE"
     knowledge_source = "LibreOffice/core@016fd5d049256dc849111f60870f15201fcd1526"
     mapping_class = "OFFICIAL_RELEASE_MAPPED"
     source_relation = "DIVERGED"
@@ -122,7 +122,7 @@ $manifest = [ordered]@{
     l2_ready = "NO"
 }
 $manifestPath = Join-Path $EvidenceRoot "runtime-manifest.json"
-$manifest | ConvertTo-Json -Depth 8 | Out-File -FilePath $manifestPath -Encoding UTF8
+[System.IO.File]::WriteAllText($manifestPath, ($manifest | ConvertTo-Json -Depth 8), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "OFFICIAL_MSI_SHA256=PASS"
 Write-Host "STATUS=$state"
 Write-Host "MANIFEST=$manifestPath"
