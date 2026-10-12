@@ -89,7 +89,8 @@ class TestFrozenBM25(unittest.TestCase):
         }
         docs = validate_index(sample, fake_lookup())
         baseline = dict((item_id, base) for item_id, base, _ in docs)["F01"]
-        self.assertIn("input_schema", tokenize(baseline))
+        self.assertIn("input", tokenize(baseline))
+        self.assertIn("schema", tokenize(baseline))
         self.assertIn("properties", tokenize(baseline))
         self.assertIn("customer", tokenize(baseline))
         self.assertIn("id", tokenize(baseline))
