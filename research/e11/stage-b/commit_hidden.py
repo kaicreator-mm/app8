@@ -24,10 +24,11 @@ CLAIM_FIELDS = {
     "decisive_fixture_ref", "expected_behavior", "provenance",
     "reset_requirements", "target_applicability"
 }
-MAPPING_FIELDS = {"execution_target_ref", "relation", "applicability_review_sha256", "applicability_review_status"}
+MAPPING_FIELDS = {"execution_target_ref", "relation", "applicability_review_sha256", "applicability_review_status", "approved_applicability_evidence"}
 APPLICABILITY_FIELDS = {"mapping_relation", "evidence_kind", "evidence_sha256", "independent_review_status"}
 RELATIONS = {"SAME", "KNOWLEDGE_SOURCE_ANCESTOR", "KNOWLEDGE_SOURCE_DESCENDANT", "DIVERGED", "UNRESOLVED"}
 EVIDENCE_KINDS = {"EXACT_SOURCE_IDENTITY", "RELEASE_SPECIFIC_SOURCE", "DETERMINISTIC_TARGET_PROBE"}
+EVIDENCE_ENTRY_FIELDS = {"evidence_kind", "evidence_sha256"}
 ID_SCHEME = "HMAC_SHA256_UUIDV4_V1"
 STAGE_A = "0279968580d50e51843b09aa2b6e266b9967ff93"
 
@@ -107,6 +108,21 @@ def validate(doc):
             fail(f"{asset}: applicability review must be SHA-256")
         if mapping["applicability_review_status"] != "PASS":
             fail(f"{asset}: applicability review must PASS before hidden freeze")
+        approved = mapping["approved_applicability_evidence"]
+        if not isinstance(approved, list) or not approved:
+            fail(f"{asset}: approved applicability evidence set must be nonempty")
+        seen_evidence = set()
+        for entry in approved:
+            exact_fields(entry, EVIDENCE_ENTRY_FIELDS, f"{asset}.approved_applicability_evidence[]")
+            if entry["evidence_kind"] not in EVIDENCE_KINDS:
+                fail(f"{asset}: invalid approved applicability evidence kind")
+            sha = entry["evidence_sha256"]
+            if not isinstance(sha, str) or not SHA256_RE.fullmatch(sha):
+                fail(f"{asset}: approved applicability evidence must be SHA-256")
+            key = (entry["evidence_kind"], sha)
+            if key in seen_evidence:
+                fail(f"{asset}: duplicate approved applicability evidence")
+            seen_evidence.add(key)
         if mapping["relation"] == "UNRESOLVED":
             fail(f"{asset}: UNRESOLVED mapping cannot enter hidden corpus freeze")
     if doc["truth_visible_to_llm_b"] is not False:
@@ -155,6 +171,12 @@ def validate(doc):
             fail(f"{cid}: applicability evidence must be SHA-256")
         if applicability["independent_review_status"] != "PASS":
             fail(f"{cid}: applicability evidence must be independently PASS-reviewed")
+        approved_keys = {
+            (entry["evidence_kind"], entry["evidence_sha256"])
+            for entry in mappings[asset]["approved_applicability_evidence"]
+        }
+        if (applicability["evidence_kind"], evidence_sha) not in approved_keys:
+            fail(f"{cid}: applicability evidence is not in the frozen approved evidence set")
         if relation in {"DIVERGED", "KNOWLEDGE_SOURCE_ANCESTOR", "KNOWLEDGE_SOURCE_DESCENDANT"} and applicability["evidence_kind"] == "EXACT_SOURCE_IDENTITY":
             fail(f"{cid}: non-SAME mapping requires release-specific source or deterministic target evidence")
         matrix[asset][category] += 1
