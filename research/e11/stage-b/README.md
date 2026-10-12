@@ -17,7 +17,7 @@ This tooling does not create the corpus.
 
 The curator/private context that sees `truth_class`, claim text, expected behavior and decisive fixtures must never become the tested LLM-B planning context.
 
-The private truth file must be outside **every Git worktree** until the reviewed protocol explicitly permits reveal. The commitment tool rejects Git-backed private input. Claim IDs are opaque `H0001`-style identifiers with no semantic category or label embedded.
+The private truth file must be outside **every Git worktree** until the reviewed protocol explicitly permits reveal. The commitment tool rejects Git-backed private input. Claim IDs are opaque **random UUIDv4** identifiers (`H_<32 lowercase hex>`) with no semantic category or label embedded.
 
 ## Required shape
 
@@ -81,3 +81,7 @@ SE11_GATE_PASS=NO
 PRODUCT_FREEZE=NO
 L2_READY=NO
 ```
+
+## ID generation and blind isolation
+
+The independent curator must assign each claim an independently generated UUIDv4, for example `"H_" + uuid.uuid4().hex`. No sequential ID, truth-class prefix, asset-derived prefix, semantic slug, or predictable ordering may identify the verdict. Independently shuffle claim order before producing public commitments. The tool checks UUIDv4 structure, but cannot prove authorship, randomness quality or separation of curator and planner: these remain independent review requirements.
