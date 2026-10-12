@@ -65,7 +65,7 @@ These controls are frozen **before first participant contact**.
 Duplicate detection uses a keyed digest, never a raw identifier in Git.
 
 1. Privately collect **all verified stable identifiers already legitimately available** for recruitment/eligibility verification from this bounded type set: `EMAIL`, `PROFESSIONAL_PROFILE_URL`, `EMPLOYER_DIRECTORY_ID`, `PROJECT_ACCOUNT_ID`. Do not collect an identifier only for dedup if it is otherwise unnecessary/unlawful.
-2. Canonicalize deterministically by identifier type: trim surrounding whitespace; lowercase the complete email address; for URLs lowercase scheme/host only and preserve path/query bytes; directory/account IDs are trimmed but otherwise byte-preserved. Do not infer aliases, strip plus-addressing, merge domains, or use fuzzy matching.
+2. Canonicalize deterministically by identifier type: trim surrounding whitespace; for email preserve the local-part bytes and lowercase only the domain after the final `@`; for URLs lowercase scheme/host only and preserve path/query bytes; directory/account IDs are trimmed but otherwise byte-preserved. Do not infer aliases, strip plus-addressing, merge domains, or use fuzzy matching.
 3. Compute one keyed digest **per available verified identifier**:
    `HMAC-SHA256(SE16_DEDUP_SECRET, "app8-se16-v1\n" + identifier_type + "\n" + canonical_identity)`.
 4. The participant's private dedup identity is the **set of all such HMACs**, not a researcher-selected single identifier. If any HMAC intersects an existing participant's set, mark `POTENTIAL_DUPLICATE` and require private human linkage resolution before eligibility can become VALID.
@@ -249,7 +249,7 @@ Before first outreach:
 3. Freeze outreach sources/channels, per-channel allocation, candidate queue/randomization seed commitment, outreach cadence/batch rule and eligibility screening procedure before outcomes.
 4. The **first 8 valid eligible participants encountered by the frozen queue/segment/employer procedure** form the primary cohort. Interview outcome cannot change queue order, channel allocation, contact cadence, eligibility disposition, or whether an otherwise valid candidate enters the cohort. Positive/negative interview results may not affect whether an otherwise valid participant enters that cohort.
 5. Recruitment ends for the primary gate when the eighth valid participant is frozen. The PASS/FAIL calculation uses exactly those 8 valid participants.
-6. If the sampling plan cannot produce 8 valid participants within the pre-registered recruitment window/outreach budget, primary verdict = `BLOCKED_RECRUITMENT`; do not extend the window/budget after observing positivity.
+6. If the pre-frozen candidate pool/queue is exhausted, or the sampling plan cannot produce 8 valid participants within the pre-registered recruitment window/outreach budget, primary verdict = `BLOCKED_RECRUITMENT`. Do not add/refill candidates, channels, window or budget after any interview outcome is visible.
 7. Additional participants after the primary cohort are explicitly `SECONDARY_EXPLORATORY`. They may inform product learning but **cannot rescue or replace** the primary SE16 gate result.
 
 Before first outreach publicly commit the non-sensitive sampling plan:
