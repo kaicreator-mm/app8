@@ -40,14 +40,16 @@ foreach ($registryRoot in @(
     if (Test-Path $registryRoot) {
         $vcRuntime += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
             Where-Object {
-                $_.DisplayName -like "Microsoft Visual C++*Redistributable*(x64)*" -or
-                $_.DisplayName -like "Microsoft Visual C++ 2015-2022 Redistributable (x64)*"
+                $_.DisplayName -like "Microsoft Visual C++ 2015-2022 Redistributable (x64)*" -and
+                $_.Publisher -eq "Microsoft Corporation" -and
+                $_.DisplayVersion -match "^[0-9]+(\\.[0-9]+){1,3}$" -and
+                $_.PSChildName -match "^\\{[0-9A-Fa-f-]{36}\\}$"
             } |
             Select-Object DisplayName, DisplayVersion, PSChildName, Publisher)
     }
 }
-if ($Install -and $vcRuntime.Count -eq 0) {
-    throw "VC_RUNTIME_DEPENDENCY_MISSING: Microsoft.VCRedist.2015+.x64 equivalent not found; DO NOT AUTO-INSTALL OR SUBSTITUTE"
+if ($Install -and $vcRuntime.Count -ne 1) {
+    throw "VC_RUNTIME_DEPENDENCY_AMBIGUOUS_OR_MISSING: expected exactly one Microsoft Visual C++ 2015-2022 Redistributable (x64), found $($vcRuntime.Count); DO NOT AUTO-INSTALL OR SUBSTITUTE"
 }
 
 if ($Install) {
