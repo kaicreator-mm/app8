@@ -29,6 +29,27 @@ if ($actualSha -ne $ExpectedSha) {
 }
 $signature = Get-AuthenticodeSignature -FilePath $msi
 
+# winget provenance declares Microsoft.VCRedist.2015+.x64.
+# This script does not install/substitute that dependency. It records the exact
+# already-installed x64 VC runtime identity; Issue #69 freezes it into the final target.
+$vcRuntime = @()
+foreach ($registryRoot in @(
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
+    "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+)) {
+    if (Test-Path $registryRoot) {
+        $vcRuntime += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
+            Where-Object {
+                $_.DisplayName -like "Microsoft Visual C++*Redistributable*(x64)*" -or
+                $_.DisplayName -like "Microsoft Visual C++ 2015-2022 Redistributable (x64)*"
+            } |
+            Select-Object DisplayName, DisplayVersion, PSChildName, Publisher)
+    }
+}
+if ($Install -and $vcRuntime.Count -eq 0) {
+    throw "VC_RUNTIME_DEPENDENCY_MISSING: Microsoft.VCRedist.2015+.x64 equivalent not found; DO NOT AUTO-INSTALL OR SUBSTITUTE"
+}
+
 if ($Install) {
     $who = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = New-Object Security.Principal.WindowsPrincipal($who)
@@ -111,6 +132,11 @@ $manifest = [ordered]@{
     windows_version = $os.Version
     windows_build = $os.BuildNumber
     machine_architecture = $env:PROCESSOR_ARCHITECTURE
+    installation_policy = "DIRECT_OFFICIAL_MSI_ONLY"
+    winget_install_allowed = $false
+    vc_runtime_dependency_package = "Microsoft.VCRedist.2015+.x64"
+    vc_runtime_installed = @($vcRuntime)
+    vc_runtime_exact_identity_frozen = ($vcRuntime.Count -gt 0)
     install_status = $state
     installed_registry = @($installed)
     executables = @($exeInfo)
