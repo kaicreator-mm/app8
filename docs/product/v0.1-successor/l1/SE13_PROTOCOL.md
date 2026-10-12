@@ -25,21 +25,20 @@ Before any benchmark run, an independently reviewed benchmark manifest must pin:
 - time/token/tool-call budgets;
 - random seed/order.
 
-## 3. Task construction and leakage control
+## 3. Deterministic task population and leakage control
 
-Task authors work from the frozen Capability/Evidence authority and ordinary user-facing software goals, not from generated CLI/MCP/Skill examples.
+Task population = the **12 frozen SE12 subject Capabilities**, with exactly **two independently authored user-goal tasks per Capability** (24 tasks). No curator chooses only the easiest software/task pairs. Exact software versions, Capability IDs and evidence blobs come from the SE12 subject manifest.
 
-The 24 tasks must be frozen before Agent-run outputs are visible and balanced across:
+Before examining Agent outputs or any final generated CLI/MCP/Skill instruction examples, an independent task author writes for each subject:
 
-- assets/classes;
-- read/inspect vs mutate/produce behavior where applicable;
-- simple vs multi-step tasks;
-- tasks exercising material constraints/variants;
-- at least 6 tasks containing a plausible unsupported or boundary-sensitive choice.
+- T0 = one common positive task based on its user-facing intent;
+- T1 = one variant/constraint/boundary-sensitive task using its source-supported variation; if no such variation exists, a second materially distinct ordinary user goal is selected from the frozen Capability description with the smallest lexical source-anchor ID.
 
-No task may copy a generated projection example verbatim. No task scorer or hidden fixture may be available to either Agent arm.
+At least 6 T1 tasks must require material constraint/variant/unsupported-boundary reasoning. If the 12 subjects cannot yield 6 such tasks, verdict is BLOCKED; **do not replace Capabilities**.
 
-If a projection was created using a task later selected for SE13, that task is excluded before any benchmark run and replaced using the same predeclared selection rule.
+Commit the 24 task descriptions, objective scoring scripts/fixtures, exact source anchors and the complete candidate-task set before benchmark execution or final projection exposure. Task author cannot read generated projection examples during task authoring.
+
+No post-hoc task replacement is permitted. If a selected task literal appears in a generated Skill/example, that task remains in the audit manifest and the study is BLOCKED until an independently reviewed pre-run remedy; it is not silently swapped for an easier task.
 
 ## 4. Study design
 
@@ -82,23 +81,25 @@ Both arms receive equivalent credentials and native software access.
 
 If app8 projections encode a task's literal expected answer, that task is invalid and must be excluded before running either arm.
 
-## 8. Frozen PASS thresholds
+## 8. Frozen PASS thresholds and paired statistical unit
 
 PASS requires:
 
 - APP8 aggregate success rate >= BASELINE + 0.15 absolute;
-- paired bootstrap 95% CI for success-rate delta has lower bound > 0;
-- APP8 does not increase invalid/unsupported action rate by > 0.05 absolute;
-- no asset class shows an APP8 success deficit > 0.10 absolute;
-- at least one of retries, glue-code creation, or tool-selection errors improves by >= 20% relative without a material success tradeoff.
+- **task-cluster paired bootstrap** 95% two-sided percentile CI for success-rate delta has lower bound > 0;
+- APP8 invalid/unsupported action rate does not increase by >0.05 absolute;
+- no software class shows APP8 success deficit >0.10 absolute;
+- at least one of retries, glue-code burden, or tool-selection errors improves by >=20% relative without material success tradeoff.
 
-Token/time cost are secondary and reported, not hidden. A success gain achieved only by an unbounded budget increase is invalid; both arms obey the frozen budget.
+**Bootstrap exact algorithm:** For each of 24 tasks, compute mean success of its three APP8 runs and three BASELINE runs; task paired difference = APP8 mean - BASELINE mean. Draw 10,000 bootstrap samples of 24 **paired task IDs** with replacement using committed seed `app8-SE13-task-bootstrap-v1`; average paired differences in each resample, and take the 2.5th and 97.5th percentiles. Do **not** resample 144 runs or 72 per arm as independent; the unit is the paired task.
 
-## 9. Anti-cheating
+Token/time cost is reported. A success gain achieved by extra time/token/tool budget beyond the frozen common cap does not count.
 
-Freeze benchmark manifest, task-construction rule, tasks, scorers, model/harness identities and thresholds before first run.
+## 9. Infrastructure failure policy / anti-cheating
 
-Preserve all failed runs. No selective rerun except a predeclared infrastructure-failure policy applied symmetrically to both arms.
+Freeze task population, scoring, execution identities, all three trial seeds per arm, bootstrap implementation and thresholds before first run. Run all task × arm × trial combinations.
+
+Classify genuine infrastructure failures only from objective host logs (e.g., unavailable provider, failed machine boot before Agent execution), **not** Agent command errors, timeout due to poor task behavior, or tool-use mistakes. Apply **one paired rerun** using the predeclared reserve seed to **both arms** for that task/trial when an external infrastructure failure affected either arm. Retain original and rerun logs. If >5% of paired task/trial cells remain externally blocked, verdict = BLOCKED; otherwise unresolved cells are counted as failures for the affected arm, with sensitivity analysis reported. No selective reruns after observing score.
 
 ## 10. Outputs
 
