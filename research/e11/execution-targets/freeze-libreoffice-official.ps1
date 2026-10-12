@@ -20,6 +20,18 @@ New-Item -ItemType Directory -Force -Path $EvidenceRoot | Out-Null
 $msi = Join-Path $EvidenceRoot "LibreOffice_26.8.1_Win_x86-64.msi"
 $state = "PACKAGE_DOWNLOADED_VERIFIED_NOT_INSTALLED"
 
+function Get-OptionalPropertyValue {
+    param(
+        [Parameter(Mandatory=$true)]$Object,
+        [Parameter(Mandatory=$true)][string]$Name
+    )
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $null
+    }
+    return $property.Value
+}
+
 if (-not (Test-Path -LiteralPath $msi)) {
     Invoke-WebRequest -Uri $Url -OutFile $msi -UseBasicParsing
 }
@@ -41,16 +53,23 @@ foreach ($registryRoot in @(
         $vcRuntime += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
             Where-Object {
                 $canonicalName = "Microsoft Visual C++ 2015-2022 Redistributable (x64)"
+                $displayName = Get-OptionalPropertyValue $_ "DisplayName"
+                $displayVersion = Get-OptionalPropertyValue $_ "DisplayVersion"
+                $publisher = Get-OptionalPropertyValue $_ "Publisher"
+                $productCode = Get-OptionalPropertyValue $_ "PSChildName"
+                if ($null -eq $displayName -or $null -eq $displayVersion -or $null -eq $publisher -or $null -eq $productCode) {
+                    return $false
+                }
                 $nameMatches = (
-                    $_.DisplayName -eq $canonicalName -or
-                    $_.DisplayName -eq ($canonicalName + " - " + $_.DisplayVersion)
+                    [string]$displayName -eq $canonicalName -or
+                    [string]$displayName -eq ($canonicalName + " - " + [string]$displayVersion)
                 )
                 $nameMatches -and
-                $_.Publisher -eq "Microsoft Corporation" -and
-                $_.DisplayVersion -match "^[0-9]+(\.[0-9]+){1,3}$" -and
-                $_.PSChildName -match "^\{[0-9A-Fa-f-]{36}\}$"
+                [string]$publisher -eq "Microsoft Corporation" -and
+                [string]$displayVersion -match "^[0-9]+(\.[0-9]+){1,3}$" -and
+                [string]$productCode -match "^\{[0-9A-Fa-f-]{36}\}$"
             } |
-            Select-Object DisplayName, DisplayVersion, PSChildName, Publisher)
+            Select-Object @{Name="DisplayName";Expression={ Get-OptionalPropertyValue $_ "DisplayName" }}, @{Name="DisplayVersion";Expression={ Get-OptionalPropertyValue $_ "DisplayVersion" }}, @{Name="PSChildName";Expression={ Get-OptionalPropertyValue $_ "PSChildName" }}, @{Name="Publisher";Expression={ Get-OptionalPropertyValue $_ "Publisher" }})
     }
 }
 if ($Install -and $vcRuntime.Count -ne 1) {
@@ -103,8 +122,11 @@ foreach ($registryRoot in @(
 )) {
     if (Test-Path $registryRoot) {
         $uninstall += @(Get-ChildItem $registryRoot | ForEach-Object { Get-ItemProperty $_.PSPath } |
-            Where-Object { $_.DisplayName -like "LibreOffice*" } |
-            Select-Object DisplayName, DisplayVersion, PSChildName, InstallLocation)
+            Where-Object {
+                $displayName = Get-OptionalPropertyValue $_ "DisplayName"
+                $null -ne $displayName -and [string]$displayName -like "LibreOffice*"
+            } |
+            Select-Object @{Name="DisplayName";Expression={ Get-OptionalPropertyValue $_ "DisplayName" }}, @{Name="DisplayVersion";Expression={ Get-OptionalPropertyValue $_ "DisplayVersion" }}, @{Name="PSChildName";Expression={ Get-OptionalPropertyValue $_ "PSChildName" }}, @{Name="InstallLocation";Expression={ Get-OptionalPropertyValue $_ "InstallLocation" }})
     }
 }
 $installed = @($uninstall | Where-Object { $_.DisplayVersion -eq $Version -and $_.PSChildName -eq $ProductCode })
