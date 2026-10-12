@@ -9,6 +9,8 @@
     "stage_a_merge",
     "truth_visible_to_llm_b",
     "decisive_fixtures_visible_to_llm_b",
+    "execution_target_manifest_sha256",
+    "source_execution_mapping_frozen",
     "curator_isolation_declaration",
     "claims"
   ],
@@ -94,6 +96,13 @@
           }
         }
       }
+    },
+    "execution_target_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_execution_mapping_frozen": {
+      "const": true
     }
   }
 }
