@@ -72,7 +72,9 @@ Duplicate detection uses a keyed digest, never a raw identifier in Git.
 5. `SE16_DEDUP_SECRET` is a fresh cryptographically random 256-bit study secret, stored separately from participant evidence and never committed, logged, pasted into issues, or shared with scorers.
 6. Store only the typed HMAC set and linkage disposition in the private participant index. Public GitHub receives neither raw stable identifiers nor HMACs.
 7. Linkage resolution is bounded: `CONFIRMED_SAME_HUMAN`, `CONFIRMED_DISTINCT_HUMANS`, or `UNRESOLVED`. `CONFIRMED_SAME_HUMAN` may contribute at most one valid participant; `UNRESOLVED` is ineligible for the primary cohort. No fuzzy similarity score can auto-merge or auto-clear a candidate.
-8. If a new identifier is learned later, it must be HMAC-indexed and checked against the full private index before final primary-cohort freeze. A duplicate discovered after interview remains a recruitment-flow exclusion and cannot be replaced using outcome knowledge.
+8. Before candidate-queue randomization, an independent eligibility custodian performs a **full-pool duplicate-resolution pass** over every candidate record using the typed HMAC intersections plus legitimately available recruitment provenance. This pass happens before any SE16 interview outcome exists. Where two records have no shared HMAC but the available provenance creates a credible same-human ambiguity, the custodian must record one of `CONFIRMED_SAME_HUMAN`, `CONFIRMED_DISTINCT_HUMANS`, or `UNRESOLVED`; every `UNRESOLVED` record in that ambiguity set is excluded from the primary candidate pool. No outcome-bearing interviewer/scorer participates.
+9. Freeze a SHA-256 commitment to the deduplicated candidate-pool ledger and the independent duplicate-resolution ledger before queue randomization. Queue construction may consume only candidate IDs in that committed pool.
+10. If a new identifier is learned later, it must be HMAC-indexed and checked against the full private index before final primary-cohort freeze. A duplicate discovered after interview remains a recruitment-flow exclusion and cannot be replaced using outcome knowledge.
 
 The HMAC is only a duplicate-enrolment control. It is not identity proof, consent proof, or evidence of a valid workflow.
 
@@ -236,6 +238,7 @@ Before first outreach:
 
 0. Freeze the **candidate queue and outcome-blind recruitment firewall**:
    - create a bounded candidate pool from the frozen outreach channels without using any SE16 interview/pilot outcome;
+   - complete the independent full-pool duplicate-resolution pass and freeze `CANDIDATE_POOL_DEDUP_REVIEW_SHA256` before randomization;
    - assign each candidate an opaque recruitment ID and freeze a cryptographically random permutation/queue plus channel-allocation quotas;
    - freeze outreach cadence/batch size and the rule for moving to the next queued candidate after non-response/ineligibility;
    - interviewer/scorer outcome data is not visible to the recruitment coordinator or eligibility queue operator until the eighth valid primary participant is irrevocably frozen;
@@ -262,6 +265,8 @@ MAX_VALID_PER_EMPLOYER_PROJECT=2
 RECRUITMENT_WINDOW_OR_BUDGET=<frozen value>
 OUTREACH_CHANNEL_SET=<frozen non-sensitive identifiers>
 OUTREACH_CHANNEL_ALLOCATION=<frozen quotas>
+CANDIDATE_POOL_DEDUP_REVIEW_SHA256=<64 lowercase hex>
+CANDIDATE_POOL_COMMITMENT_SHA256=<64 lowercase hex>
 CANDIDATE_QUEUE_COMMITMENT_SHA256=<64 lowercase hex>
 OUTREACH_CADENCE_BATCH_RULE=<frozen value>
 RECRUITMENT_OUTCOME_FIREWALL=ENFORCED_UNTIL_PRIMARY_COHORT_FREEZE
@@ -287,6 +292,8 @@ Before first participant contact:
 - [ ] private evidence-store descriptor created outside Git, independently reviewed and its SHA-256 publicly committed;
 - [ ] UUIDv4 participant-ID method frozen;
 - [ ] HMAC-SHA256 typed multi-identifier deduplication method + separate secret-storage class frozen;
+- [ ] full candidate-pool duplicate-resolution ledger independently completed and SHA-256 committed before any outcomes;
+- [ ] deduplicated candidate-pool commitment frozen before queue randomization;
 - [ ] candidate queue/randomization commitment, channel allocation and outreach cadence/batch rule frozen;
 - [ ] recruitment/eligibility outcome firewall frozen until primary cohort lock;
 - [ ] no raw identity or dedup HMAC appears in public GitHub;
