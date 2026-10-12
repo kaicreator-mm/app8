@@ -2,7 +2,7 @@
 
 > **文档性质：中文对照版，非新增或替代的产品权威。** 对产品主张、边界、Gate、状态或术语有歧义时，以英文 [PRD.md](./PRD.md)、[L1_EVIDENCE_INDEX.md](./L1_EVIDENCE_INDEX.md) 及相应的 GitHub exact-blob 证据为准。本文不批准 Product Freeze、L2 或正式实现。
 >
-> 英文 PRD 来源 blob：`998348fe1fd79c4a99d72a96c00a5da641b9afa6`；L1 Evidence Index 来源 blob：`5f6c7cf40e6a7b3cf7163b078d892f34a4ef1498`。
+> 英文 PRD 来源 blob：`43e9b50719ed5281fdf0f59b2138c953043bf64b`；L1 Evidence Index 来源 blob：`77225a2edc8ec689a9a93db2c6a8f5b434e9049b`。
 >
 > L1 研究任务依赖关系参考 [Issue #25](https://github.com/kaicreator-mm/app8/issues/25)。它**不是** Product Freeze 之后的正式实现 Task DAG。
 
@@ -235,7 +235,9 @@ EXPORT_READY（可导出）
 
 这一示意**不允许**把 `REFUTED`、`BLOCKED` 或仅 `COMPILED` 直接标为 `EXPORT_READY`；具体状态机、充分性条件须保留在后续权威审查中。
 
-一个 Evidence Package 可以保存：来源声称、调用/绑定身份、软件/Provider 版本、fixture/input、运行环境、真实观测、输出产物和状态增量、正负证据、已知限制、已知不支持场景、重放资料及来源/时效性。
+一个 Evidence Package 可以保存：Knowledge Source 身份、Execution Target 身份、Source→Execution 映射及其版本/发布关系、来源声称、调用/绑定身份、软件/Provider 版本、fixture/input、运行环境、真实观测、输出产物和状态增量、正负证据、已知限制、已知不支持场景、重放资料及来源/时效性。
+
+两者可以是同一源码修订，但**不要求相同**。对于普通已发布软件，优先采用发布方官方 binary/package 作为 Execution Target；只有 source-only / 未发布行为或没有合适官方构建时才要求源码构建。若 Knowledge Source 与执行版本来自分叉发布线，必须在把源码声称作为预期运行时真值之前完成 release-specific applicability 校验。
 
 单个通过的 fixture **不等于**对任意输入的正确性或通用安全性证明。证据可支持、收窄或反驳最初的假设。
 
@@ -421,6 +423,7 @@ v0.1 **不要求**：
 | `SINV-003` | 对抗性反证是第一等公民，必须主动尝试发现限制、负例与反例 |
 | `SINV-004` | 负面证据持久保存，含不支持变体与已观测限制 |
 | `SINV-005` | Evidence 必须有软件/Provider、版本/构建、环境、绑定、输入和观察边界 |
+| `SINV-005A` | Knowledge Source 与 Execution Target 是两个一等身份；真实行为验证优先使用官方发布构建，并显式记录 Source→Execution 映射；若发布线分叉，必须先证明目标版本适用性 |
 | `SINV-006` | CLI/MCP/Skill/Docs/Search 从同一事实权威派生，不得各自重造语义真相 |
 | `SINV-007` | 允许结构化语义接口；禁止像素衍生自动化 |
 | `SINV-008` | 非核心机制先考虑成熟 OSS 复用/采收，再决定自研 |
