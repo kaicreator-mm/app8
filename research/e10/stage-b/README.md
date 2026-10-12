@@ -14,6 +14,7 @@ The private gold file must be in a sealed access-controlled store outside any **
 
 The private gold file stays outside Git. This directory contains only:
 - the gold JSON schema;
+- an independent-attestation schema;
 - the exact 76-entry frozen source-anchor allowlist;
 - a validator / SHA-256 commitment generator;
 - a gitignore guard for private material.
@@ -28,13 +29,15 @@ ChatGPT/LLMs must not fill those semantic gold fields.
 
 1. Create the sealed private gold file outside the repository.
 2. Validate it against `gold.schema.json`.
-3. Run:
+3. A **different independent human reviewer** creates a private attestation conforming to `independent_attestation.schema.json`, bound to the exact Gold SHA-256 and private-store/isolation review. The attestation must not contain semantic Gold.
+4. Run:
    ```bash
    python research/e10/stage-b/commit_gold.py /secure/path/se10-gold.json \
+     --independent-attestation /secure/path/se10-independent-attestation.json \
      --out /tmp/se10-public-commitment.json
    ```
-4. Review the generated public commitment.
-5. Commit only the public commitment/hash after independent review. Never commit the semantic gold file before prediction is irreversibly frozen and the protocol permits reveal.
+5. Review the generated public commitment.
+6. Commit only the public commitment/hash after Fresh review. Never commit the semantic gold file before prediction is irreversibly frozen and the protocol permits reveal.
 
 The tool refuses:
 - wrong source-pack blob;
@@ -76,3 +79,10 @@ SE10_GATE_PASS=NO
 PRODUCT_FREEZE=NO
 L2_READY=NO
 ```
+
+
+## Independence boundary
+
+The CLI can verify exact byte/hash binding, fixed identity classes, PASS status, isolation-review hash, declared non-Git-backed storage, and internal consistency. It **cannot prove that the humans are actually independent or that an arbitrary external Git index does not exist**. Those are evidence facts established by the Fresh reviewer/private-store audit, not by self-certification.
+
+The public commitment therefore emits `independent_attestation_sha256` and `human_independence_requires_external_review=true`. Boolean inputs are exposed as declarations, not promoted as mechanically proven facts.
