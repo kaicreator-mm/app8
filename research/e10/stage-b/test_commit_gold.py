@@ -151,8 +151,12 @@ class GoldToolTests(unittest.TestCase):
                 '"schema_version":', '"schema_version": "shadow", "schema_version":', 1
             )
             inp.write_text(raw, encoding="utf-8")
+            attestation = pathlib.Path(td) / "attestation.json"
+            write_attestation(inp, attestation)
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(out)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(cp.returncode, 0)
@@ -168,8 +172,12 @@ class GoldToolTests(unittest.TestCase):
                 '"schema_version":', '"injected": NaN, "schema_version":', 1
             )
             inp.write_text(raw, encoding="utf-8")
+            attestation = pathlib.Path(td) / "attestation.json"
+            write_attestation(inp, attestation)
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--independent-attestation", str(attestation),
+                 "--out", str(out)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(cp.returncode, 0)
