@@ -9,8 +9,8 @@ import sys
 
 ASSETS = ("FFmpeg", "pandas", "MinIO", "LibreOffice")
 SOURCE_PACK_BLOB = "4b3c9b62b1899653524f19a286924f942605210a"
-ID_RE = re.compile(r"G[0-9]{4,6}\\Z")
-SHA1_RE = re.compile(r"[0-9a-f]{40}\\Z")
+ID_RE = re.compile(r"G[0-9]{4,6}\Z")
+SHA1_RE = re.compile(r"[0-9a-f]{40}\Z")
 ROOT_FIELDS = {
     "schema_version", "source_pack_blob", "model_generated_gold",
     "predictor_gold_visibility", "human_author_declaration", "capabilities"
@@ -152,7 +152,7 @@ def main():
         "predictor_gold_visibility": False,
         "semantic_gold_in_public_output": False
     }
-    output.write_text(json.dumps(public, indent=2, sort_keys=True) + "\\n", encoding="utf-8")
+    output.write_text(json.dumps(public, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"PUBLIC_COMMITMENT={output}")
     print(f"COUNT={len(ids)}")
     # The hash is printed for convenience; no private semantic data is printed.
