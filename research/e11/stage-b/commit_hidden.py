@@ -6,11 +6,12 @@ import json
 import pathlib
 import re
 import sys
+import uuid
 
 ASSETS = ("FFmpeg", "pandas", "MinIO", "LibreOffice")
 CLASSES = ("TRUE", "MATERIALLY_FALSE", "OVERBROAD", "NEAR_MISS")
 EXPECTED = {"TRUE": 8, "MATERIALLY_FALSE": 4, "OVERBROAD": 4, "NEAR_MISS": 4}
-ID_RE = re.compile(r"H[0-9]{4,6}\Z")
+ID_RE = re.compile(r"H_[0-9a-f]{32}\Z")
 SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
 ROOT_FIELDS = {
     "schema_version", "stage_a_merge", "execution_target_manifest_sha256",
@@ -66,7 +67,10 @@ def validate(doc):
         exact_fields(claim, CLAIM_FIELDS, f"claims[{index}]")
         cid, asset, category = claim["id"], claim["asset"], claim["truth_class"]
         if not isinstance(cid, str) or not ID_RE.fullmatch(cid):
-            fail("claim ID must be opaque H0001-style ID")
+            fail("claim ID must be opaque H_<UUID4-hex> identifier")
+        parsed_id = uuid.UUID(hex=cid[2:])
+        if parsed_id.version != 4 or parsed_id.variant != uuid.RFC_4122:
+            fail("claim ID must use a random UUIDv4 rather than sequence-derived IDs")
         if cid in seen:
             fail(f"duplicate claim ID: {cid}")
         seen.add(cid)
