@@ -54,7 +54,7 @@
           "id": {
             "type": "string",
             "minLength": 1,
-            "pattern": "^H[0-9]{4,6}$"
+            "pattern": "^H_[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$"
           },
           "asset": {
             "enum": [
