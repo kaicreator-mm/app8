@@ -23,7 +23,22 @@ Before execution, an independently reviewed subject manifest must bind:
 - exact Capability/Evidence blobs;
 - exact bindings and environments.
 
-Subject rebinding may choose cases from the frozen SE10/SE11 results but may not alter this protocol's scoring/thresholds.
+### 2.1 Anti-cherry-pick subject selection
+
+The 12 subjects may not be hand-picked for exporter convenience.
+
+From the pool of SE10/SE11 Capabilities that reached the frozen eligible Evidence state, construct strata:
+
+- asset/software class;
+- simple vs variant-bearing Capability;
+- Capability with vs without material negative boundary;
+- single-binding vs multi-binding where available.
+
+Within each stratum, select subjects by a deterministic hash ordering over the frozen Capability identity using a seed committed before any projection is generated. If a stratum lacks enough eligible cases, take all available cases and report the deficit; do not substitute easier cases from another stratum without explicit reviewed disposition.
+
+Selection occurs before any CLI/MCP/Skill projection output for the candidate set is inspected.
+
+Subject rebinding may choose only from frozen SE10/SE11 results and may not alter this protocol's scoring/thresholds.
 
 ## 3. Required consumers
 
@@ -94,6 +109,7 @@ PASS requires:
 Freeze before consumer generation:
 
 - exact Capability/Evidence subject;
+- deterministic selection seed and selected IDs;
 - task matrix;
 - consumer implementations/providers/versions;
 - scoring rules;
@@ -105,6 +121,7 @@ No consumer may receive hidden truth unavailable through the frozen authority.
 
 Produce:
 
+- eligible-pool and subject-selection manifest;
 - subject manifest;
 - all consumer artifacts;
 - authority-input ledger;
