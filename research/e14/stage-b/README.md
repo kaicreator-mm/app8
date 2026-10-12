@@ -60,7 +60,7 @@ No private relevance ledger should be passed to the ranker; only an approved com
 python -m unittest discover -s research/e14/stage-b -p 'test_*.py' -v
 ```
 
-Author-side isolated Linux Python 3.13.5: **14/14 synthetic tests passed** at this source revision; independent reviewer must verify exact SHA and conduct fresh adversarial attacks.
+Author-side isolated Linux Python 3.13.5 previously passed **14/14** before the registry-key preservation hardening. The current candidate adds two regressions (16 total) for schema-key indexing and byte-identical baseline prefix; **the latest 16-test set has not yet been rerun in this author context**. Independent reviewer must execute the exact current files and conduct fresh adversarial attacks.
 
 ## Hard Gate
 
