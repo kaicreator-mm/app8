@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-se11-hidden-v1",
+  "title": "SE11 Isolated Hidden Truth Corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "stage_a_merge",
+    "truth_visible_to_llm_b",
+    "decisive_fixtures_visible_to_llm_b",
+    "curator_isolation_declaration",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "se11-hidden-v1"
+    },
+    "stage_a_merge": {
+      "const": "0279968580d50e51843b09aa2b6e266b9967ff93"
+    },
+    "truth_visible_to_llm_b": {
+      "const": false
+    },
+    "decisive_fixtures_visible_to_llm_b": {
+      "const": false
+    },
+    "curator_isolation_declaration": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 80,
+      "maxItems": 80,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "asset",
+          "truth_class",
+          "claim_text",
+          "binding_id",
+          "decisive_fixture_ref",
+          "expected_behavior",
+          "provenance",
+          "reset_requirements"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "asset": {
+            "enum": [
+              "FFmpeg",
+              "pandas",
+              "MinIO",
+              "LibreOffice"
+            ]
+          },
+          "truth_class": {
+            "enum": [
+              "TRUE",
+              "MATERIALLY_FALSE",
+              "OVERBROAD",
+              "NEAR_MISS"
+            ]
+          },
+          "claim_text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "binding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decisive_fixture_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_behavior": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provenance": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reset_requirements": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}
