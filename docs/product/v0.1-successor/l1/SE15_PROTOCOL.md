@@ -17,26 +17,30 @@ PIXEL_DERIVED_AUTOMATION = FORBIDDEN
 SEMANTIC_STRUCTURED_UI = ALLOWED
 ~~~
 
-## 2. Portfolio
+## 2. Frozen portfolio
 
-Use the four source-pinned SE10 assets plus one structured-semantic desktop target on the Windows execution host.
-
-Pinned source assets:
+Use these five target identities:
 
 - FFmpeg/FFmpeg@f2bf7a2440d1e49023e4b3ed0e224a8806d388b8
 - pandas-dev/pandas@82c18c170b9aea7cbb96ef54b8005bed07c94220
 - minio/minio@7aac2a2c5b7c882e68c1ce017d8256be2feea27f
 - LibreOffice/core@016fd5d049256dc849111f60870f15201fcd1526
+- Microsoft Windows Notepad package/app identity on the Windows execution host, exercised only through Windows UI Automation/accessibility semantics for the structured-UI lane.
 
-Fifth target:
+Before inspecting Notepad's UIA tree, the execution manifest must freeze:
 
-- a stock Windows desktop application exposing a Windows UI Automation/accessibility tree, with exact Windows build and application version frozen in the execution manifest before inspection.
+- Windows edition/build;
+- Notepad package/application version;
+- executable/package identity;
+- UI Automation client/runtime version.
 
-The fifth target may not be replaced after results are visible.
+A host lacking Notepad may install the official Microsoft Notepad package before the environment manifest is frozen. After UIA inspection begins, the fifth target may not be replaced.
 
 ## 3. Frozen Capability sample
 
 Before binding attempts, an independent semantic reviewer selects the top 5 user-meaningful Capabilities per asset from official user-facing material, for 25 total.
+
+For Notepad, selection is based on ordinary user-visible product behavior/documentation before inspecting which UIA controls happen to be easy to automate.
 
 Selection occurs before inspecting whether a preferred binding is easy or difficult.
 
@@ -84,7 +88,7 @@ For successful classes, record implementation effort band and stability/currentn
 - per-asset coverage;
 - route distribution;
 - unsupported rate;
-- structured-semantic UI success rate for the fifth target;
+- structured-semantic UI success rate for Notepad;
 - pixel-policy violations.
 
 ## 8. Frozen PASS thresholds
@@ -94,14 +98,14 @@ PASS requires:
 - pooled useful bindable coverage >= 0.70;
 - at least 4 of 5 assets achieve >= 0.60 coverage;
 - no pixel-policy violation;
-- at least one successful structured-semantic UI Capability on the Windows target if its accessibility tree exposes actionable semantics;
+- at least one successful structured-semantic UI Capability on Notepad if its accessibility tree exposes actionable semantics;
 - no more than 20% of total cases BLOCKED_ENVIRONMENT.
 
-If the Windows target exposes no actionable semantic tree, report that as negative evidence; do not substitute a screenshot route.
+If Notepad exposes no actionable semantic tree for a selected Capability, report negative evidence; do not substitute a screenshot route or another GUI target.
 
 ## 9. Anti-cheating
 
-Freeze portfolio, exact versions, 25-Capability sample and route definitions before binding attempts.
+Freeze portfolio, exact environment versions, 25-Capability sample and route definitions before binding attempts.
 
 Do not remove hard cases or redefine user-meaningful capability after seeing accessibility/binding difficulty.
 
