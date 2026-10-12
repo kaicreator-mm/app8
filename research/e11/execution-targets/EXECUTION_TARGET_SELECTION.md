@@ -34,7 +34,7 @@ Existing exact-source builds from SE11 Stage A remain valid and are reused; the 
 - Relation: `SAME`
 - Runtime readiness: `READY`
 
-No rebuild is required unless later claim scope requires a different release-only surface.
+Reuse is valid **only within the original Ubuntu 24.04 x86_64 Docker/WSL2-compatible execution lane** (container image digest `sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55`). Before evaluated execution, prove the exact artifact bytes remain available on the real host and freeze the compatible container/runtime. The ELF binary must **not** be treated as directly runnable on the Windows host. If the original artifact was deleted, artifact re-materialization and smoke must be independently evidenced; previous hash alone does not prove current availability.
 
 ### pandas
 
@@ -46,7 +46,7 @@ No rebuild is required unless later claim scope requires a different release-onl
 - Relation: `SAME`
 - Runtime readiness: `READY`
 
-No rebuild is required.
+The frozen wheel is `cp312-cp312-linux_x86_64` and runs **only in a compatible CPython 3.12 Linux x86_64 environment**, not the Windows Python installation. Preserve the original `python:3.12-bookworm` image digest `sha256:5560e9ab8709f459489e5b8aa696eda8a07ef821e14bb122be62d91234bfa98b`. Before evaluated execution, re-verify the exact wheel bytes and freeze/pin runtime dependencies (Stage-A smoke had unpinned numpy/python-dateutil/six). If wheel/artifact or compatible container no longer exists, do not claim READY from historical evidence alone.
 
 ### MinIO
 
@@ -58,7 +58,7 @@ No rebuild is required.
 - Relation: `SAME`
 - Runtime readiness: `READY`
 
-No rebuild is required.
+This is a **Windows x64 native** `minio.exe` produced by Go 1.27.1 for windows/amd64. Reuse only if the original binary SHA-256 is verified on the actual Windows execution host; do not try to execute it as Linux ELF in the FFmpeg/pandas containers. If no longer preserved, re-materialization requires fresh provenance and smoke evidence.
 
 ### LibreOffice
 
@@ -126,6 +126,22 @@ No LibreOffice source build is required for this ordinary release target.
 
 ## 4. Freeze consequences
 
+### 4.1 Cross-host compatibility gate
+
+These are not four interchangeable executables on one host. The studied host is Windows 11 plus a WSL2 Docker runtime. Asset-specific lanes:
+
+| Asset | Runtime lane | Condition for reuse |
+|---|---|---|
+| FFmpeg | Linux x86_64 Ubuntu 24.04 Docker | SHA-256 artifact still present + same compatible image/runtime |
+| pandas | Linux x86_64 CPython 3.12 bookworm Docker | frozen wheel present + image digest + pinned dependencies |
+| MinIO | Windows x64 native | SHA-256 EXE present and runnable |
+| LibreOffice | Windows x64 native | official MSI SHA-256, ProductCode + installed EXE identity (pending) |
+| Notepad (SE15 only) | Windows 11 frozen Store app | frozen package/host/UIA identities, no UIA inspection before sample freeze |
+
+**Historical smoke = evidence of historical readiness, not proof the runtime/artifact is still present today.** Never carry a Linux wheel/ELF over to the native Windows lane, and never silently move the pinned Windows Notepad/UIA target. If reusing the same host does not work, record a new host/identity freeze before evaluation, never patch the denominator or swap a target after outcomes.
+
+## 4. Freeze consequences
+
 After PR #64 and this selection are independently reviewed:
 
 - FFmpeg/pandas/MinIO may reuse existing Stage-A artifacts;
@@ -135,9 +151,9 @@ After PR #64 and this selection are independently reviewed:
 
 ```text
 EXECUTION_TARGET_SELECTION=FROZEN_CANDIDATE
-FFMPEG=READY_REUSE
-PANDAS=READY_REUSE
-MINIO=READY_REUSE
+FFMPEG=HISTORICAL_READY_REUSE_IF_ARTIFACT_PRESENT_LINUX
+PANDAS=HISTORICAL_READY_REUSE_IF_WHEEL_AND_DEPS_PINNED_LINUX
+MINIO=HISTORICAL_READY_REUSE_IF_ARTIFACT_PRESENT_WINDOWS
 LIBREOFFICE=OFFICIAL_26_8_1_PENDING_LOCAL_SMOKE
 LIBREOFFICE_SOURCE_BUILD_REQUIRED=NO
 LIBREOFFICE_SOURCE_RELATION=DIVERGED
