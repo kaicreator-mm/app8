@@ -15,6 +15,11 @@ INDEPENDENCE_DECLARATION = "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS
 AUTHOR_CLASS = "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
 REVIEWER_CLASS = "INDEPENDENT_HUMAN_GOLD_REVIEWER"
 PRIVATE_STORE_CLASS = "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
+ATTEST_FIELDS = {
+    "schema_version", "gold_file_sha256", "author_identity_class",
+    "reviewer_identity_class", "review_status", "git_backed_private_gold",
+    "private_store_class", "isolation_review_sha256"
+}
 ID_RE = re.compile(r"G[0-9]{4,6}\Z")
 SHA1_RE = re.compile(r"[0-9a-f]{40}\Z")
 ROOT_FIELDS = {
@@ -75,6 +80,27 @@ def nonblank(value, where):
 def git_blob_sha1(raw):
     header = f"blob {len(raw)}\0".encode("ascii")
     return hashlib.sha1(header + raw).hexdigest()
+
+
+def validate_attestation(attestation, gold_sha256):
+    exact_fields(attestation, ATTEST_FIELDS, "attestation")
+    if attestation["schema_version"] != "se10-independent-gold-attestation-v1":
+        fail("attestation schema_version mismatch")
+    if attestation["gold_file_sha256"] != gold_sha256:
+        fail("attestation does not bind exact private Gold SHA-256")
+    if attestation["author_identity_class"] != AUTHOR_CLASS:
+        fail("attestation author identity class mismatch")
+    if attestation["reviewer_identity_class"] != REVIEWER_CLASS:
+        fail("attestation reviewer identity class mismatch")
+    if attestation["review_status"] != "PASS":
+        fail("independent Gold attestation must PASS")
+    if attestation["git_backed_private_gold"] is not False:
+        fail("independent attestation reports Git-backed private Gold")
+    if attestation["private_store_class"] != PRIVATE_STORE_CLASS:
+        fail("attestation private-store class mismatch")
+    review_sha = attestation["isolation_review_sha256"]
+    if not isinstance(review_sha, str) or not re.fullmatch(r"[0-9a-f]{64}", review_sha):
+        fail("attestation isolation review must be SHA-256")
 
 
 def load_allowlist():
@@ -192,6 +218,7 @@ def validate(doc, anchors):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("gold_file", type=pathlib.Path)
+    parser.add_argument("--independent-attestation", required=True, type=pathlib.Path)
     parser.add_argument("--out", required=True, type=pathlib.Path)
     args = parser.parse_args()
     source, output = args.gold_file.resolve(), args.out.resolve()
@@ -217,16 +244,25 @@ def main():
     if not source.is_file():
         fail("private gold file does not exist")
     raw = source.read_bytes()
+    gold_sha256 = hashlib.sha256(raw).hexdigest()
+    attestation_path = args.independent_attestation.resolve()
+    if not attestation_path.is_file():
+        fail("independent attestation file does not exist")
+    attestation_raw = attestation_path.read_bytes()
     try:
         doc = strict_json_loads(raw)
+        attestation = strict_json_loads(attestation_raw)
     except (ValueError, UnicodeDecodeError) as exc:
-        fail(f"invalid gold JSON: {exc}")
+        fail(f"invalid gold/attestation JSON: {exc}")
+    validate_attestation(attestation, gold_sha256)
 
     ids, counts, ambiguity = validate(doc, load_allowlist())
     public = {
         "schema_version": "se10-public-commitment-v1",
         "source_pack_blob": SOURCE_PACK_BLOB,
-        "gold_file_sha256": hashlib.sha256(raw).hexdigest(),
+        "gold_file_sha256": gold_sha256,
+        "independent_attestation_sha256": hashlib.sha256(attestation_raw).hexdigest(),
+        "human_independence_requires_external_review": True,
         "gold_file_bytes": len(raw),
         "capability_count": len(ids),
         "asset_counts": counts,
@@ -241,8 +277,8 @@ def main():
         "private_store_class": PRIVATE_STORE_CLASS,
         "private_store_independent_reviewed": True,
         "allowlist_git_blob": ALLOWLIST_GIT_BLOB,
-        "model_generated_gold": False,
-        "predictor_gold_visibility": False,
+        "declared_model_generated_gold": False,
+        "declared_predictor_gold_visibility": False,
         "semantic_gold_in_public_output": False
     }
     output.write_text(json.dumps(public, indent=2, sort_keys=True) + "\n", encoding="utf-8")
