@@ -29,6 +29,11 @@ def main():
         fail("schema_version must be se11-hidden-v1")
     if doc.get("stage_a_merge") != "0279968580d50e51843b09aa2b6e266b9967ff93":
         fail("stage_a_merge mismatch")
+    etm = doc.get("execution_target_manifest_sha256")
+    if not isinstance(etm, str) or len(etm) != 64 or any(c not in "0123456789abcdef" for c in etm):
+        fail("execution_target_manifest_sha256 must be 64 lowercase hex characters")
+    if doc.get("source_execution_mapping_frozen") is not True:
+        fail("source_execution_mapping_frozen must be true")
     if doc.get("truth_visible_to_llm_b") is not False:
         fail("truth_visible_to_llm_b must be false")
     if doc.get("decisive_fixtures_visible_to_llm_b") is not False:
@@ -75,6 +80,8 @@ def main():
         "stage_a_merge": doc["stage_a_merge"],
         "hidden_file_sha256": hashlib.sha256(raw).hexdigest(),
         "hidden_file_bytes": len(raw),
+        "execution_target_manifest_sha256": etm,
+        "source_execution_mapping_frozen": True,
         "claim_count": 80,
         "asset_counts": {a: sum(matrix[a].values()) for a in ASSETS},
         "aggregate_class_counts": aggregate,
