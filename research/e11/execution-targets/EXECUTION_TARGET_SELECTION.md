@@ -124,9 +124,7 @@ Required local completion is limited to:
 
 No LibreOffice source build is required for this ordinary release target.
 
-## 4. Freeze consequences
-
-### 4.1 Cross-host compatibility gate
+## 4. Cross-host compatibility gate
 
 These are not four interchangeable executables on one host. The studied host is Windows 11 plus a WSL2 Docker runtime. Asset-specific lanes:
 
@@ -140,7 +138,7 @@ These are not four interchangeable executables on one host. The studied host is 
 
 **Historical smoke = evidence of historical readiness, not proof the runtime/artifact is still present today.** Never carry a Linux wheel/ELF over to the native Windows lane, and never silently move the pinned Windows Notepad/UIA target. If reusing the same host does not work, record a new host/identity freeze before evaluation, never patch the denominator or swap a target after outcomes.
 
-## 4. Freeze consequences
+## 5. Freeze consequences
 
 After PR #64 and this selection are independently reviewed:
 
@@ -164,6 +162,6 @@ PRODUCT_FREEZE=NO
 L2_READY=NO
 ```
 
-## 5. What Was NOT Proven
+## 6. What Was NOT Proven
 
 This target-selection artifact does not prove LibreOffice runtime readiness, target applicability for any individual Capability, SE11 falsification quality, SE15 binding coverage, Product Freeze, L2 readiness, or release qualification.
