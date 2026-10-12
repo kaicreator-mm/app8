@@ -170,6 +170,7 @@ def validate(doc):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("hidden_file", type=pathlib.Path)
+    parser.add_argument("--execution-target-manifest", required=True, type=pathlib.Path)
     parser.add_argument("--out", required=True, type=pathlib.Path)
     args = parser.parse_args()
     source, output = args.hidden_file.resolve(), args.out.resolve()
@@ -180,10 +181,23 @@ def main():
     if not source.is_file():
         fail("private hidden corpus does not exist")
     raw = source.read_bytes()
+    manifest_path = args.execution_target_manifest.resolve()
+    if not manifest_path.is_file():
+        fail("execution target manifest does not exist")
+    manifest_raw = manifest_path.read_bytes()
     try:
         doc = strict_json_loads(raw)
+        manifest = strict_json_loads(manifest_raw)
     except (ValueError, UnicodeDecodeError) as exc:
-        fail(f"invalid hidden JSON: {exc}")
+        fail(f"invalid hidden/target JSON: {exc}")
+    target_hash = hashlib.sha256(manifest_raw).hexdigest()
+    if doc.get("execution_target_manifest_sha256") != target_hash:
+        fail("execution_target_manifest_sha256 does not match supplied manifest bytes")
+    exact_fields(manifest, {"schema_version", "source_execution_mappings"}, "execution target manifest")
+    if manifest["schema_version"] != "se11-execution-target-manifest-v1":
+        fail("execution target manifest schema_version mismatch")
+    if manifest["source_execution_mappings"] != doc.get("source_execution_mappings"):
+        fail("hidden corpus source_execution_mappings differ from supplied frozen manifest")
 
     ids, matrix, target, secret, mappings = validate(doc)
     public = {
