@@ -5,22 +5,34 @@ import hashlib
 import json
 import pathlib
 import re
+import subprocess
 import sys
 
 ASSETS = ("FFmpeg", "pandas", "MinIO", "LibreOffice")
 SOURCE_PACK_BLOB = "4b3c9b62b1899653524f19a286924f942605210a"
+ALLOWLIST_GIT_BLOB = "5be0ed7674fcdfd7361a57fd4f29a6f9655c1df1"
+INDEPENDENCE_DECLARATION = "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS"
+AUTHOR_CLASS = "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
+REVIEWER_CLASS = "INDEPENDENT_HUMAN_GOLD_REVIEWER"
+PRIVATE_STORE_CLASS = "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
 ID_RE = re.compile(r"G[0-9]{4,6}\Z")
 SHA1_RE = re.compile(r"[0-9a-f]{40}\Z")
 ROOT_FIELDS = {
     "schema_version", "source_pack_blob", "model_generated_gold",
-    "predictor_gold_visibility", "human_author_declaration", "capabilities"
+    "predictor_gold_visibility", "human_author_declaration",
+    "human_author_identity_class", "human_reviewer_identity_class",
+    "independence_declaration", "isolation_statement",
+    "adjudication_procedure_sha256", "adjudication_code_sha256",
+    "private_store_class", "private_store_independent_reviewed",
+    "capabilities"
 }
 CAP_FIELDS = {
     "id", "asset", "canonical_identity", "purpose", "source_anchors",
     "variants", "constraints", "negative_boundaries", "failure_semantics",
-    "binding_equivalence_group", "ambiguity"
+    "binding_equivalence_group", "duplicate_identity_disposition", "ambiguity"
 }
 ANCHOR_FIELDS = {"path", "blob"}
+IDENTITY_DISPOSITIONS = {"UNIQUE", "EQUIVALENT_GROUP_MEMBER", "AMBIGUOUS_POSSIBLE_DUPLICATE"}
 ARRAY_FIELDS = ("variants", "constraints", "negative_boundaries", "failure_semantics")
 
 
@@ -60,9 +72,20 @@ def nonblank(value, where):
         fail(f"{where}: expected nonblank string")
 
 
+def git_blob_sha1(raw):
+    header = f"blob {len(raw)}\0".encode("ascii")
+    return hashlib.sha1(header + raw).hexdigest()
+
+
 def load_allowlist():
     path = pathlib.Path(__file__).with_name("source_anchor_allowlist.json")
-    obj = json.loads(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes()
+    if git_blob_sha1(raw) != ALLOWLIST_GIT_BLOB:
+        fail("source anchor allowlist bytes do not match reviewed Git blob")
+    try:
+        obj = strict_json_loads(raw)
+    except (ValueError, UnicodeDecodeError) as exc:
+        fail(f"invalid source anchor allowlist JSON: {exc}")
     if obj.get("source_pack_blob") != SOURCE_PACK_BLOB:
         fail("source anchor allowlist is not tied to frozen source pack")
     anchors = obj.get("assets")
@@ -85,7 +108,23 @@ def validate(doc, anchors):
         fail("model_generated_gold must be false")
     if doc["predictor_gold_visibility"] is not False:
         fail("predictor_gold_visibility must be false")
-    nonblank(doc["human_author_declaration"], "human_author_declaration")
+    if doc["human_author_declaration"] != "I attest that this semantic Gold was authored by an independent human without model-generated Gold.":
+        fail("human_author_declaration must use the frozen attestation text")
+    if doc["human_author_identity_class"] != AUTHOR_CLASS:
+        fail("human_author_identity_class mismatch")
+    if doc["human_reviewer_identity_class"] != REVIEWER_CLASS:
+        fail("human_reviewer_identity_class mismatch")
+    if doc["independence_declaration"] != INDEPENDENCE_DECLARATION:
+        fail("independence_declaration mismatch")
+    nonblank(doc["isolation_statement"], "isolation_statement")
+    for key in ("adjudication_procedure_sha256", "adjudication_code_sha256"):
+        value = doc[key]
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+            fail(f"{key}: expected lowercase SHA-256")
+    if doc["private_store_class"] != PRIVATE_STORE_CLASS:
+        fail("private_store_class mismatch")
+    if doc["private_store_independent_reviewed"] is not True:
+        fail("private_store_independent_reviewed must be true")
     caps = doc["capabilities"]
     if not isinstance(caps, list):
         fail("capabilities must be list")
@@ -114,6 +153,15 @@ def validate(doc, anchors):
         group = cap["binding_equivalence_group"]
         if group is not None:
             nonblank(group, f"{cid}.binding_equivalence_group")
+        disposition = cap["duplicate_identity_disposition"]
+        if disposition not in IDENTITY_DISPOSITIONS:
+            fail(f"{cid}.duplicate_identity_disposition invalid")
+        if disposition == "UNIQUE" and group is not None:
+            fail(f"{cid}: UNIQUE cannot declare binding equivalence group")
+        if disposition == "EQUIVALENT_GROUP_MEMBER" and group is None:
+            fail(f"{cid}: EQUIVALENT_GROUP_MEMBER requires binding equivalence group")
+        if disposition == "AMBIGUOUS_POSSIBLE_DUPLICATE" and cap["ambiguity"] is not True:
+            fail(f"{cid}: ambiguous duplicate disposition requires ambiguity=true")
         if not isinstance(cap["ambiguity"], bool):
             fail(f"{cid}.ambiguity: must be bool")
         src = cap["source_anchors"]
@@ -149,8 +197,23 @@ def main():
     source, output = args.gold_file.resolve(), args.out.resolve()
     if source == output:
         fail("output cannot overwrite private gold")
+    if output.exists():
+        try:
+            if source.samefile(output):
+                fail("output cannot alias the private gold inode/file identity")
+        except OSError as exc:
+            fail(f"cannot verify source/output file identity: {exc}")
     if any((parent / ".git").exists() for parent in (source.parent, *source.parents)):
-        fail("private gold must be stored outside any Git repository")
+        fail("private gold must be stored outside any discoverable Git repository")
+    try:
+        git_probe = subprocess.run(
+            ["git", "-C", str(source.parent), "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, check=False, timeout=10
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        fail(f"cannot perform Git worktree membership check: {exc}")
+    if git_probe.returncode == 0:
+        fail("private gold is inside a Git-discoverable worktree")
     if not source.is_file():
         fail("private gold file does not exist")
     raw = source.read_bytes()
@@ -169,6 +232,15 @@ def main():
         "asset_counts": counts,
         "opaque_reference_ids": sorted(ids),
         "ambiguity_count": ambiguity,
+        "human_author_identity_class": AUTHOR_CLASS,
+        "human_reviewer_identity_class": REVIEWER_CLASS,
+        "independence_declaration": INDEPENDENCE_DECLARATION,
+        "isolation_statement": doc["isolation_statement"],
+        "adjudication_procedure_sha256": doc["adjudication_procedure_sha256"],
+        "adjudication_code_sha256": doc["adjudication_code_sha256"],
+        "private_store_class": PRIVATE_STORE_CLASS,
+        "private_store_independent_reviewed": True,
+        "allowlist_git_blob": ALLOWLIST_GIT_BLOB,
         "model_generated_gold": False,
         "predictor_gold_visibility": False,
         "semantic_gold_in_public_output": False
