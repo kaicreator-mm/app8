@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Synthetic STRUCTURAL tests only — not the sealed independent SE11 truth corpus."""
+import copy
 import hashlib
 import hmac
 import json
@@ -79,7 +80,7 @@ def fake_hidden():
     return {
         "schema_version": "se11-hidden-v1",
         "stage_a_merge": "0279968580d50e51843b09aa2b6e266b9967ff93",
-        "execution_target_manifest_sha256": "a" * 64,
+        "execution_target_manifest_sha256": "AUTO",
         "source_execution_mapping_frozen": True,
         "source_execution_mappings": mappings,
         "id_scheme": "HMAC_SHA256_UUIDV4_V1",
@@ -91,14 +92,33 @@ def fake_hidden():
     }
 
 
+def write_manifest_and_bind(doc, path, mutator=None):
+    manifest = {
+        "schema_version": "se11-execution-target-manifest-v1",
+        "source_execution_mappings": copy.deepcopy(doc["source_execution_mappings"])
+    }
+    if mutator is not None:
+        mutator(manifest)
+    raw = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    path.write_bytes(raw)
+    if doc["execution_target_manifest_sha256"] == "AUTO":
+        doc["execution_target_manifest_sha256"] = hashlib.sha256(raw).hexdigest()
+    return raw
+
+
 class HiddenToolTests(unittest.TestCase):
-    def check_case(self, doc, success):
+    def check_case(self, doc, success, manifest_mutator=None):
         with tempfile.TemporaryDirectory(prefix="se11-tool-unit-test-") as td:
-            inp = pathlib.Path(td) / "private.json"
-            out = pathlib.Path(td) / "public.json"
+            td = pathlib.Path(td)
+            inp = td / "private.json"
+            out = td / "public.json"
+            manifest = td / "target-manifest.json"
+            write_manifest_and_bind(doc, manifest, manifest_mutator)
             inp.write_text(json.dumps(doc), encoding="utf-8")
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--execution-target-manifest", str(manifest),
+                 "--out", str(out)],
                 text=True, capture_output=True, check=False
             )
             self.assertEqual(cp.returncode == 0, success, cp.stderr)
@@ -109,7 +129,7 @@ class HiddenToolTests(unittest.TestCase):
                 self.assertNotIn("SYNTHETIC_FIXTURE", output)
                 self.assertEqual(obj["claim_count"], 80)
                 self.assertEqual(obj["hidden_file_sha256"], hashlib.sha256(inp.read_bytes()).hexdigest())
-                self.assertEqual(obj["execution_target_manifest_sha256"], "a" * 64)
+                self.assertEqual(obj["execution_target_manifest_sha256"], hashlib.sha256(manifest.read_bytes()).hexdigest())
                 self.assertEqual(obj["id_scheme"], "HMAC_SHA256_UUIDV4_V1")
                 self.assertEqual(obj["source_execution_relations"]["LibreOffice"], "DIVERGED")
             else:
@@ -159,6 +179,12 @@ class HiddenToolTests(unittest.TestCase):
         d["claims"][0]["id"] = "H_00000000000040008000000000000001"
         self.check_case(d, False)
 
+    def test_manifest_mapping_mismatch_rejected(self):
+        d = fake_hidden()
+        def mutate(manifest):
+            manifest["source_execution_mappings"]["LibreOffice"]["execution_target_ref"] = "ALTERED_TARGET"
+        self.check_case(d, False, mutate)
+
     def test_wrong_manifest_hash(self):
         d = fake_hidden()
         d["execution_target_manifest_sha256"] = "z" * 64
@@ -181,15 +207,20 @@ class HiddenToolTests(unittest.TestCase):
 
     def test_rejects_duplicate_json_keys(self):
         with tempfile.TemporaryDirectory(prefix="se11-strict-json-") as td:
-            inp = pathlib.Path(td) / "private.json"
-            out = pathlib.Path(td) / "public.json"
+            td = pathlib.Path(td)
+            inp = td / "private.json"
+            out = td / "public.json"
+            manifest = td / "target-manifest.json"
             doc = fake_hidden()
+            write_manifest_and_bind(doc, manifest)
             raw = json.dumps(doc).replace(
                 '"schema_version":', '"schema_version": "shadow", "schema_version":', 1
             )
             inp.write_text(raw, encoding="utf-8")
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--execution-target-manifest", str(manifest),
+                 "--out", str(out)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(cp.returncode, 0)
@@ -198,15 +229,20 @@ class HiddenToolTests(unittest.TestCase):
 
     def test_rejects_nonfinite_json_constants(self):
         with tempfile.TemporaryDirectory(prefix="se11-strict-json-") as td:
-            inp = pathlib.Path(td) / "private.json"
-            out = pathlib.Path(td) / "public.json"
+            td = pathlib.Path(td)
+            inp = td / "private.json"
+            out = td / "public.json"
+            manifest = td / "target-manifest.json"
             doc = fake_hidden()
+            write_manifest_and_bind(doc, manifest)
             raw = json.dumps(doc).replace(
                 '"schema_version":', '"injected": NaN, "schema_version":', 1
             )
             inp.write_text(raw, encoding="utf-8")
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(out)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--execution-target-manifest", str(manifest),
+                 "--out", str(out)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(cp.returncode, 0)
@@ -215,10 +251,16 @@ class HiddenToolTests(unittest.TestCase):
 
     def test_source_same_as_output(self):
         with tempfile.TemporaryDirectory(prefix="se11-tool-unit-test-") as td:
-            inp = pathlib.Path(td) / "private.json"
-            inp.write_text(json.dumps(fake_hidden()), encoding="utf-8")
+            td = pathlib.Path(td)
+            inp = td / "private.json"
+            manifest = td / "target-manifest.json"
+            doc = fake_hidden()
+            write_manifest_and_bind(doc, manifest)
+            inp.write_text(json.dumps(doc), encoding="utf-8")
             cp = subprocess.run(
-                [sys.executable, str(RUNNER), str(inp), "--out", str(inp)],
+                [sys.executable, str(RUNNER), str(inp),
+                 "--execution-target-manifest", str(manifest),
+                 "--out", str(inp)],
                 capture_output=True, text=True, check=False
             )
             self.assertNotEqual(cp.returncode, 0)
