@@ -21,16 +21,22 @@ Recruit across at least two of:
 - software/library/tool maintainers publishing Agent-facing interfaces;
 - developers maintaining repeated glue around CLI/API/desktop software for Agents.
 
-## 3. Sample
+## 3. Human / external eligibility and minimum sample
 
-Minimum 8 valid independent participants, with:
+**Only genuine consenting human target users external to the app8 study team/project count.** Artificial/model-generated personas, synthetic interviews, LLM-agent responses, researcher proxies, paid impersonators or claims written by an app8 team member on behalf of a participant are categorically ineligible.
 
-- at least 3 participants from each of two distinct target segments;
-- no more than 2 participants from the same employer/project;
-- no participant who authored the app8 PRD or this protocol;
-- participant identity may be private, but an auditable pseudonymous record and eligibility evidence must exist.
+Minimum 8 independently eligible human participants:
 
-Recruitment list and eligibility rules are frozen before interviews begin.
+- >=3 from each of two distinct target segments;
+- <=2 from the same employer/project;
+- no app8 PRD author, protocol author, developer/maintainer, study interviewer or member of the evaluation team;
+- no participant whose role is solely to grade/promote the idea rather than use software in actual work.
+
+Before recruitment, freeze eligibility questionnaire and audit method. Capture pseudonymous unique participant ID, independently verifiable role/organization or professional project affiliation (kept private/redacted publicly), real user workflow/activity evidence, consent timestamp, interview modality and interviewer identity. Prevent duplicate enrolment by private deduplication controls.
+
+Participants must supply their own non-hypothetical workflow examples; researcher suggestions are not valid eligibility proof. An unverified person or unverifiable workflow remains INELIGIBLE and cannot enter the numerator/denominator of valid participants; all exclusions and reasons must be counted in recruitment flow.
+
+No personal credentials, private email, proprietary artifacts or recordings may be posted publicly without explicit consent.
 
 ## 4. Instrument
 
@@ -89,16 +95,22 @@ PASS requires:
 
 If recruitment cannot reach 8 valid participants, verdict is BLOCKED, not PASS.
 
-## 8. Scoring discipline
+## 8. Independent scoring / adjudication discipline
 
-Before interviews:
+Before interviews freeze:
 
-- freeze participant eligibility;
-- freeze interview instrument;
-- freeze POSITIVE rule;
-- freeze thresholds.
+- eligibility rules and proof schema;
+- neutral interview script;
+- POSITIVE criteria and thresholds;
+- double-scoring and dispute procedure.
 
-Interview notes are scored independently from the interviewer where practical. Preserve verbatim or faithful structured evidence sufficient for audit, subject to participant privacy/consent.
+Every **valid** participant record must receive two independent scorers, neither of whom conducted that interview or authored its transcript. Scorers independently mark CURRENT_RECURRING_PAIN and CONCRETE_PILOT_COMMITMENT with evidence excerpts/references, then assign POSITIVE only when both are present.
+
+Any disagreement goes to a third independent adjudicator whose tie-breaking decision and reasons are durable. If independent double-scoring cannot be arranged, participant remains UNSCORED and aggregate verdict is BLOCKED; there is no discretionary "where practical" exception for the primary gate.
+
+A commitment is counted only when backed by a concrete asset/task/environment or verified >=2-hour engineering/maintainer review allocation, not by a hypothetical intent or a polite verbal endorsement.
+
+Publish pseudonymous score matrix, exclusions, inter-rater agreement and negative evidence; protect private eligibility proofs in an access-controlled store with durable opaque refs.
 
 ## 9. Outputs
 
