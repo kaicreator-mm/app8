@@ -61,3 +61,54 @@ FORMAL_PRODUCT_RELEASE_QUALIFIED=NO
 ```
 
 **Stop after this one product slice.** Do not begin another general tool adapter or research corpus until the pilot is evaluated.
+
+## Privileged host pilot driver (#140)
+
+Run only from a clean exact-SHA worktree after the current candidate PR has
+passed `python -m pytest tests/qualification -q` and `python -m pytest tests -q`.
+Set the host-specific values from the actual reviewed Docker client and daemon,
+not from model-generated suggestions.
+
+**Phase A — inspect the already-cached digest-pinned image**:
+
+```sh
+python scripts/v03_cpython_json_pilot.py inspect \
+  --docker-client "<ABSOLUTE_DOCKER_CLI>" \
+  --docker-client-sha256 "<REAL_SHA256>" \
+  --environment-id "<FROZEN_HOST_ENVIRONMENT_ID>" \
+  --server-version "<REAL_ENGINE_VERSION>" \
+  --ledger-root "<PRIVATE_ABSOLUTE_LEDGER_OUTSIDE_REPO>" \
+  --out "<PRIVATE_ABSOLUTE_PATH>/cpython-json-source.json"
+```
+
+This invokes the trusted Docker policy but produces only
+`SOURCE_INSPECTED_NOT_EVIDENCE` with the measured `json.__file__`, module
+content SHA256 and interpreter version. It **does not** approve the source
+license or create an Evidence record. The image must be locally cached; no
+fallback to `:latest` or automatic `docker pull`.
+
+**Phase B — operator-approved real assertions, signing and projection**:
+
+```sh
+python scripts/v03_cpython_json_pilot.py execute \
+  --docker-client "<ABSOLUTE_DOCKER_CLI>" \
+  --docker-client-sha256 "<REAL_SHA256>" \
+  --environment-id "<FROZEN_HOST_ENVIRONMENT_ID>" \
+  --server-version "<REAL_ENGINE_VERSION>" \
+  --ledger-root "<PRIVATE_ABSOLUTE_LEDGER_OUTSIDE_REPO>" \
+  --key-file "<PRIVATE_32_BYTE_OR_LONGER_KEY_FILE_OUTSIDE_REPO>" \
+  --source-sha256 "<SOURCE_SHA256_FROM_INSPECT_AND_OPERATOR_REVIEW>" \
+  --license-review-reference "<VERIFIABLE_PYTHON_LICENSE_REVIEW_RECORD>" \
+  --out "<PRIVATE_ABSOLUTE_PATH>/cpython-json-terminal.json"
+```
+
+The driver executes exactly three separately scoped behavioral claims with
+fixed argv, records signed positive and negative Evidence, and then explicitly
+checks that target drift is rejected before execution. `SCOPED_EXPORT_READY`
+may be reported for the reviewed P01 claim and separate N01 error behavior;
+F01 must remain a signed refutation. All host keys, logs and SQLite files stay
+private. In GitHub #140, submit **redacted hashes/verdicts only**, and report
+BLOCKED rather than substituting an unpinned target or a synthetic test.
+
+These commands are **not** a general production API, nor evidence of SE10/SE11
+product accuracy or a formal Release qualification.
