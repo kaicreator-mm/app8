@@ -96,7 +96,8 @@ def evaluate_readiness(
         return Readiness(state, False, tuple(sorted(reasons)), ())
     if reasons & {"MATERIAL_NEGATIVE_EVIDENCE", "TARGET_APPLICABILITY_UNVERIFIED",
                   "SOURCE_MISMATCH", "EXECUTION_TARGET_MISMATCH", "BINDING_NOT_AUTHORIZED",
-                  "NO_VALID_REAL_OBSERVATION", "NO_DETERMINISTIC_ASSERTION_PASS"}:
+                  "NO_VALID_REAL_OBSERVATION", "NO_DETERMINISTIC_ASSERTION_PASS",
+                  "UNAUTHENTICATED_EXECUTION_EVIDENCE"}:
         return Readiness("BLOCKED", False, tuple(sorted(reasons)), tuple(sorted(set(qualified))))
     if projection_verifier is None or not projection_verifier(capability):
         reasons.add("PROJECTION_NOT_VERIFIED")
