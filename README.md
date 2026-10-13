@@ -4,6 +4,8 @@ app8 aims to turn existing software knowledge and **real observed behavior** int
 
 ## Current delivery state: v0.1.0a0 technical-preview candidate
 
+[Cross-platform R2 acceptance and full-release blockers](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md): Windows + Ubuntu 84/84 tests, wheels/CLI PASS; real OS sandbox BLOCKED, SE10/SE11 empirical UNPROVEN. This is not Release PASS.
+
 | Area | Status |
 |---|---|
 | Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
