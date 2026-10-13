@@ -203,6 +203,12 @@ def execute_pilot(runner: RealDockerRunner, settings: PilotSettings, measurement
     root = settings.ledger_root.resolve()
     if root.is_relative_to(Path.cwd().resolve()):
         raise PilotBlocked("PRIVATE_LEDGER_MUST_BE_OUTSIDE_WORKTREE")
+    # Do not reuse an older signed ledger: the v0.3 qualification service
+    # correctly requires *all* Evidence refs, including earlier refutations.
+    # Each replay/host run needs an isolated private store and nonce ledger.
+    if ((root / "evidence" / "evidence.sqlite3").exists() or
+            (root / "nonces.sqlite3").exists()):
+        raise PilotBlocked("FRESH_PRIVATE_LEDGER_REQUIRED")
     root.mkdir(parents=True, exist_ok=True)
     key = load_signing_key(settings.key_file)
     sidecars = {}
