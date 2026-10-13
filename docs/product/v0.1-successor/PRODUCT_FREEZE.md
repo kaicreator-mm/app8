@@ -21,10 +21,12 @@ revision=7929012f36a2202dcc2edc7a414b8163adc7afbd
 | Authority | Blob |
 |---|---|
 | Successor PRD r2 | 998348fe1fd79c4a99d72a96c00a5da641b9afa6 |
-| Successor L1 Evidence Index r2 | 5f6c7cf40e6a7b3cf7163b078d892f34a4ef1498 |
+| Successor L1 Evidence Index convergence r2 | 939679d668a888fb755ec3d5e35da24401a59f8a |
 | Expanded SE09 Comparator Evidence | cd94a6fdbacc9fea712eb7d4dc06c1cd79e5b61d |
 | Successor Migration r2 | e70a2e3db3746b9ee64668bf50d671aad27502dd |
-| Successor L2 Question Register r2 | 22fe971152f3898879fec6153badd69f0d37f168 |
+| Successor L2 Question Register convergence r2 | 07a1ef445d9bb3d20525725ca3a475fd0c159a74 |
+| L1 Convergence Register r2 | 31511dc681d10bc1017bb3c43ea62cf5b23e8379 |
+| L1→L2 Adoption Matrix r2 | 415e1c2504050782f71abb3e063425b5729e9467 |
 
 ## Candidate Product identity
 
