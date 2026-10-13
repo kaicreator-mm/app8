@@ -48,6 +48,9 @@ TEST_OR_COUNTEREXAMPLE=exact prior false-promotion / target-applicability counte
 WRITE_SET=...
 ACCEPTANCE_TESTS=...
 FAILURE_HANDLING=...
+VALIDATION_CLASS=L3
+DEFERRED_VALIDATION=NONE
+RELEASE_GATE=NONE
 ```
 
 ## Gate before formal Task DAG creation
