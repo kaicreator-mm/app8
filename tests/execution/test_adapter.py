@@ -1,4 +1,5 @@
 import hashlib
+import os
 from dataclasses import replace
 from pathlib import Path
 import sys
@@ -20,7 +21,7 @@ class AdapterTests(unittest.TestCase):
         o=run_invocation(self.req)
         self.assertEqual(o.status,"EXECUTED")
         self.assertEqual(o.exit_code,0)
-        self.assertEqual(o.stdout_sha256,hashlib.sha256(b"observed\n").hexdigest())
+        self.assertEqual(o.stdout_sha256,hashlib.sha256(("observed" + os.linesep).encode("utf-8")).hexdigest())
         self.assertEqual(o.reason,"OBSERVATION_ONLY_NOT_EVIDENCE")
 
     def test_default_isolation_fail_closed(self):
