@@ -1,10 +1,26 @@
-# app8 Current Task DAG — v0.1 → v0.3
+# app8 Current Task DAG — v0.1 → v0.4 (engineering + empirical qualification)
 
 > Live task-status register, not a replacement for the frozen v0.1 normative design.
 > Source of truth for current state: linked GitHub Issue/PR terminal and exact-SHA evidence.
 > Update snapshot: 2026-10-14; main reference before this document:
 > `1c220fd343faa1e6fd481dc7515a9d527c72b3c2`.
 > An Issue marked CLOSED does **not** imply full Product Release Qualification.
+
+## Current portfolio snapshot (v0.4 adoption)
+
+The v0.1–v0.3 **18/18 engineering tasks remain completed**. A separate empirical core-product qualification campaign has now been added; this is not retroactive incompleteness of the earlier engineering milestones.
+
+| Scope | Defined tasks | Closed | Open | Release authority |
+|---|---:|---:|---:|---|
+| v0.1–v0.3 engineering | 18 | 18 | 0 | Scoped technical-preview / two-environment CPython pilot only |
+| v0.4 SE10/SE11 core qualification | 4 | 1 | 3 | T01 reuse audit complete; both empirical evaluations not yet run |
+| **Current defined task portfolio** | **22** | **19** | **3** | **19/22 by count only, not Product Release readiness** |
+
+v0.4 controller [#147](https://github.com/kaicreator-mm/app8/issues/147) is not counted as a Task. Children: T01 [#148](https://github.com/kaicreator-mm/app8/issues/148) reuse/eligibility audit **CLOSED after audit PR**, T02 [#149](https://github.com/kaicreator-mm/app8/issues/149) SE10 empirical score **OPEN**, T03 [#150](https://github.com/kaicreator-mm/app8/issues/150) SE11 real execution score **OPEN**, T04 [#151](https://github.com/kaicreator-mm/app8/issues/151) bounded Product terminal **OPEN**. Dependency: #148 → (#149 ∥ #150) → #151. [Adopted assets and exact prerequisite blockers](../release/v0.4/SE10_SE11_REUSE_AUDIT.md).
+
+Neither study's private independent semantic Gold / hidden-truth commitment, four-asset completed prediction/run, nor aggregate release score is presently visible in the GitHub repository. See owner #92 stage-gate waiver: it does not turn model-generated examples into independent empirical truth. **Full product Release NO; SE10/SE11 UNPROVEN; SE12–SE16 deferred.**
+
+The 18-task register below is intentionally preserved as the completed **engineering baseline**, not rewritten into 22 unrelated implementation items.
 
 ## Task totals
 
