@@ -1,10 +1,10 @@
 # app8 v0.3 — Real CPython JSON pilot, host-scoped verification
 
-**Status: WINDOWS_REAL_HOST_PASS / UBUNTU_INCREMENTAL_NOT_YET_RUN / FULL_RELEASE_NO**
+**Status: WINDOWS_DOCKER_DESKTOP_PASS / UBUNTU_WSL2_NATIVE_DOCKER_PASS / V03_ENGINEERING_SCOPE_COMPLETE / FULL_RELEASE_NO**
 
 Controller: [#138](https://github.com/kaicreator-mm/app8/issues/138); real-host task [#140](https://github.com/kaicreator-mm/app8/issues/140).
 Pilot executable PR [#143](https://github.com/kaicreator-mm/app8/pull/143), verified exact HEAD `7bb6435c2112a9980b48d909f7f3af1f0d314961`, tree `d8ed1a6890bb4d2cd75c346c86f50355826dd2fc`, merged to `f4c1692c73aac76ec127e45f5fc8d48d68bbd2e6`.
-Operator redacted terminal: [Issue #140 comment 6153563183](https://github.com/kaicreator-mm/app8/issues/140#issuecomment-6153563183). Raw logs, HMAC secret, EvidenceStore SQLite and artifacts remain private.
+Operator redacted terminals: [Windows R3](https://github.com/kaicreator-mm/app8/issues/140#issuecomment-6153563183) and [Ubuntu WSL2 R4](https://github.com/kaicreator-mm/app8/issues/140#issuecomment-6154181907). Private raw logs, HMAC keys, SQLite EvidenceStores and artifacts were not uploaded.
 
 ## Windows Docker Desktop terminal (real host)
 
@@ -24,25 +24,40 @@ Operator redacted terminal: [Issue #140 comment 6153563183](https://github.com/k
 
 Three attested Evidence records (2 SUPPORTED, 1 REFUTED), three accepted nonce receipts, append-only private SQLite rows and verified scoped projection hashes were reported. Full SHA256 values of each Evidence/snapshot/projection are in the linked operator terminal; no fake generated receipt is substituted. This is one **real observed software Capability pilot**, not general extraction accuracy.
 
-## Qualification scope and remaining gate
+## Ubuntu WSL2, native Linux Docker Engine (R4 terminal)
+
+Ubuntu was a **WSL2 Ubuntu Unix environment with its own native Linux Docker Engine**, not an independent physical Ubuntu server. The local validator reported a clean exact-main worktree at `1d1cbe8578ef5a385a0bf16324507c1e184914a0`. [Detailed R4 terminal, Issue #140](https://github.com/kaicreator-mm/app8/issues/140#issuecomment-6154181907).
+
+- Ubuntu targeted `tests/qualification`: **20/20 PASS**. Full 200-test pytest suite was **not repeated**; Windows R3 full pytest remains 200 PASS + 1 filesystem-privilege SKIP on the unchanged pilot source.
+- Docker Linux client/daemon **29.1.3**, actual client `/usr/bin/docker` SHA256 `40cdaf7fd0f21089dd9e15b0c3a7dd7f2399027f010e366dac6304ae0615954a`. Frozen policy module SHA256 `099afa4e543c0f7479f8781b288ff60d6c5cd062405c14031cbf8731d1c1777b` was byte-identical to the Windows R3 source.
+- Exact cached image `library/python@sha256:5560e9ab8709f459489e5b8aa696eda8a07ef821e14bb122be62d91234bfa98b`, no pull. Executing-image `json/__init__.py` content SHA256 `d5d41e2c29049515d295d81a6d40b4890fbec8d8482cfb401630f8ef2f77e4d5` matches Windows. CPython **3.12.15**, license review recorded.
+- **P01 SUPPORTED / SCOPED_EXPORT_READY**, **N01 SUPPORTED / SCOPED_EXPORT_READY** as an independent error-boundary claim; **F01 signed REFUTED / BLOCKED**, **B01 BLOCKED_PRE_SPAWN** without creating evidence or spawning a container.
+- Private append-only SQLite: 3 accepted signed Evidence rows (2 supported, 1 refuted), 3 receipt nonces, artifacts and scoped CLI/MCP/Skill/Docs/Search projection SHA256s in the Ubuntu R4 terminal. These are distinct from the Windows signatures, nonces, host identity and ledger. Zero containers left over according to the real-host report.
+
+## v0.3 engineering terminal and release boundary
 
 ```text
-V01_IMPLEMENTATION_TASKS=10_OF_10_CLOSED
-V02_IMPLEMENTATION_TASKS=6_OF_6_CLOSED
+IMPLEMENTATION_TASKS_TOTAL=18
+V01_IMPLEMENTATION_TASKS_CLOSED=10_OF_10
+V02_IMPLEMENTATION_TASKS_CLOSED=6_OF_6
 V03_T01_#139=PASS_CLOSED
-V03_T02_#140=WINDOWS_R3_PASS_UBUNTU_INCREMENTAL_PENDING
-IMPLEMENTATION_TASKS_CLOSED=17_OF_18
-V03_CONTROLLER_#138=OPEN_NOT_COUNTED_AS_IMPLEMENTATION_TASK
-PR_#143=MERGED
-WINDOWS_REAL_CPYTHON_SOURCE_SHA_PIN=PASS
+V03_T02_#140=WINDOWS_R3_AND_UBUNTU_WSL2_R4_REAL_PILOT_PASS
+V03_CONTROLLER_#138=ENGINEERING_SCOPE_COMPLETE
+IMPLEMENTATION_TASKS_CLOSED=18_OF_18
+V03_DEFINED_ENGINEERING_TASKS_COMPLETE=YES
+WINDOWS_QUALIFICATION_TESTS=20_OF_20_PASS
+WINDOWS_FULL_PYTEST=200_PASS_1_SKIP
+UBUNTU_WSL2_QUALIFICATION_TESTS=20_OF_20_PASS
+UBUNTU_WSL2_FULL_PYTEST=NOT_REPEATED
 WINDOWS_REAL_EVIDENCE_END_TO_END=PASS_SCOPED
-UBUNTU_CPTHON_SOURCE_AND_EXECUTION=NOT_YET_OBSERVED
+UBUNTU_WSL2_REAL_EVIDENCE_END_TO_END=PASS_SCOPED
+INDEPENDENT_PHYSICAL_UBUNTU_HOST_TEST=NOT_CLAIMED
 SE10_SE11_GENERAL_PRODUCT_EFFECT=UNPROVEN
 FULL_PRODUCT_RELEASE_QUALIFIED=NO
+GITHUB_RELEASE_TAG_OR_PUBLICATION=NOT_CREATED
 ```
 
-The **only pending v0.3 host delta** is a fresh, exact-main Ubuntu run of the same frozen CPython `inspect` → `execute` pilot, with actual local Docker client/server SHA, cached image digest, source hash/license review, P01/N01/F01/B01, nonce/EvidenceStore and projection digests recorded. Ubuntu must not reuse the Windows environmental identity or attestations. If image/daemon/client not available, report BLOCKED; do not pull or substitute a new target automatically. Use the [frozen protocol](../../validation/v0.3/CPYTHON_JSON_PILOT.md).
+**Closure meaning:** The 18-task **defined engineering scope** through the narrowly scoped v0.3 real-software pilot is complete. The result is neither a generalized SE10/SE11 Capability-extraction benchmark nor independent Gold/human evaluation, and is **not** authorization to expose arbitrary model commands, market the product as production-ready, or publish a formal release.
 
-Do **not** rerun Windows's 200-test full suite, v0.1 LibreOffice installation, #125 22 Docker escape probes, or #133 42 runner smoke tests absent relevant baseline change.
+The same pinned Docker policy and runner used the previously validated #125 and #133 host-security constraints; no unnecessary repeat of old isolation / runner suites occurred. Future broader product/release claims require separately scoped, real empirical qualification.
 
-**CLOSURE RULE:** Close #140 and #138 upon accepted Ubuntu delta or explicit owner reduction to Windows-only pilot. Neither choice makes the entire app8 product release-qualified: independent/general SE10/SE11 empirical results are still unproven.

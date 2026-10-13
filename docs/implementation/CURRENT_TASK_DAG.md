@@ -12,10 +12,10 @@
 |---|---:|---:|---:|---|
 | v0.1 technical preview | 10 | 10 | 0 | Technical-preview R2 accepted; formal release NO |
 | v0.2 trusted execution | 6 | 6 | 0 | Scoped Docker isolation / real runner PASS; SE10/SE11 not measured |
-| v0.3 real CPython JSON Capability pilot | 2 | 1 | 1 | Windows exact-HEAD tests and real signed Evidence PASS; Ubuntu small delta pending |
-| **All defined implementation tasks** | **18** | **17** | **1** | **17/18 (94.4%) by task count only** |
+| v0.3 real CPython JSON Capability pilot | 2 | 2 | 0 | Windows Docker Desktop R3 + Ubuntu WSL2 native Docker R4 real signed Evidence scoped PASS |
+| **All defined implementation tasks** | **18** | **18** | **0** | **18/18 (100%) by defined task count, not by release readiness** |
 
-The two v0.3 Issues are #139 (code/contract complete) and #140 (real-host product slice open). Controller #138 is a dependent terminal and is **not** counted as an independent implementation task. Equivalent controller #123 and v0.1 project-level Issues are not double counted. No source-backed estimate exists for overall product commercial readiness.
+The two v0.3 Issues are #139 (code/contract complete) and #140 (scoped real-host product slice accepted). Controller #138 is a dependent terminal and is **not** counted as an independent implementation task. Equivalent controller #123 and v0.1 project-level Issues are not double counted. No source-backed estimate exists for overall product commercial readiness.
 
 ## 18-task dependency register
 
@@ -38,7 +38,7 @@ The two v0.3 Issues are #139 (code/contract complete) and #140 (real-host produc
 | v0.2 | S04 real Docker runner | #133 | CLOSED | PR #134, 21/21 checks per host on frozen baseline |
 | v0.2 | S04R1 runner plan/adjudication integrity | #135 | CLOSED | PR #136; Windows 72/72, Ubuntu targeted 8/8 |
 | v0.3 | T01 stored Capability qualification | #139 | CLOSED | PR #141; 11/11 targeted and 191 passed, 1 skipped full pytest |
-| v0.3 | T02 CPython JSON real capability | #140 | **OPEN** | PR #143 merged; Windows real P01/N01/F01/B01 signed pilot PASS; Ubuntu delta pending |
+| v0.3 | T02 CPython JSON real capability | #140 | CLOSED | PR #143 merged; Windows R3 and Ubuntu WSL2 R4 signed P01/N01/F01/B01 real pilot PASS |
 
 Dependency overview:
 
@@ -49,34 +49,34 @@ v0.2 S00/S01 → S02 → S03/S04 → S04R1 (all closed)
     ↓
 v0.3 T01 #139 (closed)
     ↓
-v0.3 T02 #140 (open; Windows exact-HEAD + signed CPython pilot PASS → Ubuntu incremental host qualification pending)
+v0.3 T02 #140 (closed; Windows R3 and Ubuntu WSL2 R4 scoped signed Evidence qualification PASS)
     ↓
-v0.3 Controller #138 terminal (open, not a task)
+v0.3 Controller #138 terminal (closed, not a task)
 ```
 
-## Current blocker: T02 #140
+## Final v0.3 T02 #140 verification
 
 - PR [#143](https://github.com/kaicreator-mm/app8/pull/143) is **MERGED** at `f4c1692c73aac76ec127e45f5fc8d48d68bbd2e6` after Windows exact-HEAD source and real Docker pilot PASS. [Real-host terminal](../release/v0.3/REAL_CPYTHON_PILOT_TERMINAL.md).
 - R1 test failure (old HEAD `0dacd591307192451b229efbb3e3341c36ea4c41`): 2 API assumption failures.
 - R2 test failure (old HEAD `210fdac577009d0f0379238e4a1408bcbd55d9d6`): two additional stale caller-boolean assertions.
 - R3 tested HEAD: `7bb6435c2112a9980b48d909f7f3af1f0d314961`, tree `d8ed1a6890bb4d2cd75c346c86f50355826dd2fc`. Actual Docker policy-argv assertions passed.
-- **Windows R3: 20/20 qualification PASS, 200 PASS + 1 SKIP full pytest; real P01/N01 SUPPORTED scoped, F01 signed REFUTED, B01 BLOCKED_PRE_SPAWN.** Three signed immutable Evidence rows accepted in a private SQLite store. Ubuntu real CPython source/target validation **NOT_YET_RUN**; this is the only remaining v0.3 engineering gate.
-- Windows exact-HEAD source gate completed (20/20 and 200 PASS, 1 SKIP). For Ubuntu run only the same pinned host-specific incremental pilot, plus changed-path tests as needed. Prior R1/R2 failures are not release baselines.
-- Ubuntu must measure its **own** cached image/source SHA and environment/client pins, then execute the fixed P01/N01/F01/B01 cases and report true signed Evidence with private ledger. Follow [pilot runbook](../validation/v0.3/CPYTHON_JSON_PILOT.md); do not copy Windows signing keys, nonces or environment identities.
+- **Windows R3: 20/20 qualification PASS, 200 PASS + 1 SKIP full pytest; real P01/N01 SUPPORTED scoped, F01 signed REFUTED, B01 BLOCKED_PRE_SPAWN.** Three signed immutable Evidence rows accepted in a private SQLite store. Ubuntu R4 **20/20 qualification PASS**, source SHA matched Windows, P01/N01 scoped SUPPORTED, F01 signed REFUTED, B01 blocked before spawn.
+- Windows exact-HEAD source gate completed (20/20 and 200 PASS, 1 SKIP). Ubuntu R4 exact-main incremental pilot completed (20/20 qualification PASS); full pytest was deliberately not repeated. Prior R1/R2 failures are not release baselines.
+- Ubuntu WSL2 used its **own** Docker client/daemon/environment and private key/nonce ledger, independently measured exact source hash `d5d41e2c29049515d295d81a6d40b4890fbec8d8482cfb401630f8ef2f77e4d5` and image SHA, then executed P01/N01/F01/B01. Evidence and projection hashes are in [R4 source terminal](https://github.com/kaicreator-mm/app8/issues/140#issuecomment-6154181907). WSL2 is **not** an independent physical host.
 - If full-product empirical SE10/SE11 results have not been produced, Product Release Qualification remains **NO** even after a scoped JSON pilot succeeds.
 
 ## No duplicate local work
 
-Do not redo LibreOffice official installation (#69), v0.1 host R2 (#95), v0.2 Docker 22 escape probes (#125) or v0.2 smoke 42 checks (#133) unless the material security/environment baseline has changed. The only current genuine local-host dependency is #140 T02's Ubuntu incremental real software pilot; Windows exact-HEAD tests and pilot have passed.
+Do not redo LibreOffice official installation (#69), v0.1 host R2 (#95), v0.2 Docker 22 escape probes (#125) or v0.2 smoke 42 checks (#133) unless the material security/environment baseline has changed. No remaining local-host task is required for the defined v0.1–v0.3 engineering scope. Independent physical-host or broader product efficacy testing is future, separately scoped work.
 
 ## Issue closure versus release
 
 ```text
 IMPLEMENTATION_TASKS_TOTAL=18
-IMPLEMENTATION_TASKS_CLOSED=17
-IMPLEMENTATION_TASKS_OPEN=1
-V03_T02_REAL_PILOT=#140_OPEN
-V03_CONTROLLER=#138_OPEN_NOT_COUNTED_AS_IMPLEMENTATION_TASK
+IMPLEMENTATION_TASKS_CLOSED=18
+IMPLEMENTATION_TASKS_OPEN=0
+V03_T02_REAL_PILOT=#140_CLOSED_SCOPED_REAL_PILOT
+V03_CONTROLLER=#138_CLOSED_NOT_COUNTED_AS_IMPLEMENTATION_TASK
 OPEN_PR=NONE
 SE10_SE11_GENERAL_PRODUCT_EFFICACY=UNPROVEN
 FORMAL_PRODUCT_RELEASE_QUALIFIED=NO
