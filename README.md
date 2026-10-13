@@ -1,148 +1,54 @@
-# app8
+# app8 — Evidence-backed Software Capability Compiler
 
-**app8** is an LLM-driven **Evidence-backed Software Capability Compiler**.
+app8 aims to turn existing software knowledge and **real observed behavior** into reusable Capabilities, then project a single factual authority into CLI, MCP, Skill, Agent documentation and search.
 
-It turns software knowledge plus real software behavior into reusable **Evidence-backed Capabilities**, then projects the same factual authority into Agent-facing CLI, MCP, Skill, documentation and searchable Capability Metadata.
+## Current delivery state: v0.1.0a0 technical-preview candidate
 
-The stable authority is not an exporter or adapter:
+| Area | Status |
+|---|---|
+| Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
+| L2 architecture | ADR01–ADR08 adopted (#94 / PR #96) |
+| Implementation Task DAG | 9/10 source tasks implemented; real-host/release #107 remains |
+| Python package | Source/doc discovery, hypothesis and falsification plan freezing, SQLite evidence ledger, readiness reducer, in-memory BM25, projection metadata, CLI preview |
+| Windows real-host validation | R1: 83/84 tests; CRLF test and frozen JSON byte issues fixed in PR #120; R2 pending |
+| Ubuntu real-host validation | R1: 84/84 tests, wheel install and CLI smoke PASS |
+| LibreOffice official target | #69 26.8.1.1 install identity/non-evaluative smoke documented, scope PASS |
+| OS-level sandbox | **BLOCKED** on both hosts; no verified network/filesystem containment backend |
+| SE10/SE11 empirical studies | **UNPROVEN** |
+| Full release qualification | **NO** |
 
-```text
-Capability semantics
-+ Behavioral Evidence
-+ Provenance / Currentness
-+ Binding identity
+The installed `app8` CLI currently produces **`ILLUSTRATIVE_UNVERIFIED` Capability previews**, not authorized executable exports. CLI/MCP/Skill/Docs/Search projections are metadata representations of a single Capability snapshot, not working MCP/Skill installers or complete runtime adapters.
+
+### Quick start (source/package preflight)
+
+Requires Python 3.11+, `jsonschema` and `setuptools` available in the environment.
+
+```bash
+python -m pip install -e . --no-build-isolation
+app8 --help
+python scripts/release_preflight.py --out app8-preflight.json
 ```
 
-## Current stage
+The preflight runs nine unit/integration suites, builds an offline wheel, checks exact frozen L2 schema content hashes and its CLI entrypoint, and explicitly reports `release_qualified=false`. It does **not** verify operating-system sandbox isolation or real-software Capability quality. Do not represent a passing preflight as Release PASS.
 
-```text
-PRODUCT_DIRECTION = NARROW_AND_PROCEED
-SUCCESSOR_PRODUCT = EVIDENCE_BACKED_SOFTWARE_CAPABILITY_COMPILER
+The preview CLI requires an **exact source SHA256**, source revision and explicit model-output hypothesis/plan JSON files; see `tests/integration/test_preview.py` for executable fixtures. Output stays `real_execution_status=NOT_RUN`, `release_ready=false`. No claim can be promoted to `EXPORT_READY` from model prose alone.
 
-CORE_RUNTIME =
-UNDERSTAND
--> FALSIFY
--> REAL_EXECUTION
--> COMPILE
--> Evidence-backed Capability
+### Safety boundaries
 
-PRODUCT_FREEZE = NO
-L2_READY = NO
-FORMAL_IMPLEMENTATION_TASK_DAG = NOT_AUTHORIZED
-```
+- Source snapshot, execution binary and environment are separate identities; evidence is version/scope-bound.
+- Model-produced Capability hypotheses and test plans are **proposals**, never behavioral evidence.
+- Refuted, blocked, stale or unobserved claims cannot become `EXPORT_READY`.
+- Pixel/OCR/coordinate-driven automation is forbidden; structured semantic UI adapters may be supported later.
+- `app8.execution` is currently an experimental exact-binary subprocess **observation adapter**, **not** an OS sandbox. Do not pass untrusted model-generated commands or treat caller-supplied isolation flags as verified boundaries. Automatic real execution is not release-qualified.
+- No human independent review is required for L1/L2 scheduling by product-owner decision #92; this is a documented waiver, not an independent-review PASS.
+- Existing human Gold/hidden truth protocols and adversarial studies are preserved as deferred release-quality research assets; results must not be invented.
 
-The project is still in **Product/L1 evidence qualification**. Protocol/research work is not production implementation.
+### Authoritative references
 
-## Product documents
+- [Product PRD and owner r3 decision](docs/product/v0.1-successor/PRD.md)
+- [Owner r3 product scope/evidence split](docs/product/v0.1-successor/L1_OWNER_DESIGN_FREEZE_R3.md)
+- [L2 architecture decisions](docs/architecture/v0.1-successor/L2_ARCHITECTURE_EVIDENCE.md)
+- [Formal implementation Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
+- [Release qualification](https://github.com/kaicreator-mm/app8/issues/107) and [deferred empirical work](https://github.com/kaicreator-mm/app8/issues/95)
 
-- [English PRD — v0.1 Successor r2](docs/product/v0.1-successor/PRD.md) — normative Product/L1 reference.
-- [中文 PRD — v0.1 Successor r2](docs/product/v0.1-successor/PRD.zh-CN.md) — Chinese reference translation; English authority remains normative.
-- [L1 Evidence Index](docs/product/v0.1-successor/L1_EVIDENCE_INDEX.md) — SPCL claim-to-evidence mapping and Product Freeze gate.
-- [SE09 Comparator Evidence](docs/product/v0.1-successor/SE09_COMPARATOR_EVIDENCE.md) — market/comparator and reuse-first evidence.
-- [L2 Question Register](docs/product/v0.1-successor/L2_QUESTION_REGISTER.md) — candidate architecture questions only; does not authorize L2.
-- [Product Freeze Manifest](docs/product/v0.1-successor/PRODUCT_FREEZE.md) — exact-package aggregation only.
-
-The previous `docs/product/v0.1/**` Admission/Governance product line is historical/superseded for the current successor product.
-
-## Core product loop
-
-```text
-Software knowledge / surfaces
-          ↓
-LLM-A — UNDERSTAND
-          ↓
-Capability Hypothesis
-          ↓
-LLM-B — FALSIFY
-          ↓
-Evidence / Test Plan
-          ↓
-Deterministic real execution / observation
-          ↓
-Behavioral Evidence
-          ↓
-LLM-C — COMPILE
-          ↓
-Evidence-backed Capability
-          ↓
-CLI / MCP / Skill / Docs / Search
-```
-
-Important rules:
-
-```text
-DECLARATION != EVIDENCE
-LLM_OUTPUT_SELF_CERTIFICATION = FORBIDDEN
-PIXEL_DERIVED_AUTOMATION = FORBIDDEN
-SEMANTIC_STRUCTURED_UI = ALLOWED
-REUSE_HARVEST_FIRST = YES
-LLM_REWRITE_LICENSE_ERASURE = NO
-```
-
-## L1 evidence campaign
-
-The active successor L1 campaign is tracked in [Issue #25](https://github.com/kaicreator-mm/app8/issues/25).
-
-Required studies:
-
-```text
-SE10 = Semantic Capability extraction quality
-SE11 = Falsification / Evidence quality
-SE12 = One authority / many consumers
-SE13 = Agent utility
-SE14 = Capability search quality
-SE15 = Non-pixel exportability
-SE16 = Target-user pilot pull
-Final Independent Product Review
-```
-
-The current research dependency structure is approximately:
-
-```text
-protocol authoring/review
-        ↓
-SE10 execution ─┐
-SE11 execution ─┼─> SE12 execution ─> SE13 execution
-                │
-SE14 execution ─┼─────────────────────────┐
-SE15 execution ─┤                         │
-SE16 execution ─┘                         │
-SE12 / SE13 results ──────────────────────┘
-                                          ↓
-                                 Product Freeze candidate
-                                          ↓
-                                 Final Independent Review
-```
-
-This is an **L1 research/evidence DAG**, not the formal implementation Task DAG.
-
-The formal implementation Task DAG may only be created after:
-
-```text
-required successor L1 evidence PASS
--> Final Independent Product Review PASS
--> Product Freeze
--> L2 Architecture Evidence
--> formal Task DAG
--> implementation
-```
-
-For live execution status, use GitHub Issues/PRs as the source of truth rather than this README.
-
-## Pinned development standard
-
-```text
-repository=kaicreator-mm/ai-development-standard
-version=4.9.0
-revision=7929012f36a2202dcc2edc7a414b8163adc7afbd
-```
-
-Do not implicitly follow the latest standard `main` for the frozen Product/L1 package.
-
-## Product boundary
-
-app8 owns the **Capability/Evidence factual authority** and its lifecycle. Generic CLI generation, MCP/Skill generation, discovery engines, evaluation infrastructure, routing, packaging and similar non-core mechanisms are reuse/harvest-first.
-
-The product must report `UNSUPPORTED`, `BLOCKED` or `STALE` when appropriate rather than inventing support.
-
-GitHub durable state is the project source of truth.
+The older `docs/product/v0.1/` Admission/Governance product thesis is superseded. Historical SE10–SE16 protocols and evidence remain retained, but are not current pre-L2 gates. GitHub exact commits and Issue terminals are the live state authority.
