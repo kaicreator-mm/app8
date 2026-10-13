@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "app8-capability-compiler"
+version = "0.1.0a0"
+description = "Evidence-backed software capability compiler"
+requires-python = ">=3.11"
+dependencies = ["jsonschema>=4.20,<5"]
+
+[tool.setuptools.packages.find]
+include = ["app8*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
