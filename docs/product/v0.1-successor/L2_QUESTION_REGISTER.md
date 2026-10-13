@@ -1,11 +1,15 @@
 # L2 Question Register — app8 v0.1 Successor r2
 
-Status: READY_AFTER_CORE_PRODUCT_FREEZE  
+Status: ARCHITECTURE_ENTRY_AUTHORIZED_BY_OWNER_R3  
 Product Freeze: NO  
-L2 Ready: NO  
-Convergence authority: Issue #80
+L2 Ready: YES_WITH_OWNER_WAIVER  
+Convergence authority: Issues #80, #92
 
 This register records candidate architecture questions only. It cannot redefine Product/L1.
+
+## Current architecture entry
+
+The Product owner has frozen **scope/design**, not the empirical SE10/SE11 performance result. Architect the core contracts now, explicitly carrying empirical unproven risks to L3/Release. Reference kickoff: `docs/architecture/v0.1-successor/L2_KICKOFF_OWNER_WAIVER.md`. Original independent-review/Gold gates are waived for L2 scheduling, not passed.
 
 ## Transfer rule
 
@@ -147,10 +151,10 @@ This is primarily architecture/process enforcement. Legal conclusions for specif
 ## Current terminal
 
 ~~~text
-L2_READY = NO
-ENTRY_GATE = SE10_PASS + SE11_PASS + FINAL_CORE_PRODUCT_REVIEW_PASS + PRODUCT_FREEZE
+L2_READY = YES_WITH_OWNER_WAIVER
+ENTRY_GATE = OWNER_R3_SCOPE_FREEZE + DEFERRED_EVIDENCE_TRACE + ADOPTION_MATRIX
 DEFERRED_L2_VALIDATION = SE12,SE14,SE15
 DEFERRED_L3_RELEASE_VALIDATION = SE13
 DEFERRED_PRODUCT_RELEASE_VALIDATION = SE16
-NEXT = finish core L1 only, then start L2
+NEXT = L2_C01_CAPABILITY_IR + L2_C02_EVIDENCE + L2_C03_EXECUTION_PROJECTION_CONTRACTS
 ~~~

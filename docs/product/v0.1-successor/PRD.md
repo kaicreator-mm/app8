@@ -1,11 +1,13 @@
 # app8 Product PRD v0.1 Successor r2 — Evidence-backed Software Capability Compiler
 
-Status: DRAFT_FOR_INDEPENDENT_REVIEW  
+Status: PRODUCT_OWNER_SCOPE_FROZEN_R3 / EMPIRICAL_CLAIMS_UNPROVEN  
 Product Freeze: NO  
-L2 Ready: NO  
-Successor authority: Issue #21  
+L2 Ready: YES_WITH_OWNER_WAIVER  
+Successor authority: Issue #21; owner-decision successor: Issue #92  
 Expanded comparator evidence: SE09_COMPARATOR_EVIDENCE.md  
 Pinned standard: kaicreator-mm/ai-development-standard@7929012f36a2202dcc2edc7a414b8163adc7afbd (4.9.0)
+
+**Gate/currentness notice:** `L1_OWNER_DESIGN_FREEZE_R3.md` is the authoritative 2026-10-13 Product-owner stage-gate overlay. Independent human Gold and independent Fresh review are no longer prerequisites for L2. This does not claim empirical SE10/SE11 PASS; all evidence readiness remains strict. The r2 study language below is retained as deferred reference, not a pre-L2 scheduling gate.
 
 ## 1. Product definition
 
