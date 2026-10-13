@@ -98,5 +98,42 @@ class StageCTest(unittest.TestCase):
             r=m.score(adj,pred,gold,goldpub,cp,out)
             self.assertEqual(r["verdict"],"BLOCKED")
 
+    def test_ambiguous_cannot_hide_nonambiguous_predictions(self):
+        with tempfile.TemporaryDirectory() as td:
+            gold, goldpub, pred, cp, adj = self.build(td)
+            d = json.loads(pathlib.Path(adj).read_text())
+            d["prediction_judgments"][0]["classification"] = "AMBIGUOUS"
+            dump(pathlib.Path(adj), d)
+            with self.assertRaises(SystemExit):
+                m.score(adj, pred, gold, goldpub, cp, pathlib.Path(td)/"result.json")
+
+    def test_match_requires_gold_link(self):
+        with tempfile.TemporaryDirectory() as td:
+            gold, goldpub, pred, cp, adj = self.build(td)
+            d = json.loads(pathlib.Path(adj).read_text())
+            d["prediction_judgments"][0]["matched_gold_ids"] = []
+            dump(pathlib.Path(adj), d)
+            with self.assertRaises(SystemExit):
+                m.score(adj, pred, gold, goldpub, cp, pathlib.Path(td)/"result.json")
+
+    def test_cross_asset_gold_match_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            gold, goldpub, pred, cp, adj = self.build(td)
+            d = json.loads(pathlib.Path(adj).read_text())
+            d["prediction_judgments"][0]["matched_gold_ids"] = ["G0013"]
+            dump(pathlib.Path(adj), d)
+            with self.assertRaises(SystemExit):
+                m.score(adj, pred, gold, goldpub, cp, pathlib.Path(td)/"result.json")
+
+    def test_full_coverage_requires_matching_prediction(self):
+        with tempfile.TemporaryDirectory() as td:
+            gold, goldpub, pred, cp, adj = self.build(td)
+            d = json.loads(pathlib.Path(adj).read_text())
+            d["prediction_judgments"][0]["classification"] = "HALLUCINATED"
+            d["prediction_judgments"][0]["matched_gold_ids"] = []
+            dump(pathlib.Path(adj), d)
+            with self.assertRaises(SystemExit):
+                m.score(adj, pred, gold, goldpub, cp, pathlib.Path(td)/"result.json")
+
 if __name__ == "__main__":
     unittest.main()
