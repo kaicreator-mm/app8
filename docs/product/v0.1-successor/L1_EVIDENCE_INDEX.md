@@ -1,8 +1,14 @@
 # L1 Evidence Index — app8 v0.1 Successor r2
 
-Status: CONVERGENCE_R2_ACTIVE / PRODUCT_OWNER_APPROVED  
+Status: OWNER_R3_SCOPE_FROZEN / EMPIRICAL_RESULTS_DEFERRED  
 Authority: successor claim-to-evidence map for PRD.md  
-Convergence authority: Issue #80
+Convergence authority: Issues #80 and #92 (r3 supersedes gate scheduling)
+
+## Current r3 gating authority
+
+Owner decision `L1_OWNER_DESIGN_FREEZE_R3.md` supersedes all r2 rules that require independent Gold, blind empirical SE10/SE11 PASS or Fresh Product review **before architecture begins**. Product-scope freeze is approved; L2 may begin with an explicit ADS review/evidence waiver. The original seven study protocols remain unmodified and their empirical claims remain unproven. No model-authored test data counts as validated Gold, ground truth or real observation.
+
+Pre-L2 = scope contract + claim/invariant discipline + reusable asset inventory; empirical SE10/SE11 quality verification moves to L3/Release. No evidence-based readiness without real observations.
 
 ## 1. Purpose
 
@@ -99,7 +105,7 @@ SE09 remains subject to context-fresh Product review and therefore is not yet a 
 
 Convergence r2 changes scheduling, not study integrity. Existing protocols, frozen inputs, thresholds and evidence assets remain valid. A deferred study is not waived and must not be silently declared PASS.
 
-Pre-L2 blockers: **SE10 and SE11 only**.  
+Historical r2 pre-L2 blockers: **SE10 and SE11**. Under current r3 these are deferred empirical acceptance gates, not blockers for L2 architecture.  
 Deferred validation: **SE12–SE16** as mapped below.
 
 ### SE10 — Semantic Capability extraction quality
@@ -335,7 +341,7 @@ EXPORT_READY
 
 The exact evidence sufficiency policy is Product/L1 where it changes SPCL-002 or readiness trust; implementation mechanics may be L2.
 
-## 9. Product Freeze aggregate
+## 9. Historical r2 Product Freeze aggregate — SUPERSEDED_FOR_L2_ENTRY
 
 Under convergence r2, successor Product Freeze / L2 entry requires:
 
@@ -378,3 +384,18 @@ SE16 = DEFERRED_TO_PRODUCT_RELEASE
 PRODUCT_FREEZE = NO
 L2_READY = NO
 ~~~
+
+## 10. Current owner-r3 aggregate
+
+```text
+PRODUCT_SCOPE_FREEZE=YES_OWNER_APPROVED
+SE09=RETAINED_PRODUCT_CONTEXT
+SE10=DESIGN_ACCEPTED_EMPIRICAL_UNPROVEN
+SE11=DESIGN_ACCEPTED_EMPIRICAL_UNPROVEN
+SE12_TO_SE16=UNPROVEN_DEFERRED
+ADS_INDEPENDENT_REVIEW=OWNER_WAIVER_NOT_PASS
+MODEL_AUTHORED_SEEDS=ILLUSTRATIVE_ONLY
+L2_ARCHITECTURE_START=YES_WITH_OWNER_WAIVER
+PRODUCT_EVIDENCE_QUALIFIED_FREEZE=NO
+RELEASE_READY=NO
+```
