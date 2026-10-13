@@ -9,7 +9,7 @@ import unittest
 from app8.contracts import validate_contract
 from scripts.v03_cpython_json_pilot import (
     BINDING, IMAGE, COMMAND, _CASES, PilotBlocked, PilotSettings,
-    GOOD_SCRIPT, BAD_SCRIPT, case_request, make_capability,
+    GOOD_SCRIPT, BAD_SCRIPT, case_request, make_capability, execute_pilot,
     source_probe_request, _strict_sha,
 )
 
@@ -78,6 +78,16 @@ class FrozenPilotUnitTests(unittest.TestCase):
                          capture_output=True,text=True,timeout=10)
         self.assertNotEqual(n.returncode,0)
         self.assertIn("JSONDecodeError",n.stderr)
+
+    def test_private_ledger_cannot_be_reused_silently(self):
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private"
+            (root / "evidence").mkdir(parents=True)
+            (root / "evidence" / "evidence.sqlite3").write_bytes(b"prior")
+            cfg = settings(ledger_root=root, approved_source_sha256="d"*64)
+            with self.assertRaisesRegex(PilotBlocked, "FRESH_PRIVATE_LEDGER_REQUIRED"):
+                execute_pilot(None, cfg, {"sha256":"d"*64, "path":"/test/json.py", "version":"3.14"})
 
     def test_false_assertion_is_deliberately_incorrect(self):
         self.assertIn("never-produced-sentinel-9fa4",_CASES["F01"][1][-1])
