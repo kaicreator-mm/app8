@@ -204,6 +204,9 @@ def _se11(manifest_path: Path | None, hidden_path: Path | None, blockers: list[s
                 or not isinstance(hidden.get("source_execution_relations"), dict)
                 or not isinstance(hidden.get("source_execution_applicability_review_sha256"), dict)
                 or manifest is None
+                or not isinstance(manifest.get("source_execution_mappings"), dict)
+                or set(manifest["source_execution_mappings"]) != set(ASSETS)
+                or any(not isinstance(manifest["source_execution_mappings"][a], dict) for a in ASSETS)
                 or set(hidden["source_execution_relations"]) != set(ASSETS)
                 or set(hidden["source_execution_applicability_review_sha256"]) != set(ASSETS)
                 or any(hidden["source_execution_relations"][a] !=
