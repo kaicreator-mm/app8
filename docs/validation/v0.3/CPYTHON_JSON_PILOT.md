@@ -102,6 +102,10 @@ python scripts/v03_cpython_json_pilot.py execute \
   --out "<PRIVATE_ABSOLUTE_PATH>/cpython-json-terminal.json"
 ```
 
+Provide a **fresh, empty private --ledger-root for each host/run**. Reusing a
+previous SQLite ledger is deliberately blocked to prevent stale or omitted
+signed Evidence from producing a misleading qualification.
+
 The driver executes exactly three separately scoped behavioral claims with
 fixed argv, records signed positive and negative Evidence, and then explicitly
 checks that target drift is rejected before execution. `SCOPED_EXPORT_READY`
