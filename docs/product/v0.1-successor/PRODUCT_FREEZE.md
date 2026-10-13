@@ -20,7 +20,7 @@ revision=7929012f36a2202dcc2edc7a414b8163adc7afbd
 
 | Authority | Blob |
 |---|---|
-| Successor PRD r2 | 998348fe1fd79c4a99d72a96c00a5da641b9afa6 |
+| Successor PRD r2 | 43e9b50719ed5281fdf0f59b2138c953043bf64b |
 | Successor L1 Evidence Index convergence r2 | 939679d668a888fb755ec3d5e35da24401a59f8a |
 | Expanded SE09 Comparator Evidence | cd94a6fdbacc9fea712eb7d4dc06c1cd79e5b61d |
 | Successor Migration r2 | e70a2e3db3746b9ee64668bf50d671aad27502dd |
@@ -45,19 +45,19 @@ The stable authority is Evidence-backed Capability, not CLI/MCP/Skill.
 |---|---|---|
 | predecessor E00 detector calibration result | 9c4277b6fab4bdb89a94e688de3f438fc2f9ef85 | RETAINED_RESEARCH_ASSET; not successor Gate PASS |
 
-## Successor L1 study state
+## Successor evidence state
 
 | Study | Current Gate |
 |---|---|
-| SE09 Expanded market/comparator | COMPLETE_RESEARCH / PROPOSED_PASS / REVIEW_REQUIRED |
-| SE10 Semantic Capability extraction | NOT_RUN |
-| SE11 Falsification / Evidence quality | NOT_RUN |
+| SE09 Expanded market/comparator | RETAINED_CORE_CONTEXT |
+| SE10 Semantic Capability extraction | IN_PROGRESS / CORE_L1 |
+| SE11 Falsification / Evidence quality | IN_PROGRESS / CORE_L1 |
 | SE12 One authority / many consumers | DEFERRED_TO_L2 |
 | SE13 Agent utility | DEFERRED_TO_L3_RELEASE |
 | SE14 Capability search | DEFERRED_TO_L2_L3 |
 | SE15 Non-pixel exportability | DEFERRED_TO_L2_L3 |
 | SE16 Target-user pilot | DEFERRED_TO_PRODUCT_RELEASE |
-| Final Independent Product Review | NOT_RUN |
+| Final Core Product Review | NOT_RUN |
 
 ## Hard Product boundaries
 
@@ -87,7 +87,7 @@ UNIFIED_PRODUCT_GAP = MEDIUM
 PRODUCT_DIRECTION = NARROW_AND_PROCEED
 ~~~
 
-This is not yet a Frozen PASS.
+The Final Core Product Review must accept or revise this retained disposition before Freeze.
 
 ## Predecessor disposition
 
@@ -97,11 +97,11 @@ Completed predecessor E00 remains historical/research evidence only.
 
 Old E01/E02/E03 and the old Final Product Freeze path are NOT_APPLICABLE to this successor.
 
-The r1 Fresh Review task #23 is stale once PR #22 moves away from its frozen exact HEAD/tree and must not be used to qualify r2.
-
 ## Freeze rule
 
-Successor Product Freeze requires the exact successor core L1 package to satisfy convergence-r2 gates in L1_EVIDENCE_INDEX.md: SE10 PASS, SE11 PASS, retained SE09 disposition, Final Core Product Review PASS, zero unresolved valid core P0/P1, and completed core/deferred asset transfer mapping. Deferred SE12–SE16 are not L2-entry blockers and remain explicitly UNPROVEN until their own validation passes.
+Successor Product Freeze requires the exact successor core L1 package to satisfy convergence-r2 gates in L1_EVIDENCE_INDEX.md: SE10 PASS, SE11 PASS, retained SE09 disposition, Final Core Product Review PASS, zero unresolved valid core P0/P1, and completed core/deferred asset transfer mapping.
+
+Deferred SE12–SE16 are not L2-entry blockers and remain explicitly UNPROVEN until their own validation passes.
 
 Current aggregate:
 
