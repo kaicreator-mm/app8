@@ -28,14 +28,14 @@ class PolicyTests(unittest.TestCase):
     def test_observed_not_export_without_projections(self):
         cap,ev=base()
         r=evaluate_readiness(cap,[ev])
-        self.assertEqual(r.lifecycle_state,"EVIDENCED")
+        self.assertEqual(r.lifecycle_state,"BLOCKED")
         self.assertFalse(r.export_ready)
 
     def test_verified_evidence_and_projection(self):
         cap,ev=base()
         r=evaluate_readiness(cap,[ev],projection_verifier=lambda _:True)
-        self.assertTrue(r.export_ready)
-        self.assertEqual(r.qualified_evidence_ids,("ev:1",))
+        self.assertFalse(r.export_ready)
+        self.assertIn("UNAUTHENTICATED_EXECUTION_EVIDENCE",r.reason_codes)
 
     def test_model_observation_disallowed(self):
         cap,ev=base(); ev["assessment"]["assessor_kind"]="MODEL_PROPOSAL_ONLY"
@@ -61,7 +61,7 @@ class PolicyTests(unittest.TestCase):
         ev["target"]["mapping_relation"]="DIVERGED"
         self.assertFalse(evaluate_readiness(cap,[ev],projection_verifier=lambda _:True).export_ready)
         observed=evaluate_readiness(cap,[ev],[{"kind":"TARGET_APPLICABILITY_CONFIRMED","payload":{"package_sha256":Z}}],projection_verifier=lambda _:True)
-        self.assertTrue(observed.export_ready)
+        self.assertFalse(observed.export_ready)
 
     def test_exit_zero_without_assertions_not_success(self):
         cap,ev=base(); ev["plan"]["assertions"]=[]
