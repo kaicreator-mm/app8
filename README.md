@@ -50,7 +50,7 @@ The preview CLI requires an **exact source SHA256**, source revision and explici
 - [Product PRD and owner r3 decision](docs/product/v0.1-successor/PRD.md)
 - [Owner r3 product scope/evidence split](docs/product/v0.1-successor/L1_OWNER_DESIGN_FREEZE_R3.md)
 - [L2 architecture decisions](docs/architecture/v0.1-successor/L2_ARCHITECTURE_EVIDENCE.md)
-- [Formal implementation Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
+- [Current combined Task DAG (v0.1–v0.3, 18 tasks)](docs/implementation/CURRENT_TASK_DAG.md) and [historical v0.1 Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
 - [v0.2 secure execution terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md), [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) and [historical deferred empirical work](https://github.com/kaicreator-mm/app8/issues/95)
 
 The older `docs/product/v0.1/` Admission/Governance product thesis is superseded. Historical SE10–SE16 protocols and evidence remain retained, but are not current pre-L2 gates. GitHub exact commits and Issue terminals are the live state authority.
