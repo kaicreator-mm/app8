@@ -1,0 +1,4 @@
+# Frozen normative L2 JSON contracts must have byte-identical LF across hosts.
+# Narrow paths preserve historical research/source pack Git blob identities.
+/docs/architecture/v0.1-successor/contracts/*.json text eol=lf
+/app8/contracts/schemas/*.json text eol=lf
