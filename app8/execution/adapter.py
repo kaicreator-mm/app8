@@ -1,4 +1,4 @@
-"""No shell or model text execution; never claim host isolation without proof."""
+"""Legacy exact-binary adapter: deliberately no direct host execution in v0.2."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -6,8 +6,6 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
-import subprocess
-from typing import Sequence
 
 HASH = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -43,11 +41,11 @@ def _hash(data: bytes) -> str:
 
 
 def run_invocation(req: Invocation) -> Observation:
-    """Execute only a reviewed exact binary under explicitly declared policy.
+    """Retired unsafe subprocess route: validate identity, then always BLOCK.
 
-    Caller supplies argv, never raw LLM plan prose. This is a subprocess
-    adapter, NOT a network/filesystem OS sandbox. Restricted requests FAIL
-    CLOSED unless the caller has verified a separately provisioned sandbox.
+    Sandbox isolation must come from a separately verified runner (#125),
+    NOT from caller booleans or empty environment variables. This function
+    never runs subprocesses, regardless of caller-provided permissions.
     """
     desc = {"executable": req.executable, "argv": req.argv,
             "target_sha256": req.expected_executable_sha256,
@@ -86,16 +84,4 @@ def run_invocation(req: Invocation) -> Observation:
     actual = _hash(raw)
     if actual != req.expected_executable_sha256:
         return blocked("EXECUTABLE_HASH_MISMATCH", actual)
-    try:
-        result = subprocess.run((str(exe), *req.argv), cwd=str(cwd), env={},
-                                shell=False, timeout=req.timeout_seconds,
-                                capture_output=True, check=False)
-    except subprocess.TimeoutExpired:
-        return blocked("TIMEOUT", actual)
-    except OSError:
-        return blocked("SPAWN_FAILED", actual)
-    if len(result.stdout) > req.max_output_bytes or len(result.stderr) > req.max_output_bytes:
-        return Observation("BLOCKED", "OUTPUT_BUDGET_EXCEEDED", digest, actual,
-                           result.returncode, _hash(result.stdout), _hash(result.stderr), True)
-    return Observation("EXECUTED", "OBSERVATION_ONLY_NOT_EVIDENCE", digest, actual,
-                       result.returncode, _hash(result.stdout), _hash(result.stderr), False)
+    return blocked("UNSANDBOXED_DIRECT_EXECUTION_DISABLED", actual)
