@@ -2,3 +2,13 @@
 # Narrow paths preserve historical research/source pack Git blob identities.
 /docs/architecture/v0.1-successor/contracts/*.json text eol=lf
 /app8/contracts/schemas/*.json text eol=lf
+
+# v0.4 SE10/SE11 public preflight pins original Git blobs, not platform-transcoded
+# worktree bytes. Force LF when Windows core.autocrlf=true; do not rewrite
+# research history or weaken SHA/blob checks.
+/docs/product/v0.1-successor/l1/SE10_PROTOCOL.md text eol=lf
+/docs/product/v0.1-successor/l1/SE11_PROTOCOL.md text eol=lf
+/docs/product/v0.1-successor/l1/SE10_SOURCE_PACK_MANIFEST.md text eol=lf
+/research/e10/stage-b/source_anchor_allowlist.json text eol=lf
+/research/e10/stage-c/stage_c.py text eol=lf
+/research/e11/stage-c/stage_c.py text eol=lf
