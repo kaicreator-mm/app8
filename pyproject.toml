@@ -17,3 +17,6 @@ include = ["app8*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.setuptools.package-data]
+"app8.contracts" = ["schemas/*.json"]
