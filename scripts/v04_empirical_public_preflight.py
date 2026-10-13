@@ -40,6 +40,14 @@ SE10_PUBLIC_FIELDS = {
     "allowlist_git_blob", "declared_model_generated_gold", "declared_predictor_gold_visibility",
     "semantic_gold_in_public_output",
 }
+SE10_PRED_PUBLIC_FIELDS = {
+    "schema_version", "source_pack_blob", "gold_commitment_sha256",
+    "gold_file_sha256", "prediction_file_sha256", "prediction_count",
+    "asset_counts", "model", "declared_predictor_gold_visibility",
+    "semantic_prediction_in_public_commitment",
+}
+MODEL_FIELDS = {"provider", "model", "version", "system_prompt_sha256",
+                "sampling_sha256", "run_environment_sha256"}
 SE11_PUBLIC_FIELDS = {
     "schema_version", "stage_a_merge", "execution_target_manifest_sha256",
     "source_execution_mapping_frozen", "hidden_file_sha256", "hidden_file_bytes",
@@ -150,7 +158,22 @@ def _se10(gold_path: Path | None, prediction_path: Path | None, blockers: list[s
                 or gold.get("private_store_independent_reviewed") is not True):
             blockers.append("SE10_GOLD_COMMITMENT:INVALID_FROZEN_METADATA")
     if pred is not None:
-        if (pred.get("schema_version") != "se10-prediction-commitment-v1"
+        if (set(pred) != SE10_PRED_PUBLIC_FIELDS
+                or pred.get("schema_version") != "se10-prediction-commitment-v1"
+                or pred.get("source_pack_blob") != PINS["se10_source_pack"][1]
+                or pred.get("declared_predictor_gold_visibility") is not False
+                or pred.get("semantic_prediction_in_public_commitment") is not False
+                or not isinstance(pred.get("asset_counts"), dict)
+                or set(pred["asset_counts"]) != set(ASSETS)
+                or any(type(pred["asset_counts"][a]) is not int or pred["asset_counts"][a] < 0 for a in ASSETS)
+                or pred.get("prediction_count") != sum(pred["asset_counts"].values())
+                or pred["prediction_count"] == 0
+                or not isinstance(pred.get("model"), dict)
+                or set(pred["model"]) != MODEL_FIELDS
+                or any(not isinstance(pred["model"][k], str) or not pred["model"][k].strip()
+                       for k in ("provider", "model", "version"))
+                or any(not _is_sha(pred["model"][k])
+                       for k in ("system_prompt_sha256", "sampling_sha256", "run_environment_sha256"))
                 or raw is None
                 or pred.get("gold_commitment_sha256") != _sha(raw)
                 or not _is_sha(pred.get("prediction_file_sha256"))
