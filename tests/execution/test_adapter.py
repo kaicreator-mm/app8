@@ -1,11 +1,10 @@
 import hashlib
-import os
 from dataclasses import replace
 from pathlib import Path
 import sys
 import tempfile
 import unittest
-from app8.execution import Invocation, run_invocation
+from app8.execution.adapter import Invocation, run_invocation
 
 
 class AdapterTests(unittest.TestCase):
@@ -19,10 +18,10 @@ class AdapterTests(unittest.TestCase):
 
     def test_actual_bounded_process(self):
         o=run_invocation(self.req)
-        self.assertEqual(o.status,"EXECUTED")
-        self.assertEqual(o.exit_code,0)
-        self.assertEqual(o.stdout_sha256,hashlib.sha256(("observed" + os.linesep).encode("utf-8")).hexdigest())
-        self.assertEqual(o.reason,"OBSERVATION_ONLY_NOT_EVIDENCE")
+        self.assertEqual(o.status,"BLOCKED")
+        self.assertIsNone(o.exit_code)
+        self.assertIsNone(o.stdout_sha256)
+        self.assertEqual(o.reason,"UNSANDBOXED_DIRECT_EXECUTION_DISABLED")
 
     def test_default_isolation_fail_closed(self):
         o=run_invocation(replace(self.req,network_allowed=False,mutation_allowed=False))
@@ -46,19 +45,24 @@ class AdapterTests(unittest.TestCase):
 
     def test_output_limit_blocks(self):
         o=run_invocation(replace(self.req,max_output_bytes=3))
-        self.assertEqual(o.reason,"OUTPUT_BUDGET_EXCEEDED")
-        self.assertTrue(o.output_truncated)
+        self.assertEqual(o.reason,"UNSANDBOXED_DIRECT_EXECUTION_DISABLED")
+        self.assertFalse(o.output_truncated)
 
     def test_timeout_blocks(self):
         o=run_invocation(replace(self.req,argv=("-I","-c","import time; time.sleep(2)"),timeout_seconds=1))
-        self.assertEqual(o.reason,"TIMEOUT")
+        self.assertEqual(o.reason,"UNSANDBOXED_DIRECT_EXECUTION_DISABLED")
 
     def test_nonzero_exit_is_observation_not_pass(self):
         o=run_invocation(replace(self.req,argv=("-I","-c","raise SystemExit(4)")))
-        self.assertEqual(o.status,"EXECUTED")
-        self.assertEqual(o.exit_code,4)
+        self.assertEqual(o.status,"BLOCKED")
+        self.assertIsNone(o.exit_code)
 
     def test_invalid_budget(self):
         self.assertEqual(run_invocation(replace(self.req,timeout_seconds=True)).reason,"BAD_TIME_BUDGET")
+
+    def test_caller_claimed_verified_is_not_accepted_as_sandbox_proof(self):
+        o=run_invocation(replace(self.req,network_allowed=False,mutation_allowed=False,
+                       network_isolation_verified=True,filesystem_isolation_verified=True))
+        self.assertEqual(o.reason,"UNSANDBOXED_DIRECT_EXECUTION_DISABLED")
 
 if __name__=="__main__":unittest.main()
