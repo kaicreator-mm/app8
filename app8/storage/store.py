@@ -120,6 +120,27 @@ class EvidenceStore:
             raise IntegrityError("Evidence payload corrupted")
         return json.loads(row[1])
 
+    def list_evidence_for_capability(self, capability_id: str, *, max_records: int = 10000) -> list[dict[str, Any]]:
+        """Enumerate the complete bounded local ledger; never trust caller-supplied refs alone.
+
+        Existing v0.2 table lacks a capability_id index, so the v0.3 pilot
+        uses a strictly bounded integrity-checked scan. Future migration can
+        add an indexed lookup without altering append-only semantics.
+        """
+        if not isinstance(capability_id, str) or not capability_id:
+            raise ValueError("Capability ID required")
+        if type(max_records) is not int or not 1 <= max_records <= 100000:
+            raise ValueError("Evidence scan budget invalid")
+        total = self.db.execute("SELECT COUNT(*) FROM evidence").fetchone()[0]
+        if total > max_records:
+            raise IntegrityError("Evidence ledger exceeds bounded scan; refusing partial results")
+        result = []
+        for (evidence_id,) in self.db.execute("SELECT evidence_id FROM evidence ORDER BY evidence_id"):
+            record = self.get_evidence(evidence_id)  # SHA256 integrity verified
+            if record["capability_id"] == capability_id:
+                result.append(record)
+        return result
+
     def append_event(self, subject: str, kind: str, payload: dict[str, Any]) -> int:
         if not isinstance(subject, str) or not subject or not isinstance(kind, str) or not kind:
             raise ValueError("Event subject/kind required")
