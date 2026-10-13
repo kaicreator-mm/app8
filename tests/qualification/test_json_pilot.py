@@ -33,14 +33,14 @@ class FrozenPilotUnitTests(unittest.TestCase):
         r=source_probe_request(settings())
         self.assertEqual(r.image_ref, IMAGE)
         self.assertEqual(r.command, COMMAND)
-        self.assertEqual(r.argv[:2],("-I","-c"))
+        self.assertEqual(r.args[:2],("-I","-c"))
         self.assertFalse(r.network_allowed)
         self.assertFalse(r.mutation_allowed)
 
     def test_case_argv_are_constant(self):
         for case in _CASES:
             r=case_request(settings(),case)
-            self.assertEqual(r.argv[:2],("-I","-c"))
+            self.assertEqual(r.args[:2],("-I","-c"))
             self.assertEqual(r.command,COMMAND)
             self.assertFalse(r.network_allowed)
             self.assertFalse(r.mutation_allowed)
