@@ -91,6 +91,8 @@ class StageCTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             gold,goldpub,pred,cp,adj=self.build(td, ambiguous_count=8)
             ad=json.loads(pathlib.Path(adj).read_text())
+            for judgment in ad["prediction_judgments"][:8]:
+                judgment["classification"] = "AMBIGUOUS"
             for row in ad["gold_coverage"][:8]:
                 row["coverage"]="EXCLUDED_AMBIGUOUS"
             dump(pathlib.Path(adj),ad)
