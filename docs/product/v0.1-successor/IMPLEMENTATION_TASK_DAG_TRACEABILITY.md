@@ -1,9 +1,9 @@
 # Implementation Task DAG Traceability Contract — app8 v0.1 Successor
 
 Status: PRECOMMITTED_FORMAT / NOT_YET_POPULATED  
-Authority inputs: Product Freeze + L1→L2 Adoption Matrix + L2 Architecture Evidence
+Authority inputs: owner-approved Product scope freeze (#92) + L1→L2 Adoption Matrix + L2 Architecture Evidence
 
-This file defines the minimum provenance each future implementation Task DAG node must carry. It does **not** authorize implementation before L2.
+This file defines the minimum provenance each future implementation Task DAG node must carry. It does **not** authorize implementation before L2. Issue #92 permits starting L2 without human Gold/Fresh Product review, but does not waive L2 decisions, tests, release quality, or real Evidence for EXPORT_READY.
 
 ## Required task fields
 
@@ -53,10 +53,16 @@ DEFERRED_VALIDATION=NONE
 RELEASE_GATE=NONE
 ```
 
+## Owner-r3 stage-gate note
+
+The historical r2 Product Freeze gate requiring SE10/SE11 empirical PASS was superseded **for L2 entry only** by Issue #92. Task DAG generation still requires completed L2 Architecture Evidence, traceable assets and documented owner waiver. It must carry `SE10/SE11=UNPROVEN_DEFERRED` instead of fabricating terminal evidence.
+
 ## Gate before formal Task DAG creation
 
 ```text
-PRODUCT_FREEZE=YES
+PRODUCT_SCOPE_FREEZE=YES_OWNER_APPROVED
+ADS_INDEPENDENT_REVIEW_WAIVER=DOCUMENTED
+SE10_SE11_EMPIRICAL=UNPROVEN_DEFERRED
 L1_TO_L2_ADOPTION_MATRIX_CORE_COMPLETE=YES
 DEFERRED_VALIDATION_ASSET_MAP_COMPLETE=YES
 L2_ARCHITECTURE_EVIDENCE=COMPLETE
