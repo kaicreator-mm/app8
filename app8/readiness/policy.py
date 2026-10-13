@@ -84,4 +84,4 @@ def evaluate_readiness(
     if projection_verifier is None or not projection_verifier(capability):
         reasons.add("PROJECTION_NOT_VERIFIED")
         return Readiness("EVIDENCED", False, tuple(sorted(reasons)), tuple(sorted(set(qualified))))
-    return Readiness("EXPORT_READY", True, tuple(sorted(reasons)), tuple(sorted(set(qualified)))
+    return Readiness("EXPORT_READY", True, tuple(sorted(reasons)), tuple(sorted(set(qualified))))
