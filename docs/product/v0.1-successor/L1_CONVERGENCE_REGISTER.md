@@ -1,3 +1,22 @@
+# Current L1 Convergence Authority — Owner r3
+
+**Superseding gate authority:** Issue #92 / `L1_OWNER_DESIGN_FREEZE_R3.md`. The following r2 register is **historical planning**, not the current L2-entry gate.
+
+```text
+PRODUCT_SCOPE_FREEZE=YES_OWNER_APPROVED
+INDEPENDENT_HUMAN_GOLD_GATE=WAIVED_FOR_L2_ENTRY
+INDEPENDENT_FRESH_PRODUCT_REVIEW_GATE=WAIVED_FOR_L2_ENTRY
+SE10_EMPIRICAL_PASS=UNPROVEN_DEFERRED_TO_L3_RELEASE
+SE11_EMPIRICAL_PASS=UNPROVEN_DEFERRED_TO_L3_RELEASE
+OWNER_WAIVER_ADS_CONFORMANCE=EXPLICIT
+L2_ARCHITECTURE_START=YES
+RELEASE_READY=NO
+```
+
+Research assets/thresholds below remain reusable; model seeds are not Gold.
+
+---
+
 # L1 Convergence Register — app8 v0.1 Successor
 
 Status: CORE_CONVERGENCE_R2  
@@ -85,7 +104,7 @@ WHY_CORE_STUDY_WOULD_BE_INVALID_OR_UNEXECUTABLE=<specific counterexample>
 
 Otherwise defer to L2/L3.
 
-## Product Freeze trigger
+## Historical r2 Product Freeze trigger — SUPERSEDED_BY_OWNER_R3
 
 ```text
 SE09=RETAINED_REVIEWED_DISPOSITION
