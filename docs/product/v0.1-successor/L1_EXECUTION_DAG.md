@@ -1,108 +1,62 @@
-# L1 Execution DAG — app8 v0.1 Successor
+# L1 Execution DAG — owner-convergence r3
 
-Status: CORE_CONVERGENCE_R2  
-Phase: PRODUCT_L1_EVIDENCE  
-Controller: Issue #72  
-Convergence authority: Issue #80  
-Formal Implementation Task DAG: NOT_YET_AUTHORIZED
+Status: PRODUCT_SCOPE_FROZEN / L2_ARCHITECTURE_ALLOWED_BY_OWNER_WAIVER  
+Authority: Issue #92; `L1_OWNER_DESIGN_FREEZE_R3.md`.  
+Prior r2 7-protocol and exact-source experiments remain retained and can run during L3/Release.
 
-This artifact defines the minimum Product/L1 path after convergence r2. Deferred studies remain linked downstream validations; they are not dropped.
-
-## Phase boundary
+## Current critical path
 
 ```text
-PRD
-→ L1 core evidence (SE10 + SE11; SE09 context)
-→ Final Core Product Review
-→ Product Freeze
-→ L1→L2 transfer
-→ L2 Architecture Evidence
-→ Implementation Task DAG
-→ L3 implementation
-→ deferred acceptance / Release Qualification
+OWNER_R3_APPROVED_PRODUCT_SCOPE_FREEZE
+    │
+    ├→ adopted 7 study protocols / source packs / tooling
+    ├→ AI-authored 16 design seeds (illustrative/unverified)
+    ├→ explicit SE10/SE11 empirical risk and ADS review waiver
+    └→ traceable L1→L2 asset inventory
+    ↓
+L2 ARCHITECTURE ENTRY AUTHORIZED
+    ├→ C01 Capability IR/schema/readiness
+    ├→ C02 Evidence / replay / execution target
+    └→ C03 Model orchestration / projection contracts
+    ↓
+L2 architecture validation and exact decisions
+    ↓
+FORMAL IMPLEMENTATION TASK DAG
+    ↓
+L3 build + actual contract/integration tests
+    ↓
+empirical SE10/SE11 and deferred SE12..SE16 acceptance at mapped stages
+    ↓
+RELEASE QUALIFICATION (NO fabricated PASS)
 ```
 
-## Critical graph
+## Historical blockers reclassified
+
+| Issue/study | r3 disposition | Reuse |
+|---|---|---|
+| #58 human-only Gold | CANCEL_REQUIRED_HUMAN_GATE; optional future controlled benchmark | schema, allowlist, validators and source pack retained |
+| #55 isolated human hidden-truth | DEFER_TO_L3_RELEASE | hidden-truth tooling/commitments/Stage C retained |
+| #69 official Windows target | OPERATOR_REPORTED_LOCAL_DONE; wait redacted manifest receipt, NO RERUN | host identity reference for L2 execution contracts |
+| #42 / SE10 | empirical performance unproven, defer evaluated study | Gold/Stage C and negative regression suite |
+| #43 / SE11 | empirical performance unproven, defer evaluated study | Stage A/B/C and real behavior evidence patterns |
+| #91 independent PR review | WAIVED_BY_OWNER; no independent PASS claim | code review comments are optional, deterministic tests still required |
+| SE12..SE16 | unchanged deferred status | Adoption Matrix |
+
+## Non-negotiable product guards
 
 ```text
-#58 human Gold
-   ↓
-SE10 evaluation
-   ↓
-SE10 terminal ───────────────────────────────┐
-                                             │
-#69 runtime target → #55 hidden truth        │
-                         ↓                   │
-                    SE11 evaluation          │
-                         ↓                   │
-                    SE11 terminal ───────────┤
-                                             ↓
-                                  Final Core Product Review
-                                             ↓
-                                    Product Freeze = YES
-                                             ↓
-                                    L1→L2 transfer audit
-                                             ↓
-                                    L2 Architecture Evidence
-                                             ↓
-                                 Implementation Task DAG
-```
-
-## Deferred validation graph
-
-```text
-SE10 + SE11 frozen subject
-   ├→ SE12 → validates Q-L2-S06 projection architecture
-   │      └→ SE13 → L3/Release Agent-utility acceptance
-   ├→ SE14 → validates Q-L2-S09 search/retrieval behavior
-   └→ SE15 → validates Q-L2-S07 binding/exportability coverage
-
-SE16 → Product/Release adoption evidence
-```
-
-These nodes may run in parallel with L2/L3 when dependencies become available.
-
-## Node register
-
-| Node | Phase class | Dependency | Minimum terminal / handoff | Downstream |
-|---|---|---|---|---|
-| #58 / SE10 | CORE_L1 | merged SE10 tooling | sealed independent Gold + frozen prediction/evaluation terminal | Product Freeze |
-| #69 | CORE_L1_ENABLER | merged target script | exact runtime identity + non-evaluative smoke | #55 / SE11 |
-| #55 / SE11 | CORE_L1 | #69 target | sealed hidden truth + evaluated falsification terminal | Product Freeze |
-| SE12 | L2_VALIDATION | SE10+SE11 frozen Capability/Evidence subject | one-authority/many-consumers protocol terminal | Q-L2-S06 / SE13 |
-| SE13 | L3_RELEASE_VALIDATION | SE12 representative projections | paired Agent benchmark terminal | Release Qualification |
-| SE14 | L2_L3_VALIDATION | real Capability subject + frozen labels/index | retrieval terminal | Q-L2-S09 + search acceptance |
-| #59 / SE15 | L2_L3_VALIDATION | source sample; #69 for runtime binding | source sample / binding coverage terminal | Q-L2-S07 + coverage acceptance |
-| #51 / SE16 | PRODUCT_RELEASE_VALIDATION | frozen recruitment instrument | real-user cohort terminal | adoption claim / release evidence |
-
-## Asset preservation rule
-
-Every completed L1 artifact must be referenced by the Adoption Matrix before new implementation work replaces it. Validated code is not automatically production code, but its contracts, tests, counterexamples and patterns are durable inputs.
-
-## Finding classification
-
-Only these can reopen the **core L1** path:
-
-```text
-A = EVIDENCE_VALIDITY_BLOCKER
-B = EXECUTION_BLOCKER
+MODEL_DESIGN_SEED != GROUND_TRUTH
+MODEL_PROSE != REAL_OBSERVATION
+REAL_OBSERVATION + TARGET_SCOPE + REPLAY = EVIDENCE_CANDIDATE
+UNVALIDATED != EXPORT_READY
+PIXEL_DERIVED_AUTOMATION = FORBIDDEN
 ```
 
 ```text
-C = OPTIONAL_HARDENING
-D = L2/L3_IMPLEMENTATION_OR_ACCEPTANCE_CONCERN
-```
-
-C/D are deferred.
-
-## Current aggregate
-
-```text
-L1_PROTOCOLS_MERGED=7/7
-CORE_L1_STUDIES_REQUIRED=SE10,SE11
-CORE_L1_STUDY_GATES_PASS=0/2
-DEFERRED_VALIDATION_STUDIES=SE12,SE13,SE14,SE15,SE16
-PRODUCT_FREEZE=NO
-L2_READY=NO
-IMPLEMENTATION_TASK_DAG=NOT_AUTHORIZED
+L1_PROTOCOLS_RETAINED=7/7
+OWNER_R3_SCOPE_APPROVAL=YES
+CORE_EMPIRICAL_STUDIES_PASS=0/2_NOT_CLAIMED
+L2_ARCHITECTURE_START=YES_WITH_OWNER_WAIVER
+IMPLEMENTATION_TASK_DAG=WAIT_L2
+RELEASE_READY=NO
 ```
