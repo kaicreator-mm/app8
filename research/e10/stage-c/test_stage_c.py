@@ -81,6 +81,8 @@ class StageCTest(unittest.TestCase):
             for j in d["prediction_judgments"][:6]:
                 j["classification"]="HALLUCINATED"
                 j["matched_gold_ids"]=[]
+            for row in d["gold_coverage"][:6]:
+                row["coverage"]="MISS"
             dump(pathlib.Path(adj),d)
             out=pathlib.Path(td)/"result.json"
             r=m.score(adj,pred,gold,goldpub,cp,out)
