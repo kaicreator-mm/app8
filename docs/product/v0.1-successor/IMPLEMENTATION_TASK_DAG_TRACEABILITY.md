@@ -20,6 +20,8 @@ WRITE_SET
 ACCEPTANCE_TESTS
 FAILURE_HANDLING
 VALIDATION_CLASS
+DEFERRED_VALIDATION
+RELEASE_GATE
 ```
 
 ## Inheritance rules
@@ -31,6 +33,8 @@ VALIDATION_CLASS
 5. A new implementation replacing validated reusable code/pattern requires rationale.
 6. Human research data is not copied into production data stores merely because it supported a Product gate.
 7. Task DAG generation must consume exact L2 authority and exact transfer matrix revision.
+8. A deferred SE12-SE16 obligation must appear in the consuming task(s) as DEFERRED_VALIDATION and cannot disappear merely because it stopped blocking L2 entry.
+9. Release-facing tasks must identify which still-unproven SPCL-003..SPCL-007 claims they are responsible for validating.
 
 ## Minimum task example
 
@@ -44,13 +48,17 @@ TEST_OR_COUNTEREXAMPLE=exact prior false-promotion / target-applicability counte
 WRITE_SET=...
 ACCEPTANCE_TESTS=...
 FAILURE_HANDLING=...
+VALIDATION_CLASS=L3
+DEFERRED_VALIDATION=NONE
+RELEASE_GATE=NONE
 ```
 
 ## Gate before formal Task DAG creation
 
 ```text
 PRODUCT_FREEZE=YES
-L1_TO_L2_ADOPTION_MATRIX_COMPLETE=YES
+L1_TO_L2_ADOPTION_MATRIX_CORE_COMPLETE=YES
+DEFERRED_VALIDATION_ASSET_MAP_COMPLETE=YES
 L2_ARCHITECTURE_EVIDENCE=COMPLETE
 L1_TO_L2_TRANSFER_AUDIT=PASS
 ```
