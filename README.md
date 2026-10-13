@@ -2,7 +2,7 @@
 
 app8 aims to turn existing software knowledge and **real observed behavior** into reusable Capabilities, then project a single factual authority into CLI, MCP, Skill, Agent documentation and search.
 
-## Current delivery state: v0.4 SE10/SE11 empirical qualification (package: v0.1.0a0 alpha)
+## Current delivery state: v0.4 empirical study terminalized BLOCKED (package: v0.1.0a0 alpha)
 
 [v0.3 two-environment real CPython pilot terminal](docs/release/v0.3/REAL_CPYTHON_PILOT_TERMINAL.md): Windows Docker Desktop and Ubuntu WSL2 native Linux Engine P01/N01 scoped signed Evidence PASS, F01 signed REFUTED, B01 drift BLOCKED; Windows full pytest 200 passed / 1 skipped; Ubuntu targeted 20/20 PASS. **These are two runtime environments, not independently proven physical machines.** [v0.2 security engineering terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md) and [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) are retained. **Full Product Release PASS has not been demonstrated.**
 
@@ -10,14 +10,14 @@ app8 aims to turn existing software knowledge and **real observed behavior** int
 |---|---|
 | Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
 | L2 architecture | ADR01–ADR08 adopted (#94 / PR #96) |
-| Task DAG | v0.1–v0.3 engineering **18/18 complete**; v0.4 empirical core qualification **T01 complete, T02–T04 open**; total defined **19/22 closed**; formal Product Release NO |
+| Task DAG | Engineering **18/18 scoped PASS**; v0.4 **1 asset audit PASS + 2 empirical studies BLOCKED + 1 aggregate BLOCKED**. Total **22/22 terminalized; 0/2 empirical studies PASS**; formal Release NO |
 | Python package | Source/doc discovery, hypothesis and falsification plan freezing, SQLite evidence ledger, readiness reducer, in-memory BM25, projection metadata, CLI preview |
 | Windows host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 72/72 source tests |
 | Ubuntu WSL2 validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, runner R1 21/21; v0.3 source identity verified, 20/20 targeted qualification and scoped signed JSON pilot PASS |
 | LibreOffice official target | #69 26.8.1.1 install identity/non-evaluative smoke documented, scope PASS |
 | OS-level sandbox | **Scoped PASS** on documented Windows/Ubuntu Docker hosts and fixed digest-pinned policy; no blanket security certification |
 | Trusted Evidence | Privileged Docker runner, signed v2 receipts, durable nonce and SQLite ingress; real pinned JSON Capability scoped PASS on Windows and Ubuntu WSL2 |
-| SE10/SE11 empirical studies | **UNPROVEN** |
+| SE10/SE11 empirical studies | **NOT_RUN / BLOCKED**: no independently authored SE10 Gold, no frozen SE11 hidden truth or final reviewed target manifest |
 | Full release qualification | **NO** |
 
 The installed `app8` CLI currently produces **`ILLUSTRATIVE_UNVERIFIED` Capability previews**, not authorized executable exports. CLI/MCP/Skill/Docs/Search projections are metadata representations of a single Capability snapshot, not working MCP/Skill installers or complete runtime adapters.
@@ -51,7 +51,7 @@ The preview CLI requires an **exact source SHA256**, source revision and explici
 - [Product PRD and owner r3 decision](docs/product/v0.1-successor/PRD.md)
 - [Owner r3 product scope/evidence split](docs/product/v0.1-successor/L1_OWNER_DESIGN_FREEZE_R3.md)
 - [L2 architecture decisions](docs/architecture/v0.1-successor/L2_ARCHITECTURE_EVIDENCE.md)
-- [Current Task DAG (18 completed engineering + 4 v0.4 qualification tasks)](docs/implementation/CURRENT_TASK_DAG.md), [v0.4 SE10/SE11 evidence reuse audit](docs/release/v0.4/SE10_SE11_REUSE_AUDIT.md), and [original v0.1 Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
+- [Current Task DAG (18 scoped engineering PASS + 4 v0.4 terminalized)](docs/implementation/CURRENT_TASK_DAG.md), [v0.4 empirical BLOCKED terminal](docs/release/v0.4/CORE_EMPIRICAL_TERMINAL.md), [SE10/SE11 research reuse audit](docs/release/v0.4/SE10_SE11_REUSE_AUDIT.md), [original v0.1 Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
 - [v0.2 secure execution terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md), [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) and [historical deferred empirical work](https://github.com/kaicreator-mm/app8/issues/95)
 
 The older `docs/product/v0.1/` Admission/Governance product thesis is superseded. Historical SE10–SE16 protocols and evidence remain retained, but are not current pre-L2 gates. GitHub exact commits and Issue terminals are the live state authority.
