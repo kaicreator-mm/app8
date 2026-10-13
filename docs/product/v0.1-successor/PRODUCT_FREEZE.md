@@ -3,9 +3,10 @@
 Status: NOT_RUN  
 Product Freeze: NO  
 L2 Ready: NO  
-Successor authority: Issue #21
+Successor authority: Issue #21  
+Convergence authority: Issue #80
 
-This file is an aggregation manifest only. It does not redefine Product/L1 claims, evidence results, migration semantics or L2 questions.
+This file aggregates Product Freeze state. Issue #80 authorizes convergence r2: core Product Freeze validates SPCL-001/SPCL-002 and Product invariants before L2; SPCL-003..SPCL-007 remain explicit deferred/unproven validation obligations.
 
 ## Pinned development standard
 
@@ -49,11 +50,11 @@ The stable authority is Evidence-backed Capability, not CLI/MCP/Skill.
 | SE09 Expanded market/comparator | COMPLETE_RESEARCH / PROPOSED_PASS / REVIEW_REQUIRED |
 | SE10 Semantic Capability extraction | NOT_RUN |
 | SE11 Falsification / Evidence quality | NOT_RUN |
-| SE12 One authority / many consumers | NOT_RUN |
-| SE13 Agent utility | NOT_RUN |
-| SE14 Capability search | NOT_RUN |
-| SE15 Non-pixel exportability | NOT_RUN |
-| SE16 Target-user pilot | NOT_RUN |
+| SE12 One authority / many consumers | DEFERRED_TO_L2 |
+| SE13 Agent utility | DEFERRED_TO_L3_RELEASE |
+| SE14 Capability search | DEFERRED_TO_L2_L3 |
+| SE15 Non-pixel exportability | DEFERRED_TO_L2_L3 |
+| SE16 Target-user pilot | DEFERRED_TO_PRODUCT_RELEASE |
 | Final Independent Product Review | NOT_RUN |
 
 ## Hard Product boundaries
@@ -98,20 +99,20 @@ The r1 Fresh Review task #23 is stale once PR #22 moves away from its frozen exa
 
 ## Freeze rule
 
-Successor Product Freeze requires the exact successor L1 package to satisfy the gate in L1_EVIDENCE_INDEX.md, including all required successor evidence and independent review, with zero unresolved valid P0/P1.
+Successor Product Freeze requires the exact successor core L1 package to satisfy convergence-r2 gates in L1_EVIDENCE_INDEX.md: SE10 PASS, SE11 PASS, retained SE09 disposition, Final Core Product Review PASS, zero unresolved valid core P0/P1, and completed core/deferred asset transfer mapping. Deferred SE12–SE16 are not L2-entry blockers and remain explicitly UNPROVEN until their own validation passes.
 
 Current aggregate:
 
 ~~~text
-SE09 = COMPLETE_RESEARCH / PROPOSED_PASS / REVIEW_REQUIRED
-SE10 = NOT_RUN
-SE11 = NOT_RUN
-SE12 = NOT_RUN
-SE13 = NOT_RUN
-SE14 = NOT_RUN
-SE15 = NOT_RUN
-SE16 = NOT_RUN
-Final Independent Product Review = NOT_RUN
+SE09 = RETAINED_CORE_CONTEXT
+SE10 = IN_PROGRESS
+SE11 = IN_PROGRESS
+SE12 = DEFERRED_TO_L2
+SE13 = DEFERRED_TO_L3_RELEASE
+SE14 = DEFERRED_TO_L2_L3
+SE15 = DEFERRED_TO_L2_L3
+SE16 = DEFERRED_TO_PRODUCT_RELEASE
+Final Core Product Review = NOT_RUN
 
 PRODUCT_FREEZE = NO
 L2_READY = NO
@@ -119,8 +120,6 @@ L2_READY = NO
 
 ## Next
 
-A context-fresh independent Product/L1 adversarial review must first review the r2 Product authority and expanded SE09 evidence.
+Immediate next path is SE10 + SE11 core execution. After both terminals, run the Final Core Product Review, finalize the adoption matrix, freeze Product, and enter L2.
 
-A PASS there permits successor L1 protocol authoring/execution. It is not Product Freeze.
-
-Product Freeze occurs only after all required L1 studies and the final exact-candidate Product review pass.
+SE12–SE16 continue from their retained artifacts at their mapped downstream stages; do not restart them from zero.
