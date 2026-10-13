@@ -25,7 +25,7 @@ Read-only audit: repository source files, Git blobs, schema/test harnesses. This
 
 Source availability check: GitHub repository tree contains Stage B **schemas/scripts**, Stage C **code/synthetic unit tests**, historical Stage A identity evidence. It contains **no identifiable frozen public SE10 Gold commitment, SE10 prediction/adjudication outcome, SE11 80-claim hidden public commitment, approved final target manifest or SE11 evaluated execution/scoring report**. Private files may exist outside GitHub; their absence from the repository does **not** prove physical nonexistence.
 
-**Pin drift note:** SE11 Stage B README and historical Stage A metadata refer to `83abefb13e6a91e6b67a1c94937ca1bcce567aad`; current protocol Git blob is `1204c717eb590071a7b7f7e1cd3018b825ef1617`. Do not silently equate them. T03 must resolve lineage/current authority and freeze a reviewed protocol revision or explicit historical-reference overlay **before** private truth creation. Preserve previous protocol bytes; do not rewrite a historical manifest to look current.
+**Protocol lineage resolved after this audit:** SE11 Stage B README and historical Stage A metadata refer to `83abefb13e6a91e6b67a1c94937ca1bcce567aad`; current protocol Git blob is `1204c717eb590071a7b7f7e1cd3018b825ef1617`. [Exact authority overlay](SE11_PROTOCOL_AUTHORITY_OVERLAY.md) verifies merged PR #64 and #65 Fresh Web review as the source of the amendment, and existing Stage C code pins the current blob. Historical manifests remain unchanged. **Final real-target approval and private independent truth freeze are still NOT DONE.**
 
 ## Frozen product study targets
 
@@ -75,5 +75,5 @@ SE12_TO_SE16=UNPROVEN_DEFERRED
 
 ## Next safe action
 
-T02: inspect and reuse the existing gold-commit/prediction/adjudication validators; seek only the **necessary independently authored sealed reference commitment** before a blind four-asset prediction. T03: resolve stale protocol citation, confirm a final reviewed Execution Target manifest and hidden truth isolation, then reuse the existing real-host artifacts where byte-identical. Both should **fail closed and report their exact missing prerequisites**, instead of spawning expensive repeated review/research or host loops.
+T02: inspect and reuse the existing gold-commit/prediction/adjudication validators; seek only the **necessary independently authored sealed reference commitment** before a blind four-asset prediction. T03: protocol lineage is resolved by [the authority overlay](SE11_PROTOCOL_AUTHORITY_OVERLAY.md); next confirm a final reviewed Execution Target manifest and isolated hidden truth before reusing exact real-host artifacts. Both should **fail closed and report their exact missing prerequisites**, instead of spawning expensive repeated review/research or host loops.
 
