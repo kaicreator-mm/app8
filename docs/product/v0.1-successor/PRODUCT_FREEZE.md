@@ -1,10 +1,10 @@
 # Product Freeze Manifest — app8 v0.1 Successor r2
 
-Status: NOT_RUN  
-Product Freeze: NO  
-L2 Ready: NO  
+Status: OWNER_SCOPE_FROZEN_R3 / EVIDENCE_QUALIFICATION_NOT_RUN  
+Product Freeze: DESIGN_SCOPE_ONLY / EVIDENCE_QUALIFIED_NO  
+L2 Ready: YES_WITH_OWNER_WAIVER  
 Successor authority: Issue #21  
-Convergence authority: Issue #80
+Convergence authority: Issues #80, #92
 
 This file aggregates Product Freeze state. Issue #80 authorizes convergence r2: core Product Freeze validates SPCL-001/SPCL-002 and Product invariants before L2; SPCL-003..SPCL-007 remain explicit deferred/unproven validation obligations.
 
@@ -15,6 +15,10 @@ repository=kaicreator-mm/ai-development-standard
 version=4.9.0
 revision=7929012f36a2202dcc2edc7a414b8163adc7afbd
 ~~~
+
+## r3 owner-directed gate split
+
+`L1_OWNER_DESIGN_FREEZE_R3.md` is now the stage-gate successor. Product scope is approved for L2 architecture, but prior empirical SE10/SE11 studies were not run and cannot be marked PASS. ADS independent review is waived by owner, not satisfied. All EXPORT_READY claims remain dependent on scoped real execution Evidence. Rows and r2 validation rules below are historical/reference information unless they are consistent with this r3 decision.
 
 ## Candidate successor authority package
 
@@ -97,7 +101,7 @@ Completed predecessor E00 remains historical/research evidence only.
 
 Old E01/E02/E03 and the old Final Product Freeze path are NOT_APPLICABLE to this successor.
 
-## Freeze rule
+## Historical r2 evidence-qualified Freeze rule — SUPERSEDED_FOR_L2_ENTRY
 
 Successor Product Freeze requires the exact successor core L1 package to satisfy convergence-r2 gates in L1_EVIDENCE_INDEX.md: SE10 PASS, SE11 PASS, retained SE09 disposition, Final Core Product Review PASS, zero unresolved valid core P0/P1, and completed core/deferred asset transfer mapping.
 
@@ -125,3 +129,17 @@ L2_READY = NO
 Immediate next path is SE10 + SE11 core execution. After both terminals, run the Final Core Product Review, finalize the adoption matrix, freeze Product, and enter L2.
 
 SE12–SE16 continue from their retained artifacts at their mapped downstream stages; do not restart them from zero.
+
+## Current owner-r3 terminal
+
+```text
+PRODUCT_DESIGN_SCOPE_FROZEN=YES_OWNER_APPROVED
+ADS_INDEPENDENT_PRODUCT_REVIEW=OWNER_WAIVER_NOT_PASS
+SE10_EMPIRICAL_PASS=NO_UNPROVEN
+SE11_EMPIRICAL_PASS=NO_UNPROVEN
+OTHER_STUDY_GATES=DEFERRED_UNPROVEN
+PRODUCT_EVIDENCE_QUALIFIED_FREEZE=NO
+L2_ARCHITECTURE_START=YES_WITH_OWNER_WAIVER
+FORMAL_IMPLEMENTATION_TASK_DAG=WAIT_L2_ARCHITECTURE
+RELEASE_QUALIFIED=NO
+```
