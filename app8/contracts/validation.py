@@ -49,8 +49,10 @@ def _validator(kind: Kind) -> Draft202012Validator:
     if kind not in _SCHEMA_NAMES:
         raise ContractError(f"Unknown contract type: {kind}")
     # Installed or checked-out repo: no HTTP schema references or remote lookups.
-    path = (Path(__file__).resolve().parents[2] / "docs" / "architecture" /
-            "v0.1-successor" / "contracts" / _SCHEMA_NAMES[kind])
+    local_schema = Path(__file__).resolve().parent / "schemas" / _SCHEMA_NAMES[kind]
+    workspace_schema = (Path(__file__).resolve().parents[2] / "docs" / "architecture" /
+                        "v0.1-successor" / "contracts" / _SCHEMA_NAMES[kind])
+    path = local_schema if local_schema.is_file() else workspace_schema
     try:
         schema = parse_json(path.read_bytes())
         Draft202012Validator.check_schema(schema)
