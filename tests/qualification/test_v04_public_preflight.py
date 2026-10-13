@@ -32,6 +32,17 @@ def fake_se10_gold():
         "private_store_independent_reviewed": True,
         "asset_counts": {a: 12 for a in ASSETS},
         "capability_count": 48,
+        "gold_file_bytes": 1024,
+        "opaque_reference_ids": [f"G{i:04d}" for i in range(1, 49)],
+        "ambiguity_count": 0,
+        "human_author_identity_class": "INDEPENDENT_HUMAN_DOMAIN_CURATOR",
+        "human_reviewer_identity_class": "INDEPENDENT_HUMAN_GOLD_REVIEWER",
+        "independence_declaration":
+            "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS",
+        "isolation_statement": "synthetic fixture only",
+        "adjudication_procedure_sha256": SHA,
+        "adjudication_code_sha256": IMAGE,
+        "private_store_class": "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT",
     }
 
 
@@ -56,6 +67,12 @@ def fake_hidden(manifest_sha):
         "execution_target_manifest_sha256": manifest_sha,
         "stage_a_merge": "0279968580d50e51843b09aa2b6e266b9967ff93",
         "hidden_file_sha256": SHA,
+        "hidden_file_bytes": 1024,
+        "source_execution_mapping_frozen": True,
+        "id_scheme": "HMAC_SHA256_UUIDV4_V1",
+        "id_secret_sha256": IMAGE,
+        "source_execution_relations": {a: "SAME" for a in ASSETS},
+        "source_execution_applicability_review_sha256": {a: SHA for a in ASSETS},
         "claim_count": 80,
         "asset_counts": {a: 20 for a in ASSETS},
         "aggregate_class_counts": {"TRUE":32, "MATERIALLY_FALSE":16,
@@ -111,6 +128,16 @@ class V04PublicPreflightTests(unittest.TestCase):
             bad = fake_se10_gold()
             bad["source_pack_blob"] = "0" * 40
             write(gp, bad)
+            r = assess(REPO_ROOT, se10_gold=gp)
+            self.assertIn("SE10_GOLD_COMMITMENT:INVALID_FROZEN_METADATA",
+                          r["blocked_reasons"])
+
+    def test_public_commitment_with_semantic_gold_field_is_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            gp = Path(directory) / "g.json"
+            fake = fake_se10_gold()
+            fake["canonical_identity"] = "LEAKED_GOLD"
+            write(gp, fake)
             r = assess(REPO_ROOT, se10_gold=gp)
             self.assertIn("SE10_GOLD_COMMITMENT:INVALID_FROZEN_METADATA",
                           r["blocked_reasons"])
