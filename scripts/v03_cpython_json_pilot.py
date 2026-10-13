@@ -237,8 +237,8 @@ def execute_pilot(runner: RealDockerRunner, settings: PilotSettings, measurement
             outcomes[case] = {
                 "verdict": ev["assessment"]["verdict"],
                 "reason_codes": ev["assessment"]["reason_codes"],
-                "evidence_sha256": _digest(json.dumps(ev, sort_keys=True,
-                                  separators=(",", ":"), ensure_ascii=False).encode()),
+                "evidence_sha256": _digest((json.dumps(ev, sort_keys=True,
+                                  separators=(",", ":"), ensure_ascii=False) + "\n").encode()),
                 "evidence_id": ev["evidence_id"],
                 "nonce": receipt.attestation["nonce"],
             }
