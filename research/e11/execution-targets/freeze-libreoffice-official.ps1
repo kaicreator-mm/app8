@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 $Url = "https://download.documentfoundation.org/libreoffice/stable/26.8.1/win/x86_64/LibreOffice_26.8.1_Win_x86-64.msi"
 $ExpectedSha = "C6298B10CFA1748BCBEDAD94C62CE771E240E5021BFD6D7A967CD571B04B5312"
 $Version = "26.8.1.1"
-$ProductCode = "{87B289F9-6172-4C3D-A091-EE36A40E1287}"
+$LibreOfficeProductCode = "{87B289F9-6172-4C3D-A091-EE36A40E1287}"
 $VcRuntimeDisplayNameBases = @(
     "Microsoft Visual C++ 2015-2022 Redistributable (x64)",
     "Microsoft Visual C++ v14 Redistributable (x64)"
@@ -59,8 +59,8 @@ foreach ($registryRoot in @(
                 $displayName = Get-OptionalPropertyValue $_ "DisplayName"
                 $displayVersion = Get-OptionalPropertyValue $_ "DisplayVersion"
                 $publisher = Get-OptionalPropertyValue $_ "Publisher"
-                $productCode = Get-OptionalPropertyValue $_ "PSChildName"
-                if ($null -eq $displayName -or $null -eq $displayVersion -or $null -eq $publisher -or $null -eq $productCode) {
+                $candidateProductCode = Get-OptionalPropertyValue $_ "PSChildName"
+                if ($null -eq $displayName -or $null -eq $displayVersion -or $null -eq $publisher -or $null -eq $candidateProductCode) {
                     return $false
                 }
                 $versionText = [string]$displayVersion
@@ -91,7 +91,7 @@ foreach ($registryRoot in @(
                 $nameMatches -and
                 [string]$publisher -eq "Microsoft Corporation" -and
                 $versionIsValid -and
-                [string]$productCode -match "^\{[0-9A-Fa-f-]{36}\}$"
+                [string]$candidateProductCode -match "^\{[0-9A-Fa-f-]{36}\}$"
             } |
             Select-Object @{Name="DisplayName";Expression={ Get-OptionalPropertyValue $_ "DisplayName" }}, @{Name="DisplayVersion";Expression={ Get-OptionalPropertyValue $_ "DisplayVersion" }}, @{Name="PSChildName";Expression={ Get-OptionalPropertyValue $_ "PSChildName" }}, @{Name="Publisher";Expression={ Get-OptionalPropertyValue $_ "Publisher" }})
     }
@@ -153,9 +153,9 @@ foreach ($registryRoot in @(
             Select-Object @{Name="DisplayName";Expression={ Get-OptionalPropertyValue $_ "DisplayName" }}, @{Name="DisplayVersion";Expression={ Get-OptionalPropertyValue $_ "DisplayVersion" }}, @{Name="PSChildName";Expression={ Get-OptionalPropertyValue $_ "PSChildName" }}, @{Name="InstallLocation";Expression={ Get-OptionalPropertyValue $_ "InstallLocation" }})
     }
 }
-$installed = @($uninstall | Where-Object { $_.DisplayVersion -eq $Version -and $_.PSChildName -eq $ProductCode })
+$installed = @($uninstall | Where-Object { $_.DisplayVersion -eq $Version -and $_.PSChildName -eq $LibreOfficeProductCode })
 if ($Install -and $installed.Count -eq 0) {
-    throw "Exact LibreOffice package version/ProductCode not found in registry: $Version / $ProductCode"
+    throw "Exact LibreOffice package version/ProductCode not found in registry: $Version / $LibreOfficeProductCode"
 }
 $smoke = [ordered]@{ executed = $false; exit_code = $null; log = $null }
 if ($Install -and $state -eq "INSTALLED") {
@@ -177,7 +177,7 @@ $manifest = [ordered]@{
     release_source_commit = "bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1"
     official_url = $Url
     package_version = $Version
-    product_code_expected = $ProductCode
+    product_code_expected = $LibreOfficeProductCode
     installer_sha256_expected = $ExpectedSha.ToLowerInvariant()
     installer_sha256_observed = $actualSha.ToLowerInvariant()
     publisher_signature_status = [string]$signature.Status
