@@ -1,0 +1,279 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "capability_id",
+    "revision",
+    "semantic",
+    "source",
+    "target",
+    "bindings",
+    "evidence_refs",
+    "readiness",
+    "projection_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "app8-capability-v1"
+    },
+    "capability_id": {
+      "type": "string",
+      "pattern": "^cap:[a-z0-9][a-z0-9._-]{3,128}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "semantic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "purpose",
+        "user_job",
+        "inputs",
+        "outputs",
+        "variants",
+        "constraints",
+        "negative_boundaries",
+        "failure_modes",
+        "side_effects"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_job": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "negative_boundaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "failure_modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "side_effects": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "content_sha256",
+        "license_disposition"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "license_disposition": {
+          "enum": [
+            "UNKNOWN",
+            "REVIEWED_COMPATIBLE",
+            "REVIEW_REQUIRED",
+            "NOT_REUSABLE"
+          ]
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "package_sha256",
+        "mapping_relation",
+        "environment_id"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "mapping_relation": {
+          "enum": [
+            "SAME",
+            "KNOWLEDGE_SOURCE_ANCESTOR",
+            "KNOWLEDGE_SOURCE_DESCENDANT",
+            "DIVERGED",
+            "UNRESOLVED"
+          ]
+        },
+        "environment_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "binding_id",
+          "kind",
+          "address",
+          "preconditions",
+          "side_effects"
+        ],
+        "properties": {
+          "binding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "CLI",
+              "LIBRARY_API",
+              "SERVICE_API",
+              "IPC_RPC",
+              "STRUCTURED_UI",
+              "OSS_ADAPTER"
+            ]
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1
+          },
+          "preconditions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "side_effects": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifecycle_state",
+        "export_ready",
+        "derived_by_policy",
+        "policy_revision",
+        "reason_codes"
+      ],
+      "properties": {
+        "lifecycle_state": {
+          "enum": [
+            "DISCOVERED",
+            "HYPOTHESIZED",
+            "EVIDENCED",
+            "COMPILED",
+            "EXPORT_READY",
+            "REFUTED",
+            "BLOCKED",
+            "STALE"
+          ]
+        },
+        "export_ready": {
+          "type": "boolean"
+        },
+        "derived_by_policy": {
+          "const": true
+        },
+        "policy_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "projection_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kaicreator-mm/app8/docs/architecture/v0.1-successor/contracts/capability-v1.schema.json"
+}
