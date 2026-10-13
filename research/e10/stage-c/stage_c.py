@@ -236,11 +236,24 @@ def score(adjudication_path, prediction_path, gold_path, gold_commitment_path, c
             fail(f"unknown/duplicate prediction judgment: {pid}")
         if j["classification"] not in CLASSIFICATIONS:
             fail(f"{pid}: invalid classification")
-        if not isinstance(j["matched_gold_ids"], list):
-            fail(f"{pid}: matched_gold_ids must be list")
-        for gid in j["matched_gold_ids"]:
-            if gid not in gold_refs:
-                fail(f"{pid}: unknown matched Gold id {gid}")
+        matches = j["matched_gold_ids"]
+        if not isinstance(matches, list) or len(matches) != len(set(
+            gid for gid in matches if isinstance(gid, str)
+        )):
+            fail(f"{pid}: matched_gold_ids must be an unduplicated list")
+        positive = j["classification"] in {"MATCH", "PARTIAL_MATCH"}
+        if (positive or j["classification"] == "AMBIGUOUS") and not matches:
+            fail(f"{pid}: positive/ambiguous verdict requires frozen Gold linkage")
+        for gid in matches:
+            if not isinstance(gid, str) or gid not in gold_refs:
+                fail(f"{pid}: unknown/non-string matched Gold id {gid}")
+            ref = gold_refs[gid]
+            if ref["asset"] != pred_by_id[pid]["asset"]:
+                fail(f"{pid}: cross-asset Gold match {gid}")
+            if positive and ref["ambiguity"]:
+                fail(f"{pid}: MATCH/PARTIAL_MATCH cannot use ambiguous Gold {gid}")
+            if j["classification"] == "AMBIGUOUS" and not ref["ambiguity"]:
+                fail(f"{pid}: AMBIGUOUS cannot exclude non-ambiguous Gold {gid}")
         for k in ("material_failure_semantics_applicable",
                   "material_failure_semantics_preserved",
                   "materially_incompatible_confident_equivalent_merge"):
@@ -267,6 +280,23 @@ def score(adjudication_path, prediction_path, gold_path, gold_commitment_path, c
         coverage[gid] = row["coverage"]
     if set(coverage) != set(gold_refs):
         fail("gold_coverage must cover every Gold capability exactly once")
+
+    # Coverage is independently adjudicated, but its declared semantic
+    # credit must be supported by the frozen prediction-to-Gold link ledger.
+    linked_classes = {gid: set() for gid in gold_refs}
+    for judgment in judgments.values():
+        for gid in judgment["matched_gold_ids"]:
+            linked_classes[gid].add(judgment["classification"])
+            if judgment["classification"] == "MATCH" and coverage[gid] != "FULL":
+                fail(f"{gid}: MATCH linked to Gold without FULL coverage")
+            if judgment["classification"] == "PARTIAL_MATCH" and coverage[gid] == "MISS":
+                fail(f"{gid}: PARTIAL_MATCH linked to Gold marked MISS")
+    for gid, value in coverage.items():
+        classes = linked_classes[gid]
+        if value == "FULL" and "MATCH" not in classes:
+            fail(f"{gid}: FULL coverage has no frozen MATCH link")
+        if value == "PARTIAL" and not classes.intersection({"MATCH", "PARTIAL_MATCH"}):
+            fail(f"{gid}: PARTIAL coverage has no frozen positive link")
 
     per_asset = {}
     total_prec_num = total_prec_den = 0.0
