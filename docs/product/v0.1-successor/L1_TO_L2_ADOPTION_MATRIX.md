@@ -1,14 +1,15 @@
 # L1 → L2 Adoption Matrix — app8 v0.1 Successor
 
-Status: TEMPLATE_FROZEN_DURING_L1 / POPULATE_AT_TRANSFER  
-Phase: PRODUCT_L1_EVIDENCE  
-Controller: Issue #72
+Status: ACTIVE_TRANSFER_INVENTORY_R2  
+Phase: CORE_L1_CONVERGENCE  
+Controller: Issue #72  
+Convergence authority: Issue #80
 
 ## Purpose
 
-Ensure validated L1 assets are not discarded or re-designed from zero after Product Freeze.
+Ensure the substantial Product/L1 investment is consumed downstream instead of being discarded or rebuilt from zero.
 
-Every load-bearing L1 artifact must receive one transfer disposition before L2 architecture work begins.
+The matrix is now populated progressively. L2 may start after core Product Freeze once core assets and deferred-study assets have explicit dispositions; deferred study terminals are not required first.
 
 ## Allowed dispositions
 
@@ -21,65 +22,40 @@ REFERENCE_ONLY
 DROP
 ```
 
-A `DROP` disposition requires an explicit reason and may not silently discard a Product/L1 invariant or counterexample.
+A `DROP` requires explicit reason and may not silently discard a Product invariant, counterexample, or reusable validated asset.
 
 ## Required fields
 
 | Field | Meaning |
 |---|---|
 | L1_ASSET | Exact file / Issue / PR / blob / evidence terminal |
-| PRODUCT_REQUIREMENT | PRD/SPCL/Product invariant it supports |
-| EVIDENCE_STATUS | PASS / FAIL / BLOCKED / retained research |
-| ADOPTION_DISPOSITION | One allowed disposition |
-| L2_TARGET | Architecture question / contract / module |
-| REUSE_SCOPE | Exact file/code/test/pattern to carry forward |
-| NEGATIVE_EVIDENCE | Counterexamples/failure modes that must remain testable |
-| TASK_DAG_TRACE | Future task IDs that consume this asset |
-| DROP_REASON | Required only for DROP |
+| PRODUCT_REQUIREMENT | PRD/SPCL/Product invariant |
+| EVIDENCE_STATUS | PASS / FAIL / BLOCKED / retained research / deferred |
+| ADOPTION_DISPOSITION | allowed disposition |
+| L2_L3_RELEASE_TARGET | architecture / implementation / release target |
+| REUSE_SCOPE | exact code/test/contract/pattern |
+| NEGATIVE_EVIDENCE | inherited counterexamples/failure modes |
+| TASK_DAG_TRACE | future task(s) consuming the asset |
+| DROP_REASON | required only for DROP |
 
-## Initial transfer classes
+## Current transfer inventory
 
-| L1 asset class | Default transfer expectation |
-|---|---|
-| Capability semantic schema / identity rules | ADOPT_AS_CONTRACT |
-| Knowledge Source / Execution Target / mapping/currentness rules | ADOPT_AS_CONTRACT |
-| Evidence / provenance / refutation semantics | ADOPT_AS_CONTRACT |
-| Synthetic/adversarial regression tests | ADOPT_AS_TEST |
-| Validated experiment validators/runners | REUSE_CODE or REIMPLEMENT_FROM_VALIDATED_PATTERN |
-| Fresh Review counterexamples | ADOPT_AS_TEST |
-| Search experiment implementation | REFERENCE_ONLY unless L2 independently adopts BM25 |
-| Human Gold / Hidden Truth semantic contents | REFERENCE_ONLY / evaluation asset; not production data |
-| Human-curator / recruitment operational records | REFERENCE_ONLY |
-| One-off controller comments / temporary orchestration | DROP when superseded by durable authority |
-
-## Transfer rule
-
-Before L2 Architecture Evidence starts:
-
-```text
-ALL_LOAD_BEARING_L1_ASSETS_DISPOSITIONED=YES
-UNEXPLAINED_DROP_COUNT=0
-COUNTEREXAMPLES_TRANSFERRED_TO_TEST_REQUIREMENTS=YES
-CONTRACT_CANDIDATES_MAPPED_TO_L2_QUESTIONS=YES
-```
-
-## Task DAG traceability rule
-
-Every formal Implementation Task DAG node must include:
-
-```text
-PRODUCT_REQUIREMENT=<PRD/SPCL>
-L1_EVIDENCE=<exact terminal/artifact>
-L2_DECISION=<architecture authority>
-REUSED_ASSET=<file/blob/module/pattern or NONE_WITH_REASON>
-TEST_OR_COUNTEREXAMPLE=<exact inherited test/evidence or NONE_WITH_REASON>
-```
-
-A task that changes an L1-derived contract must point to the authority allowing that change.
+| L1 asset / study | Status | Default disposition | Downstream target | Preserve |
+|---|---|---|---|---|
+| SE10 source pack + Gold tooling (#60) | tooling PASS; real terminal pending | ADOPT_AS_TEST + REIMPLEMENT_FROM_VALIDATED_PATTERN | Capability extraction/IR validation | exact source anchors, strict JSON, isolation, anti-over-splitting tests |
+| SE11 Stage-A evidence + hidden tooling (#62) | tooling PASS; terminal pending | ADOPT_AS_CONTRACT + ADOPT_AS_TEST | Q-L2-S02/S05 Evidence store + execution harness | source→target mapping, hidden-truth binding, refutation/currentness counterexamples |
+| #69 LibreOffice runtime freeze tooling | active real-host evidence | REIMPLEMENT_FROM_VALIDATED_PATTERN + ADOPT_AS_TEST | Q-L2-S05 deterministic execution harness | exact package identity, dependency freeze, smoke/evidence manifest patterns |
+| SE12 protocol | DEFERRED_TO_L2 | ADOPT_AS_TEST | Q-L2-S06 projection/export architecture | single-authority consistency matrix and unsupported-projection semantics |
+| SE13 protocol | DEFERRED_TO_L3_RELEASE | ADOPT_AS_TEST | Agent integration / Release Qualification | paired benchmark design, budgets, scorers, trial seeds |
+| SE14 Stage-A corpus/query + Stage-B BM25 runner (#70) | tooling PASS; result deferred | REUSE_CODE for benchmark harness or REIMPLEMENT_FROM_VALIDATED_PATTERN | Q-L2-S09 search/index + retrieval acceptance | 64-item freeze, 48 queries, fairness matrix, label barrier, deterministic ranker tests |
+| SE15 source/binding protocol + Notepad boundary | result deferred | ADOPT_AS_CONTRACT + ADOPT_AS_TEST | Q-L2-S07 binding architecture | pixel prohibition, structured-semantic boundary, top-capability freeze method, applicability rules |
+| SE16 recruitment instrument (#52) | reviewed instrument; cohort deferred | REFERENCE_ONLY + ADOPT_AS_TEST for Product validation | Product/Release adoption gate | anti-adaptive sampling, dedup, fixed cohort, evidence schema |
+| Fresh Review counterexamples across L1 | retained | ADOPT_AS_TEST | matching L2/L3 module | every valid A/B counterexample |
+| Controller-only superseded orchestration | superseded | DROP | none | DROP only when durable authority contains same rule |
 
 ## Reuse-first rule
 
-For each adopted implementation concern, evaluate in this order:
+For each implementation concern:
 
 ```text
 1. REUSE_CODE
@@ -87,27 +63,54 @@ For each adopted implementation concern, evaluate in this order:
 3. NEW_IMPLEMENTATION
 ```
 
-`NEW_IMPLEMENTATION` requires a short explanation of why validated L1 code/pattern is unsuitable.
+`NEW_IMPLEMENTATION` requires an explicit rejection reason for the existing validated asset/pattern.
 
-## Expected examples from current L1
+## Deferred-study rule
 
-These are transfer candidates, not premature L2 decisions:
+Deferral changes **when** a study blocks, not whether its useful work survives.
 
-- Capability identity / anti-over-splitting semantics → Capability IR contract.
-- Knowledge Source vs Execution Target → provenance/currentness contracts.
-- Source→Execution relation/applicability guards → target resolver/evidence evaluator contracts.
-- Gold/Hidden commitment strict-JSON and exact-binding counterexamples → validation/regression suites.
-- SE11 evidence/refutation structure → Evidence Package / falsification interfaces.
-- SE14 frozen fairness and baseline-prefix tests → search evaluation tests; BM25 itself remains an L2 choice.
-- SE15 non-pixel boundary and structured semantic UI findings → binding architecture constraints.
-- SE16 anti-adaptive sampling controls → Product evidence methodology; generally not production runtime code.
+```text
+SE12 -> L2 architecture validation
+SE13 -> L3 / Release Qualification
+SE14 -> L2/L3 search validation
+SE15 -> L2/L3 binding validation
+SE16 -> Product/Release adoption validation
+```
+
+Task DAG nodes touching those domains must cite the corresponding retained protocol/tooling/counterexamples even if the final study result has not yet run.
+
+## Core transfer rule
+
+Before L2 Architecture begins:
+
+```text
+CORE_LOAD_BEARING_L1_ASSETS_DISPOSITIONED=YES
+DEFERRED_STUDY_ASSETS_MAPPED=YES
+UNEXPLAINED_DROP_COUNT=0
+CORE_COUNTEREXAMPLES_TRANSFERRED=YES
+CORE_CONTRACT_CANDIDATES_MAPPED_TO_L2=YES
+```
+
+The matrix continues to accumulate exact terminal SHAs/blobs as SE10/SE11 and deferred studies finish.
+
+## Task DAG traceability rule
+
+Every formal Implementation Task DAG node must include:
+
+```text
+PRODUCT_REQUIREMENT=<PRD/SPCL>
+L1_EVIDENCE=<exact terminal/artifact or DEFERRED_VALIDATION_REFERENCE>
+L2_DECISION=<architecture authority>
+REUSED_ASSET=<file/blob/module/pattern or NONE_WITH_REASON>
+TEST_OR_COUNTEREXAMPLE=<exact inherited test/evidence or NONE_WITH_REASON>
+```
 
 ## Terminal
 
 ```text
-CURRENT_L1_TRANSFER_TEMPLATE=FROZEN
-MATRIX_FULLY_POPULATED=NO
-POPULATE_WHEN=AFTER_SE10_TO_SE16_TERMINALS_BEFORE_L2
+CURRENT_L1_TRANSFER_MATRIX=ACTIVE_R2
+CORE_MATRIX_COMPLETE=NO
+DEFERRED_ASSET_MAP_COMPLETE=YES
 FORMAL_TASK_DAG_TRACEABILITY_CONTRACT=DEFINED
 PRODUCT_FREEZE=NO
 L2_READY=NO
