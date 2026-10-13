@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 from app8.contracts import validate_contract
+from app8.execution.docker_policy import prepare_docker_sandbox
 from scripts.v03_cpython_json_pilot import (
     BINDING, IMAGE, COMMAND, _CASES, PilotBlocked, PilotSettings,
     GOOD_SCRIPT, BAD_SCRIPT, case_request, make_capability, execute_pilot,
@@ -34,16 +35,26 @@ class FrozenPilotUnitTests(unittest.TestCase):
         self.assertEqual(r.image_ref, IMAGE)
         self.assertEqual(r.command, COMMAND)
         self.assertEqual(r.args[:2],("-I","-c"))
-        self.assertFalse(r.network_allowed)
-        self.assertFalse(r.mutation_allowed)
+        prepared=prepare_docker_sandbox(r)
+        self.assertIn("--network=none",prepared.argv)
+        self.assertIn("--read-only",prepared.argv)
+        self.assertIn("--cap-drop=ALL",prepared.argv)
+        self.assertNotIn("--mount",prepared.argv)
+        self.assertNotIn("--privileged",prepared.argv)
+        self.assertFalse(prepared.host_isolation_verified)
 
     def test_case_argv_are_constant(self):
         for case in _CASES:
             r=case_request(settings(),case)
             self.assertEqual(r.args[:2],("-I","-c"))
             self.assertEqual(r.command,COMMAND)
-            self.assertFalse(r.network_allowed)
-            self.assertFalse(r.mutation_allowed)
+            prepared=prepare_docker_sandbox(r)
+            self.assertIn("--network=none",prepared.argv)
+            self.assertIn("--read-only",prepared.argv)
+            self.assertIn("--cap-drop=ALL",prepared.argv)
+            self.assertNotIn("--mount",prepared.argv)
+            self.assertNotIn("--privileged",prepared.argv)
+            self.assertFalse(prepared.host_isolation_verified)
 
     def test_unknown_case_does_not_execute(self):
         with self.assertRaises(PilotBlocked):
