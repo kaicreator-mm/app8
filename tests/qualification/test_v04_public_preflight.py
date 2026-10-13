@@ -99,8 +99,15 @@ class V04PublicPreflightTests(unittest.TestCase):
             gp, pp, mp, hp = (root / x for x in ("g.json", "p.json", "m.json", "h.json"))
             goldsha = write(gp, fake_se10_gold())
             write(pp, {"schema_version": "se10-prediction-commitment-v1",
+                       "source_pack_blob": PINS["se10_source_pack"][1],
                        "gold_commitment_sha256": goldsha, "gold_file_sha256": SHA,
-                       "prediction_file_sha256": IMAGE})
+                       "prediction_file_sha256": IMAGE, "prediction_count": 48,
+                       "asset_counts": {a:12 for a in ASSETS},
+                       "model": {"provider":"fixture","model":"test","version":"1",
+                                 "system_prompt_sha256":SHA,"sampling_sha256":SHA,
+                                 "run_environment_sha256":SHA},
+                       "declared_predictor_gold_visibility":False,
+                       "semantic_prediction_in_public_commitment":False})
             targetsha = write(mp, fake_target())
             write(hp, fake_hidden(targetsha))
             r = assess(REPO_ROOT, gp, pp, mp, hp)
