@@ -1,14 +1,17 @@
 # L2 Question Register — app8 v0.1 Successor r2
 
-Status: DRAFT_FOR_INDEPENDENT_REVIEW  
+Status: READY_AFTER_CORE_PRODUCT_FREEZE  
 Product Freeze: NO  
-L2 Ready: NO
+L2 Ready: NO  
+Convergence authority: Issue #80
 
 This register records candidate architecture questions only. It cannot redefine Product/L1.
 
 ## Transfer rule
 
-A question is L2_REQUIRED only if a negative answer for one implementation path causes architecture pivot rather than falsifying SPCL-001..007 or a Product invariant.
+A question is L2_REQUIRED if a negative answer for one implementation path causes architecture pivot rather than falsifying the core Product thesis or a Product invariant.
+
+Under convergence r2, SPCL-003/SPCL-005/SPCL-006 are validated alongside the corresponding L2 architecture questions. A negative downstream result may narrow those deferred claims without retroactively invalidating SPCL-001/SPCL-002 unless it exposes a core contradiction.
 
 ## Candidate L2 questions
 
@@ -55,13 +58,15 @@ Projection providers may be:
 - harvested/reimplemented modules;
 - external generators behind a contract.
 
-If no plausible architecture can satisfy one-authority-many-consumers, that becomes L1_BLOCKING rather than deferred.
+SE12 is the retained executable validation for this question. If no plausible architecture can satisfy one-authority-many-consumers, narrow SPCL-003 or reopen Product authority only if the failure also contradicts the frozen core thesis.
 
 ### Q-L2-S07 — Structured semantic UI binding
 
 How should Windows UI Automation/accessibility trees, semantic DOM roles or equivalent machine-readable UI surfaces be discovered, stabilized and invoked?
 
 Hard Product constraint: no pixel-derived fallback.
+
+SE15 assets are the retained validation input for this question; source-only curator/binding work must be reused rather than regenerated.
 
 ### Q-L2-S08 — Reverse engineering and fork lifecycle
 
@@ -73,7 +78,7 @@ Authorization/license/access-control policy is not an implementation loophole.
 
 Which lexical/vector/graph/hybrid index and ranking architecture should serve natural-language Capability search?
 
-SPCL-005 relevance/readiness behavior is Product/L1; storage/ranking implementation is L2.
+SPCL-005 remains an explicit deferred claim. SE14's frozen 64-item corpus, 48 queries, fairness gates and BM25 harness are retained L2/L3 validation assets; the production index/ranker remains an L2 choice.
 
 ### Q-L2-S10 — Currentness / revalidation
 
@@ -143,5 +148,9 @@ This is primarily architecture/process enforcement. Legal conclusions for specif
 
 ~~~text
 L2_READY = NO
-NEXT = successor Product/L1 Fresh Review and remaining L1 evidence
+ENTRY_GATE = SE10_PASS + SE11_PASS + FINAL_CORE_PRODUCT_REVIEW_PASS + PRODUCT_FREEZE
+DEFERRED_L2_VALIDATION = SE12,SE14,SE15
+DEFERRED_L3_RELEASE_VALIDATION = SE13
+DEFERRED_PRODUCT_RELEASE_VALIDATION = SE16
+NEXT = finish core L1 only, then start L2
 ~~~
