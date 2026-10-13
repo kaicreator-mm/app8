@@ -2,15 +2,15 @@
 
 app8 aims to turn existing software knowledge and **real observed behavior** into reusable Capabilities, then project a single factual authority into CLI, MCP, Skill, Agent documentation and search.
 
-## Current delivery state: v0.2 secure execution engineering milestone (package: v0.1.0a0 alpha)
+## Current delivery state: v0.3 real-software Capability pilot (package: v0.1.0a0 alpha)
 
-[v0.2 secure execution scope terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md): Docker isolation 22/22, real runner R1 42/42, post-merge Evidence integrity fix unit checks Windows 72/72 + Ubuntu 8/8 PASS. [v0.1 historical technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) remains immutable reference. **Full Product Release PASS has not been demonstrated.**
+[v0.3 Windows real CPython pilot terminal](docs/release/v0.3/REAL_CPYTHON_PILOT_TERMINAL.md): exact-HEAD Windows pytest 200 passed / 1 skipped; P01/N01 scoped real Evidence PASS, F01 signed REFUTED, B01 target drift BLOCKED; **Ubuntu incremental real pilot pending**. [v0.2 security engineering terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md) and [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) are retained. **Full Product Release PASS has not been demonstrated.**
 
 | Area | Status |
 |---|---|
 | Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
 | L2 architecture | ADR01–ADR08 adopted (#94 / PR #96) |
-| Implementation Task DAG | Original v0.1 10/10 issues closed; v0.2 secure execution engineering issues completed #123–#135 |
+| Implementation Task DAG | **17/18** defined tasks closed: v0.1 10/10, v0.2 6/6, v0.3 1/2; Ubuntu pilot #140 remains open |
 | Python package | Source/doc discovery, hypothesis and falsification plan freezing, SQLite evidence ledger, readiness reducer, in-memory BM25, projection metadata, CLI preview |
 | Windows host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 72/72 source tests |
 | Ubuntu host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 8/8 targeted source tests |
