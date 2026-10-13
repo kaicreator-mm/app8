@@ -30,6 +30,24 @@ PINS = {
     "se11_scorer": ("research/e11/stage-c/stage_c.py",
                     "50c9569746d5a6b9bdabfee6b9369cc1da3e3ae5"),
 }
+SE10_PUBLIC_FIELDS = {
+    "schema_version", "source_pack_blob", "gold_file_sha256",
+    "independent_attestation_sha256", "human_independence_requires_external_review",
+    "gold_file_bytes", "capability_count", "asset_counts", "opaque_reference_ids",
+    "ambiguity_count", "human_author_identity_class", "human_reviewer_identity_class",
+    "independence_declaration", "isolation_statement", "adjudication_procedure_sha256",
+    "adjudication_code_sha256", "private_store_class", "private_store_independent_reviewed",
+    "allowlist_git_blob", "declared_model_generated_gold", "declared_predictor_gold_visibility",
+    "semantic_gold_in_public_output",
+}
+SE11_PUBLIC_FIELDS = {
+    "schema_version", "stage_a_merge", "execution_target_manifest_sha256",
+    "source_execution_mapping_frozen", "hidden_file_sha256", "hidden_file_bytes",
+    "claim_count", "asset_counts", "aggregate_class_counts", "opaque_claim_ids",
+    "id_scheme", "id_secret_sha256", "source_execution_relations",
+    "source_execution_applicability_review_sha256", "truth_visible_to_llm_b",
+    "decisive_fixtures_visible_to_llm_b", "semantic_truth_in_public_output",
+}
 CLASS_COUNTS = {"TRUE": 32, "MATERIALLY_FALSE": 16, "OVERBROAD": 16, "NEAR_MISS": 16}
 
 
@@ -97,11 +115,23 @@ def _se10(gold_path: Path | None, prediction_path: Path | None, blockers: list[s
     pred_raw, pred = _strict_read(prediction_path, "SE10_PREDICTION_COMMITMENT", blockers)
     if gold is not None:
         counts = gold.get("asset_counts")
-        if (gold.get("schema_version") != "se10-public-commitment-v1"
+        if (set(gold) != SE10_PUBLIC_FIELDS
+                or gold.get("schema_version") != "se10-public-commitment-v1"
                 or gold.get("source_pack_blob") != PINS["se10_source_pack"][1]
                 or gold.get("allowlist_git_blob") != PINS["se10_allowlist"][1]
                 or not _is_sha(gold.get("gold_file_sha256"))
                 or not _is_sha(gold.get("independent_attestation_sha256"))
+                or not _is_sha(gold.get("adjudication_procedure_sha256"))
+                or not _is_sha(gold.get("adjudication_code_sha256"))
+                or gold.get("human_author_identity_class") != "INDEPENDENT_HUMAN_DOMAIN_CURATOR"
+                or gold.get("human_reviewer_identity_class") != "INDEPENDENT_HUMAN_GOLD_REVIEWER"
+                or gold.get("independence_declaration") !=
+                   "INDEPENDENT_HUMANS_NO_MODEL_GOLD_NO_PREDICTOR_ACCESS"
+                or gold.get("private_store_class") !=
+                   "SEALED_ACCESS_CONTROLLED_OUTSIDE_DISCOVERABLE_GIT"
+                or not isinstance(gold.get("isolation_statement"), str)
+                or not gold["isolation_statement"].strip()
+                or type(gold.get("gold_file_bytes")) is not int or gold["gold_file_bytes"] <= 0
                 or gold.get("human_independence_requires_external_review") is not True
                 or gold.get("declared_model_generated_gold") is not False
                 or gold.get("declared_predictor_gold_visibility") is not False
@@ -109,6 +139,14 @@ def _se10(gold_path: Path | None, prediction_path: Path | None, blockers: list[s
                 or not isinstance(counts, dict) or set(counts) != set(ASSETS)
                 or any(type(counts[k]) is not int or counts[k] < 12 for k in ASSETS)
                 or gold.get("capability_count") != sum(counts.values())
+                or not isinstance(gold.get("opaque_reference_ids"), list)
+                or len(gold["opaque_reference_ids"]) != gold["capability_count"]
+                or len(set(map(str, gold["opaque_reference_ids"]))) != gold["capability_count"]
+                or not all(isinstance(x, str) and re.fullmatch(r"G[0-9]{4,6}", x)
+                           for x in gold["opaque_reference_ids"])
+                or type(gold.get("ambiguity_count")) is not int
+                or gold["ambiguity_count"] < 0
+                or gold["ambiguity_count"] > gold["capability_count"]
                 or gold.get("private_store_independent_reviewed") is not True):
             blockers.append("SE10_GOLD_COMMITMENT:INVALID_FROZEN_METADATA")
     if pred is not None:
@@ -152,11 +190,29 @@ def _se11(manifest_path: Path | None, hidden_path: Path | None, blockers: list[s
         counts = hidden.get("asset_counts")
         classes = hidden.get("aggregate_class_counts")
         claim_ids = hidden.get("opaque_claim_ids")
-        if (hidden.get("schema_version") != "se11-public-commitment-v1"
+        if (set(hidden) != SE11_PUBLIC_FIELDS
+                or hidden.get("schema_version") != "se11-public-commitment-v1"
                 or manifest_raw is None
                 or hidden.get("execution_target_manifest_sha256") != _sha(manifest_raw)
                 or hidden.get("stage_a_merge") != "0279968580d50e51843b09aa2b6e266b9967ff93"
                 or not _is_sha(hidden.get("hidden_file_sha256"))
+                or not _is_sha(hidden.get("id_secret_sha256"))
+                or hidden.get("id_scheme") != "HMAC_SHA256_UUIDV4_V1"
+                or hidden.get("source_execution_mapping_frozen") is not True
+                or type(hidden.get("hidden_file_bytes")) is not int
+                or hidden["hidden_file_bytes"] <= 0
+                or not isinstance(hidden.get("source_execution_relations"), dict)
+                or not isinstance(hidden.get("source_execution_applicability_review_sha256"), dict)
+                or manifest is None
+                or set(hidden["source_execution_relations"]) != set(ASSETS)
+                or set(hidden["source_execution_applicability_review_sha256"]) != set(ASSETS)
+                or any(hidden["source_execution_relations"][a] !=
+                           manifest.get("source_execution_mappings", {}).get(a, {}).get("relation")
+                       for a in ASSETS)
+                or any(not _is_sha(hidden["source_execution_applicability_review_sha256"][a])
+                       or hidden["source_execution_applicability_review_sha256"][a] !=
+                           manifest.get("source_execution_mappings", {}).get(a, {}).get("applicability_review_sha256")
+                       for a in ASSETS)
                 or hidden.get("claim_count") != 80
                 or not isinstance(counts, dict)
                 or set(counts) != set(ASSETS)
