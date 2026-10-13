@@ -24,8 +24,8 @@ Expanded comparator evidence is recorded in SE09_COMPARATOR_EVIDENCE.md.
 
 | Successor claim | Evidence | Validation stage | Gate consequence |
 |---|---|---|---|
-| SPCL-001 Useful semantic capability extraction | SE10 | CORE L1 / Product Freeze | FAIL => SK1; blocks L2 |
-| SPCL-002 Falsification/evidence validates or refutes hypotheses | SE11 + inherited E00 as method evidence only | CORE L1 / Product Freeze | FAIL => SK2; blocks L2 |
+| SPCL-001 Useful semantic capability extraction | SE10 original protocol | L3/Release empirical acceptance | DESIGN_ACCEPTED / EMPIRICAL_UNPROVEN; not an L2-entry blocker under #92 |
+| SPCL-002 Falsification/evidence validates or refutes hypotheses | SE11 + inherited E00 as method evidence only | L3/Release empirical acceptance | DESIGN_ACCEPTED / EMPIRICAL_UNPROVEN; no model self-evidence; not an L2-entry blocker under #92 |
 | SPCL-003 One Capability authority, many consumers | SE12 | L2 architecture validation | UNPROVEN until PASS; architecture must preserve claim or narrow it |
 | SPCL-004 Agent utility | SE13 | L3 / Release Qualification | UNPROVEN until PASS; cannot be a validated release claim |
 | SPCL-005 Capability search by intent | SE14 | L2/L3 search validation | UNPROVEN until PASS; cannot be a validated release claim |
