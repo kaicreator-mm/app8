@@ -1,0 +1,288 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "claim_id",
+    "capability_id",
+    "source",
+    "target",
+    "fixture",
+    "plan",
+    "observation",
+    "assessment",
+    "replay"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "app8-evidence-v1"
+    },
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^ev:[a-zA-Z0-9._:-]+$"
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_id": {
+      "type": "string",
+      "pattern": "^cap:[a-z0-9][a-z0-9._-]{3,128}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "revision",
+        "content_sha256"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "package_sha256",
+        "environment_id",
+        "mapping_relation"
+      ],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "package_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "environment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mapping_relation": {
+          "enum": [
+            "SAME",
+            "KNOWLEDGE_SOURCE_ANCESTOR",
+            "KNOWLEDGE_SOURCE_DESCENDANT",
+            "DIVERGED",
+            "UNRESOLVED"
+          ]
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "content_sha256",
+        "input_description",
+        "reset_procedure"
+      ],
+      "properties": {
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "input_description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reset_procedure": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_sha256",
+        "binding_id",
+        "assertions",
+        "budget"
+      ],
+      "properties": {
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "binding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "wall_seconds",
+            "max_output_bytes",
+            "network_allowed",
+            "mutation_allowed"
+          ],
+          "properties": {
+            "wall_seconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            },
+            "max_output_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "network_allowed": {
+              "type": "boolean"
+            },
+            "mutation_allowed": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observer",
+        "execution_status",
+        "invocation_sha256",
+        "exit_code",
+        "stdout_sha256",
+        "stderr_sha256",
+        "artifacts",
+        "recorded_at"
+      ],
+      "properties": {
+        "observer": {
+          "enum": [
+            "DETERMINISTIC_EXECUTION_ADAPTER",
+            "MANUAL_OPERATOR_ATTESTED"
+          ]
+        },
+        "execution_status": {
+          "enum": [
+            "EXECUTED",
+            "BLOCKED",
+            "NOT_RUN"
+          ]
+        },
+        "invocation_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "stdout_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "stderr_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "assessor_kind",
+        "reason_codes"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": [
+            "SUPPORTED",
+            "REFUTED",
+            "NARROWED",
+            "BLOCKED",
+            "INCONCLUSIVE"
+          ]
+        },
+        "assessor_kind": {
+          "enum": [
+            "DETERMINISTIC_ASSERTION_ENGINE",
+            "HUMAN_OPERATOR",
+            "MODEL_PROPOSAL_ONLY"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "artifact_location"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "artifact_location": {
+          "enum": [
+            "LOCAL_CONTENT_ADDRESSED",
+            "S3_CONTENT_ADDRESSED",
+            "PRIVATE_OPERATOR_VAULT"
+          ]
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kaicreator-mm/app8/docs/architecture/v0.1-successor/contracts/evidence-v1.schema.json"
+}
