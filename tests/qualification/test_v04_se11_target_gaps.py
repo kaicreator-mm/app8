@@ -42,6 +42,13 @@ class TargetGapTests(unittest.TestCase):
             with self.assertRaisesRegex(UnfrozenTarget,"exact Git blob drift"):
                 report(root)
 
+    def test_candidate_checkout_is_lf_pinned_on_windows(self):
+        attrs = (ROOT / ".gitattributes").read_text(encoding="utf-8")
+        self.assertIn(
+            "/research/e11/execution-targets/execution-target-selection.json text eol=lf",
+            attrs.splitlines(),
+        )
+
     def test_missing_candidate_is_blocked(self):
         with tempfile.TemporaryDirectory() as td:
             with self.assertRaisesRegex(UnfrozenTarget,"unavailable"):
