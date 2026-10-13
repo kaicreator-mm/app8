@@ -288,8 +288,36 @@ class AdjudicationTests(unittest.TestCase):
         obs = RunnerObservation("WALL_LIMIT_ENFORCED", 137, b"", b"", False, False, 12,
                                 "a" * 64, "c" * 64, "b" * 64, "29.0.0-test", True)
         verdict, codes = RealDockerRunner.adjudicate(["exit_code==137"], obs)
-        self.assertEqual(verdict, "SUPPORTED")
+        self.assertEqual(verdict, "BLOCKED")
+        self.assertIn("EXECUTION_INCOMPLETE", codes)
         self.assertIn("WALL_LIMIT_ENFORCED", codes)
+
+    def test_truncated_output_never_supports_matching_prefix(self):
+        obs = RunnerObservation("OUTPUT_LIMIT_ENFORCED", 137, b"good", b"",
+                                True, False, 15, "a"*64, "c"*64,
+                                "b"*64, "29.0.0-test", True)
+        verdict, codes = RealDockerRunner.adjudicate(
+            ["exit_code==137", "stdout_contains:good"], obs)
+        self.assertEqual(verdict, "BLOCKED")
+        self.assertIn("OUTPUT_LIMIT_ENFORCED", codes)
+
+    def test_limit_status_refuses_even_matching_exit_code(self):
+        obs = RunnerObservation("WALL_LIMIT_ENFORCED", 137, b"", b"",
+                                False, False, 15, "a"*64, "c"*64,
+                                "b"*64, "29.0.0-test", True)
+        result = RealDockerRunner.adjudicate(["exit_code==137"], obs)
+        self.assertEqual(result[0], "BLOCKED")
+        self.assertNotIn("ASSERTIONS_PASSED", result[1])
+
+    def test_freeze_plan_binds_command_argv_image_identity(self):
+        base = ContainerRequest(IMAGE, "/usr/local/bin/python", ("-V",),
+                                "b"*64, 30, 65536)
+        a = freeze_execution_plan("binding:x", ["exit_code==0"], base)
+        b = freeze_execution_plan("binding:x", ["exit_code==0"],
+                                  ContainerRequest(IMAGE, "/usr/local/bin/python",
+                                                   ("-c", "print(1)"), "b"*64, 30, 65536))
+        self.assertNotEqual(a["request_sha256"], b["request_sha256"])
+        self.assertNotEqual(a["plan_sha256"], b["plan_sha256"])
 
     def test_freeze_plan_binds_budget(self):
         req = ContainerRequest(IMAGE, "/usr/local/bin/python", (), "b" * 64, 30, 65536)

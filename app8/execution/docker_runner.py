@@ -410,10 +410,15 @@ class RealDockerRunner:
         if (observation.status == "OUTPUT_LIMIT_ENFORCED" or
                 observation.stdout_truncated or observation.stderr_truncated):
             enforced.append("OUTPUT_LIMIT_ENFORCED")
+        # A killed or truncated execution is not a completed behavior probe.
+        # Matching its termination exit code or truncated output must never
+        # promote a capability; preserve the enforced boundary as BLOCKED.
+        if enforced:
+            return ("BLOCKED", ("EXECUTION_INCOMPLETE", *enforced))
         if failed:
-            codes = ["ASSERTIONS_FAILED", *(f"FAILED:{a}" for a in failed), *enforced]
+            codes = ["ASSERTIONS_FAILED", *(f"FAILED:{a}" for a in failed)]
             return ("REFUTED", tuple(codes))
-        return ("SUPPORTED", ("ASSERTIONS_PASSED", *enforced))
+        return ("SUPPORTED", ("ASSERTIONS_PASSED",))
 
     # ---- Evidence v1 build + attestation v2 sign ----
 
@@ -451,11 +456,16 @@ class RealDockerRunner:
             prepared = prepare_docker_sandbox(request)
         except SandboxPolicyError as exc:
             raise RunnerBlocked(f"POLICY_REJECTED:{exc}") from exc
+        if not isinstance(plan, dict):
+            raise RunnerBlocked("frozen execution plan required")
         assertions = plan.get("assertions")
         if not isinstance(assertions, list) or not assertions:
             raise RunnerBlocked("plan must carry a nonempty assertion list")
         for assertion in assertions:
             self._parse_assertion(assertion)  # unknown forms blocked BEFORE any run
+        frozen = freeze_execution_plan(plan.get("binding_id"), assertions, request)
+        if plan != frozen:
+            raise RunnerBlocked("FROZEN_PLAN_REQUEST_HASH_MISMATCH")
         if target.get("environment_id") != self._config.environment_id:
             raise RunnerBlocked("ENVIRONMENT_MISMATCH")
         if (target.get("package_sha256") != prepared.image_sha256 or
@@ -511,6 +521,13 @@ def freeze_execution_plan(binding_id: str, assertions: list[str],
     budget = {"wall_seconds": request.wall_seconds,
               "max_output_bytes": request.max_output_bytes,
               "network_allowed": False, "mutation_allowed": False}
-    core = {"binding_id": binding_id, "assertions": list(assertions), "budget": budget}
-    return {"plan_sha256": _sha256(_canonical(core)), "binding_id": binding_id,
-            "assertions": list(assertions), "budget": budget}
+    # The plan identifies the actual immutable image, argv, Docker-client
+    # pin, execution limits and sandbox policy generated for this request.
+    # A caller cannot reuse a signed plan with modified command arguments.
+    try:
+        prepared = prepare_docker_sandbox(request)
+    except SandboxPolicyError as exc:
+        raise RunnerBlocked(f"POLICY_REJECTED:{exc}") from exc
+    core = {"binding_id": binding_id, "assertions": list(assertions),
+            "budget": budget, "request_sha256": prepared.request_sha256}
+    return {"plan_sha256": _sha256(_canonical(core)), **core}

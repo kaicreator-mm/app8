@@ -178,10 +178,43 @@ class SigningChainTests(ChainCase):
     def test_wall_limit_evidence_carries_enforcement(self):
         receipt = self.run_case("sleep", ["exit_code==0"], wall=1)
         ev = receipt.evidence
-        self.assertEqual(ev["assessment"]["verdict"], "REFUTED")
+        self.assertEqual(ev["assessment"]["verdict"], "BLOCKED")
+        self.assertIn("EXECUTION_INCOMPLETE", ev["assessment"]["reason_codes"])
         self.assertIn("WALL_LIMIT_ENFORCED", ev["assessment"]["reason_codes"])
         self.assertIsInstance(ev["observation"]["exit_code"], int)
         import_signed_observation(self.store, self.gate, ev, receipt.attestation)
+
+    def test_mutated_plan_sha256_blocked_before_any_spawn(self):
+        plan = freeze_execution_plan(BINDING, ["exit_code==0"], self.req())
+        plan["plan_sha256"] = "f" * 64
+        with mock.patch.dict(os.environ, self.env):
+            with self.assertRaisesRegex(RunnerBlocked, "FROZEN_PLAN_REQUEST_HASH_MISMATCH"):
+                self.runner().execute_attest(
+                    self.req(), claim_id="claim:x", capability_id="cap:real-runner-smoke",
+                    source=SOURCE, target=self.target(), fixture=FIXTURE, plan=plan)
+        self.assertEqual(self.ps_ids(), [])
+
+    def test_stale_plan_changed_args_blocked_before_spawn(self):
+        plan = freeze_execution_plan(BINDING, ["exit_code==0"], self.req(args=("-V",)))
+        with mock.patch.dict(os.environ, self.env):
+            with self.assertRaisesRegex(RunnerBlocked, "FROZEN_PLAN_REQUEST_HASH_MISMATCH"):
+                self.runner().execute_attest(
+                    self.req(args=("-c", "print('different')")),
+                    claim_id="claim:x", capability_id="cap:real-runner-smoke",
+                    source=SOURCE, target=self.target(), fixture=FIXTURE, plan=plan)
+        self.assertEqual(self.ps_ids(), [])
+
+    def test_limit_aborted_matching_exit_never_supports_claim(self):
+        receipt = self.run_case("sleep", ["exit_code==137"], wall=1)
+        ev = receipt.evidence
+        self.assertEqual(ev["assessment"]["verdict"], "BLOCKED")
+        self.assertIn("EXECUTION_INCOMPLETE", ev["assessment"]["reason_codes"])
+        import_signed_observation(self.store, self.gate, ev, receipt.attestation)
+        ready = evaluate_readiness(
+            self.capability(ev), [ev], projection_verifier=lambda _: True,
+            attestation_gate=self.gate,
+            signed_attestations={ev["evidence_id"]: receipt.attestation})
+        self.assertFalse(ready.export_ready)
 
     def test_runner_never_signs_unallowlisted(self):
         plan = freeze_execution_plan(BINDING, ["exit_code==0"], self.req())
