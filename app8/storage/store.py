@@ -11,7 +11,7 @@ from typing import Any, Callable
 
 from app8.contracts import validate_contract
 
-SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 class IntegrityError(ValueError):
