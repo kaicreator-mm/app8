@@ -17,6 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES = ("contracts", "storage", "readiness", "discovery", "orchestration",
           "execution", "projections", "search", "integration")
 SCHEMAS = ("capability-v1.schema.json", "evidence-v1.schema.json")
+# Reviewed content bytes, not merely equality between two potentially CRLF-converted copies.
+FROZEN_SCHEMA_SHA256 = {
+    "capability-v1.schema.json": "9e784ed03985d8357b8d96cb978acc18fe38a694988d7401300fde5ee7daa4c7",
+    "evidence-v1.schema.json": "c3b88f973b3963c8f893750e71b0cbee2aac1dfe1f3b58011e9e7ba67e35728a",
+}
 
 
 def digest(path: Path) -> str:
@@ -39,11 +44,20 @@ def preflight() -> dict:
     for name in SCHEMAS:
         packaged=ROOT/"app8"/"contracts"/"schemas"/name
         authority=ROOT/"docs"/"architecture"/"v0.1-successor"/"contracts"/name
-        if not packaged.is_file() or not authority.is_file() or digest(packaged)!=digest(authority):
+        if not packaged.is_file() or not authority.is_file():
+            record["errors"].append(f"SCHEMA_MISSING:{name}")
+            continue
+        actual_authority, actual_packaged = digest(authority), digest(packaged)
+        if actual_authority != FROZEN_SCHEMA_SHA256[name]:
+            record["errors"].append(f"SCHEMA_AUTHORITY_SHA_MISMATCH:{name}")
+        if actual_packaged != FROZEN_SCHEMA_SHA256[name]:
+            record["errors"].append(f"SCHEMA_PACKAGED_SHA_MISMATCH:{name}")
+        if actual_packaged != actual_authority:
             record["errors"].append(f"SCHEMA_PARITY_MISMATCH:{name}")
-        else:
-            record["frozen_schema_sha256"][name]=digest(authority)
-    record["schema_parity_pass"]=len(record["frozen_schema_sha256"])==len(SCHEMAS)
+        if actual_authority == actual_packaged == FROZEN_SCHEMA_SHA256[name]:
+            record["frozen_schema_sha256"][name]=actual_authority
+    record["schema_parity_pass"]=(len(record["frozen_schema_sha256"])==len(SCHEMAS)
+                                  and not any(e.startswith("SCHEMA_") for e in record["errors"]))
 
     for suite in SUITES:
         result=run(sys.executable,"-m","unittest","discover","-s",f"tests/{suite}","-p","test_*.py","-v")
