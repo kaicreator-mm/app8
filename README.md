@@ -2,21 +2,21 @@
 
 app8 aims to turn existing software knowledge and **real observed behavior** into reusable Capabilities, then project a single factual authority into CLI, MCP, Skill, Agent documentation and search.
 
-## Current delivery state: v0.1.0a0 technical-preview candidate
+## Current delivery state: v0.2 secure execution engineering milestone (package: v0.1.0a0 alpha)
 
-[Cross-platform R2 acceptance and full-release blockers](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md): Windows + Ubuntu 84/84 tests, wheels/CLI PASS; real OS sandbox BLOCKED, SE10/SE11 empirical UNPROVEN. This is not Release PASS.
+[v0.2 secure execution scope terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md): Docker isolation 22/22, real runner R1 42/42, post-merge Evidence integrity fix unit checks Windows 72/72 + Ubuntu 8/8 PASS. [v0.1 historical technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) remains immutable reference. **Full Product Release PASS has not been demonstrated.**
 
 | Area | Status |
 |---|---|
 | Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
 | L2 architecture | ADR01–ADR08 adopted (#94 / PR #96) |
-| Implementation Task DAG | 9/10 source tasks implemented; real-host/release #107 remains |
+| Implementation Task DAG | Original v0.1 10/10 issues closed; v0.2 secure execution engineering issues completed #123–#135 |
 | Python package | Source/doc discovery, hypothesis and falsification plan freezing, SQLite evidence ledger, readiness reducer, in-memory BM25, projection metadata, CLI preview |
-| Windows real-host validation | R1: 83/84 tests; CRLF test and frozen JSON byte issues fixed in PR #120; R2 pending |
-| Ubuntu real-host validation | R1: 84/84 tests, wheel install and CLI smoke PASS |
+| Windows host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 72/72 source tests |
+| Ubuntu host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 8/8 targeted source tests |
 | LibreOffice official target | #69 26.8.1.1 install identity/non-evaluative smoke documented, scope PASS |
-| OS-level sandbox | **BLOCKED** on both hosts; no verified network/filesystem containment backend |
-| SE10/SE11 empirical studies | **UNPROVEN** |
+| OS-level sandbox | **Scoped PASS** on documented Windows/Ubuntu Docker hosts and fixed digest-pinned policy; no blanket security certification |
+| Trusted Evidence | Privileged real Docker runner, signed v2 receipt, durable nonce and SQLite ingress implemented; smoke-only scoped PASS |\n| SE10/SE11 empirical studies | **UNPROVEN** |
 | Full release qualification | **NO** |
 
 The installed `app8` CLI currently produces **`ILLUSTRATIVE_UNVERIFIED` Capability previews**, not authorized executable exports. CLI/MCP/Skill/Docs/Search projections are metadata representations of a single Capability snapshot, not working MCP/Skill installers or complete runtime adapters.
@@ -41,7 +41,7 @@ The preview CLI requires an **exact source SHA256**, source revision and explici
 - Model-produced Capability hypotheses and test plans are **proposals**, never behavioral evidence.
 - Refuted, blocked, stale or unobserved claims cannot become `EXPORT_READY`.
 - Pixel/OCR/coordinate-driven automation is forbidden; structured semantic UI adapters may be supported later.
-- `app8.execution` is currently an experimental exact-binary subprocess **observation adapter**, **not** an OS sandbox. Do not pass untrusted model-generated commands or treat caller-supplied isolation flags as verified boundaries. Automatic real execution is not release-qualified.
+- The unsafe direct `app8.execution.adapter.run_invocation` path is **disabled**. `app8.execution.docker_runner.RealDockerRunner` is an operator-provisioned, digest-pinned real-host runner, **not a model-callable API**. It requires a reviewed image/command allowlist, actual Docker isolation and a private signing key. A successful synthetic smoke does not prove general Capability quality or formal release readiness.
 - No human independent review is required for L1/L2 scheduling by product-owner decision #92; this is a documented waiver, not an independent-review PASS.
 - Existing human Gold/hidden truth protocols and adversarial studies are preserved as deferred release-quality research assets; results must not be invented.
 
@@ -51,6 +51,6 @@ The preview CLI requires an **exact source SHA256**, source revision and explici
 - [Owner r3 product scope/evidence split](docs/product/v0.1-successor/L1_OWNER_DESIGN_FREEZE_R3.md)
 - [L2 architecture decisions](docs/architecture/v0.1-successor/L2_ARCHITECTURE_EVIDENCE.md)
 - [Formal implementation Task DAG](docs/implementation/v0.1-successor/TASK_DAG.md)
-- [Release qualification](https://github.com/kaicreator-mm/app8/issues/107) and [deferred empirical work](https://github.com/kaicreator-mm/app8/issues/95)
+- [v0.2 secure execution terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md), [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) and [historical deferred empirical work](https://github.com/kaicreator-mm/app8/issues/95)
 
 The older `docs/product/v0.1/` Admission/Governance product thesis is superseded. Historical SE10–SE16 protocols and evidence remain retained, but are not current pre-L2 gates. GitHub exact commits and Issue terminals are the live state authority.
