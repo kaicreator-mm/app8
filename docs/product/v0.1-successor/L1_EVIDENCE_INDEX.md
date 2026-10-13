@@ -1,11 +1,14 @@
 # L1 Evidence Index — app8 v0.1 Successor r2
 
-Status: DRAFT_FOR_INDEPENDENT_REVIEW  
-Authority: successor claim-to-evidence map for PRD.md
+Status: CONVERGENCE_R2_ACTIVE / PRODUCT_OWNER_APPROVED  
+Authority: successor claim-to-evidence map for PRD.md  
+Convergence authority: Issue #80
 
 ## 1. Purpose
 
-This document defines what must be proven before successor Product Freeze.
+This document defines the staged evidence obligations for successor Product Freeze and downstream validation.
+
+Convergence r2 narrows the **pre-L2 Product Freeze gate** to the surviving core thesis (SPCL-001/SPCL-002 plus Product invariants). SPCL-003..SPCL-007 remain real Product claims, but their validation is staged into L2/L3/Release work and they remain explicitly UNPROVEN until their own studies pass.
 
 It does not define production architecture.
 
@@ -13,16 +16,16 @@ Expanded comparator evidence is recorded in SE09_COMPARATOR_EVIDENCE.md.
 
 ## 2. Claim map
 
-| Successor claim | Required evidence | Gate consequence |
-|---|---|---|
-| SPCL-001 Useful semantic capability extraction | SE10 | FAIL => SK1 |
-| SPCL-002 Falsification/evidence validates or refutes hypotheses | SE11 + inherited E00 as method evidence only | FAIL => SK2 |
-| SPCL-003 One Capability authority, many consumers | SE12 | FAIL => SK3 |
-| SPCL-004 Agent utility | SE13 | FAIL => SK4 |
-| SPCL-005 Capability search by intent | SE14 | FAIL => SK5 disposition |
-| SPCL-006 Non-pixel exportability | SE15 | FAIL => SK6 / narrow supported classes |
-| SPCL-007 Target-user capability-compilation pull | SE16 | FAIL => SK7 |
-| Product/category differentiation and reuse boundary | SE09 | informs all claims; cannot substitute for execution evidence |
+| Successor claim | Evidence | Validation stage | Gate consequence |
+|---|---|---|---|
+| SPCL-001 Useful semantic capability extraction | SE10 | CORE L1 / Product Freeze | FAIL => SK1; blocks L2 |
+| SPCL-002 Falsification/evidence validates or refutes hypotheses | SE11 + inherited E00 as method evidence only | CORE L1 / Product Freeze | FAIL => SK2; blocks L2 |
+| SPCL-003 One Capability authority, many consumers | SE12 | L2 architecture validation | UNPROVEN until PASS; architecture must preserve claim or narrow it |
+| SPCL-004 Agent utility | SE13 | L3 / Release Qualification | UNPROVEN until PASS; cannot be a validated release claim |
+| SPCL-005 Capability search by intent | SE14 | L2/L3 search validation | UNPROVEN until PASS; cannot be a validated release claim |
+| SPCL-006 Non-pixel exportability | SE15 | L2/L3 binding validation | UNPROVEN until PASS; supported classes may be narrowed |
+| SPCL-007 Target-user capability-compilation pull | SE16 | Product/Release adoption validation | UNPROVEN until PASS; cannot be a validated adoption claim |
+| Product/category differentiation and reuse boundary | SE09 | CORE context | informs core thesis; cannot substitute for SE10/SE11 |
 
 ## 3. Inherited predecessor evidence
 
@@ -92,7 +95,12 @@ Evidence-backed Capability authority
 
 SE09 remains subject to context-fresh Product review and therefore is not yet a Frozen PASS.
 
-## 5. Required successor executable studies
+## 5. Successor evidence studies and staged gates
+
+Convergence r2 changes scheduling, not study integrity. Existing protocols, frozen inputs, thresholds and evidence assets remain valid. A deferred study is not waived and must not be silently declared PASS.
+
+Pre-L2 blockers: **SE10 and SE11 only**.  
+Deferred validation: **SE12–SE16** as mapped below.
 
 ### SE10 — Semantic Capability extraction quality
 
@@ -329,34 +337,43 @@ The exact evidence sufficiency policy is Product/L1 where it changes SPCL-002 or
 
 ## 9. Product Freeze aggregate
 
-Successor Product Freeze requires at minimum:
+Under convergence r2, successor Product Freeze / L2 entry requires:
 
 ~~~text
 SE09 = reviewed PASS or accepted reviewed disposition
 SE10 = PASS
 SE11 = PASS
-SE12 = PASS
-SE13 = PASS
-SE14 = PASS
-SE15 = PASS
-SE16 = PASS
-Final Independent Product Review = PASS
-open valid P0 = 0
-open valid P1 = 0
+Final Core Product Review = PASS
+open valid core P0 = 0
+open valid core P1 = 0
+core L1->L2 adoption matrix = COMPLETE
+deferred validation asset map = COMPLETE
 L1->L2 transfer audit = PASS
 ~~~
 
-Current state:
+Deferred validation status at Product Freeze is permitted to be:
 
 ~~~text
-SE09 = COMPLETE_RESEARCH / PROPOSED_PASS / REVIEW_REQUIRED
-SE10 = NOT_RUN
-SE11 = NOT_RUN
-SE12 = NOT_RUN
-SE13 = NOT_RUN
-SE14 = NOT_RUN
-SE15 = NOT_RUN
-SE16 = NOT_RUN
+SE12 = DEFERRED_TO_L2
+SE13 = DEFERRED_TO_L3_RELEASE
+SE14 = DEFERRED_TO_L2_L3
+SE15 = DEFERRED_TO_L2_L3
+SE16 = DEFERRED_TO_PRODUCT_RELEASE
+~~~
+
+Those states mean **UNPROVEN**, not PASS. The corresponding SPCL-003..SPCL-007 claims cannot be represented as validated until their own frozen studies pass.
+
+Current convergence-r2 state:
+
+~~~text
+SE09 = RETAINED_CORE_CONTEXT
+SE10 = IN_PROGRESS
+SE11 = IN_PROGRESS
+SE12 = DEFERRED_TO_L2
+SE13 = DEFERRED_TO_L3_RELEASE
+SE14 = DEFERRED_TO_L2_L3
+SE15 = DEFERRED_TO_L2_L3
+SE16 = DEFERRED_TO_PRODUCT_RELEASE
 
 PRODUCT_FREEZE = NO
 L2_READY = NO
