@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Mapping
+
+from app8.evidence.attestation import AttestationGate
 
 NEGATIVE_EVENTS = {"REFUTED", "BLOCKED", "STALE", "REVOKED", "TARGET_DRIFT"}
 
@@ -19,6 +21,8 @@ def evaluate_readiness(
     capability: dict[str, Any], evidence: Iterable[dict[str, Any]],
     events: Iterable[dict[str, Any]] = (),
     *, projection_verifier: Callable[[dict[str, Any]], bool] | None = None,
+    attestation_gate: AttestationGate | None = None,
+    signed_attestations: Mapping[str, dict[str, Any]] | None = None,
 ) -> Readiness:
     """Return status from scoped real observations, not supplied capability.readiness.
 
@@ -72,11 +76,24 @@ def evaluate_readiness(
             not plan.get("assertions")):
             reasons.add("NO_DETERMINISTIC_ASSERTION_PASS")
             continue
+        # A caller-controlled SUPPORTED JSON is not evidence. Verify the
+        # full payload against an authenticated, previously accepted runner
+        # receipt under a trusted-service-owned key and persistent nonce DB.
+        # Caller-supplied booleans or raw HMAC strings are never sufficient.
+        if (type(attestation_gate) is not AttestationGate or
+                not attestation_gate.is_accepted(
+                    ev, (signed_attestations or {}).get(ev["evidence_id"], {})
+                )):
+            reasons.add("UNAUTHENTICATED_EXECUTION_EVIDENCE")
+            continue
         qualified.append(ev["evidence_id"])
 
     if not qualified:
         reasons.add("NO_QUALIFIED_POSITIVE_EVIDENCE")
-        return Readiness("HYPOTHESIZED", False, tuple(sorted(reasons)), ())
+        state = "BLOCKED" if reasons & (NEGATIVE_EVENTS | {
+            "MATERIAL_NEGATIVE_EVIDENCE", "UNAUTHENTICATED_EXECUTION_EVIDENCE"
+        }) else "HYPOTHESIZED"
+        return Readiness(state, False, tuple(sorted(reasons)), ())
     if reasons & {"MATERIAL_NEGATIVE_EVIDENCE", "TARGET_APPLICABILITY_UNVERIFIED",
                   "SOURCE_MISMATCH", "EXECUTION_TARGET_MISMATCH", "BINDING_NOT_AUTHORIZED",
                   "NO_VALID_REAL_OBSERVATION", "NO_DETERMINISTIC_ASSERTION_PASS"}:
