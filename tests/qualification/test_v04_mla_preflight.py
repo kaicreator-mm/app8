@@ -7,7 +7,7 @@ import unittest
 import hashlib
 import json
 
-from app8.mla.preflight import reduce_evidence_preflight
+from scripts.v04_mla_outcome_preflight import reduce_evidence_preflight
 from scripts.v04_mla_pilot_reducer import PilotBlocked, ROOT, ALLOWLIST, SOURCE_BLOB
 
 
