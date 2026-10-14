@@ -23,6 +23,36 @@ The existing public 24-case reducer accepts arbitrary allowlisted anchors and va
 
 P receives only the predeclared user job and source material, never R/X/J responses, hidden Oracle, decisive fixtures or any result labels. R and X independently receive the same case slots/source/job but not P's output or each other's output. R proposes semantic reference, X proposes falsification hypotheses; no model may change the cohort, oracle or denominator. Batch each model **once per asset**, giving **4 P + 4 R + 4 X = 12 base invocations**. An incomplete model batch blocks the affected slots; it is not quietly rerun with new samples. One J invocation may be added per genuinely unresolved high-impact conflict, capped at **12 total J calls** (24 overall model calls), never for an already deterministically settled fact.
 
+### A.1. Prospective case intent and fixed denominator (R2 P1-D)
+
+Each pre-output sealed job binds its exact text, claim contract, negative
+boundary, boolean `requires_runtime_observation` and `evaluation_intent`
+into the job SHA256 and per-role source contexts. The deterministic compiler
+accepts `BEHAVIOR_CANDIDATE` iff runtime observation is required, otherwise
+`SOURCE_SEMANTIC`. **The semantic requirement of the job alone determines
+the distinction; never target readiness, model outputs or final scoring.**
+
+Source-only claims describe pinned source/API declarations without asserting
+successful behavior. Claims about real execution, outputs, compatibility,
+side effects, performance, process status or reproducible runtime
+counterexamples necessarily require behavior observation. An independent
+pre-run reviewer must inspect the 24 private exact job texts against those
+proposed labels and bind a sealed manifest digest; the operator-supplied
+boolean alone is **not** independently validated.
+
+All 24 slots, six per asset, remain in the denominator. An unapproved
+behavior target (including LibreOffice DIVERGED) is `BLOCKED`, **never
+reclassified** to source-only. Source-semantic dry-run reporting may describe
+only model-proposal agreement, coverage/abstention, blocked counts, costs
+and status; it cannot establish `SOURCE_SUPPORTED_ONLY`,
+`BEHAVIOR_SUPPORTED`, independent Gold, false-promotion rates or promotion.
+Pre-oracle outcomes remain `UNVERIFIED`/`BLOCKED`.
+
+This A.1 revision remains `AUTHOR_DRAFT_NOT_FROZEN` until independent
+incremental R3 approval. Chronology P1-A, H seed P1-B, independent conflict
+P1-C, actual Oracle/H authority remain separate blockers. No provider calls
+are authorized by this draft.
+
 ## B. Pre-run freeze ledger (privileged and append-only)
 
 The operator must record these *before* the first output, with independently verifiable chronological storage, not just the caller's `frozen_before_first_response=true` flag:
