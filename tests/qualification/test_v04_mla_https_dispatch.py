@@ -147,8 +147,12 @@ class HTTPSDispatchTests(unittest.TestCase):
         self.assertEqual(self.ledger.audit()["reservation_count"], 0)
 
     def test_truncated_model_response_blocks_subsequent_calls(self):
-        self.dispatch(transport=FakeTransport(reply(finish="length")))
-        # This line must be unreachable because truncated responses fail closed.
+        with self.assertRaisesRegex(ProviderDispatchBlocked, "truncated"):
+            self.dispatch(transport=FakeTransport(reply(finish="length")))
+        self.assertEqual(self.ledger.audit()["reservation_count"], 1)
+        with self.assertRaisesRegex(MLAChronologyBlocked, "outstanding"):
+            self.ledger.reserve(role="P", asset="pandas", case_id=None,
+                                request_sha256=self.digest)
 
     def test_wrong_model_response_fails_closed(self):
         with self.assertRaisesRegex(ProviderDispatchBlocked, "different-model"):
