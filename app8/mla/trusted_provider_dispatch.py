@@ -17,6 +17,7 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 from urllib.error import HTTPError, URLError
 
 from app8.mla.ordered_host_ledger import OrderedMLAHostLedger
+from app8.mla.github_freeze_witness import verify_github_freeze_witness
 from app8.storage import EvidenceStore
 
 _MAX_REQUEST = 500_000
@@ -187,6 +188,10 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
     secret = os.environ.get(profile["api_key_env"], "")
     if not secret or "\n" in secret or "\r" in secret:
         raise ProviderDispatchBlocked("provider credential unavailable or invalid")
+    # R2 P1-A: re-check the independently published immutable GitHub witness
+    # on EVERY permitted transport, even after a process restart. The witness
+    # is not a remote provider receipt or behavior Oracle.
+    verify_github_freeze_witness(ledger)
     # Ensure actual request is retained in a private content addressed store
     # before atomically taking a spending reservation.
     if sealed_store.put_artifact(request_bytes) != hashlib.sha256(request_bytes).hexdigest():
