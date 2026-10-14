@@ -6,6 +6,8 @@ enforce caps *before* dispatch and attest usage from provider transport.
 """
 from __future__ import annotations
 
+import re
+
 from scripts.v04_mla_pilot_reducer import ASSETS, PilotBlocked
 
 ROLES = ("P", "R", "X")
@@ -13,7 +15,7 @@ BASE_COUNT = 12
 MAX_J = 12
 TOTAL_CALLS = 24
 LIMIT_FIELDS = frozenset({
-    "max_calls", "max_j_calls",
+    "max_calls", "max_j_calls", "billing_currency",
     "max_total_input_tokens", "max_total_output_tokens",
     "max_total_cost_microunits", "max_total_wall_ms",
     "max_per_call_input_tokens", "max_per_call_output_tokens",
@@ -40,7 +42,11 @@ def check_budget(config: dict, calls: list[dict],
     """
     if not isinstance(config, dict) or set(config) != LIMIT_FIELDS:
         raise PilotBlocked("complete numeric pre-run budget required")
-    if (any(type(config[key]) is not int or config[key] <= 0 for key in config)
+    numeric_keys = LIMIT_FIELDS - {"billing_currency"}
+    if (any(type(config[key]) is not int or config[key] <= 0
+            for key in numeric_keys)
+            or not isinstance(config["billing_currency"], str)
+            or re.fullmatch(r"[A-Z]{3}", config["billing_currency"]) is None
             or config["max_calls"] != TOTAL_CALLS
             or config["max_j_calls"] != MAX_J):
         raise PilotBlocked("invalid or mutable fixed budget limits")
