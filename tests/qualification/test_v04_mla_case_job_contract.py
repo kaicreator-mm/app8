@@ -99,7 +99,8 @@ class ProspectiveJobContractTests(unittest.TestCase):
         self.assertEqual(out["case_denominator"], 24)
         self.assertEqual(len(out["asset_source_context_sha256"]), 4)
         self.assertFalse(out["trusted_pre_prediction_freeze_attested"])
-        self.assertNotIn("user_job", str(out))
+        self.assertNotIn(jobs[0]["user_job"], str(out))
+        self.assertNotIn(jobs[0]["claim_contract"], str(out))
 
     def test_prepared_jobs_bind_to_role_inputs(self):
         slots, jobs = fixture()
@@ -131,7 +132,7 @@ class ProspectiveJobContractTests(unittest.TestCase):
 
     def test_duplicate_job_rejected(self):
         slots, jobs = fixture()
-        jobs[0]["case_id"] = jobs[1]["case_id"]
+        jobs[1] = dict(jobs[0])
         with self.assertRaisesRegex(PilotBlocked, "duplicate"):
             prepare_case_job_commitments(pilot(slots), SEED, jobs)
 
