@@ -1,0 +1,13 @@
+# V04-MLA-1 four-target candidate reentry — exact known bytes, no target authorization
+
+Issue #150 exact host evidence: [four installed target identities, SHA256 recheck](https://github.com/kaicreator-mm/app8/issues/150#issuecomment-6169808548) and [pandas exact dependency wheel/quarantine/metadata dry-run](https://github.com/kaicreator-mm/app8/issues/150#issuecomment-6171773808). Frozen selection Git blob: `ee247c95eb56081e4014210f1013fb66f783345a`.
+
+Machine-readable artifact: `research/mla/v04-mla-four-target-reentry-candidate.json`. This is a **data-only candidate**, not a final source→target applicability decision or independent review. The unmodified historical selection record remains the pinned fact source for FFmpeg, pandas, MinIO and LibreOffice. The candidate records only the verified historical targets plus the three newly re-obtained official PyPI wheels. No credentials, hidden truth or private fixtures.
+
+**Reuse summary:** FFmpeg + ffprobe binary SHA256 and container digest match; pandas wheel SHA256 and container digest match, and candidate numpy 2.5.4 / python-dateutil 2.9.0.post0 / six 1.17.0 wheel bytes match host, container and PyPI official file listings; MinIO binary/VCS match; LibreOffice 26.8.1.1 MSI and installed identity match. pandas CPython 3.12.15/glibc 2.36 has successful *offline metadata resolution only*; the extension-import ABI has **not** been tested in an approved lane.
+
+**Unresolved P1:** (1) Independent approver must bind the exact four-target binary and dependency manifest and each case's claim-to-target applicability; (2) LibreOffice target remains `DIVERGED` with no claim-specific applicability proof; (3) pandas execution must use exact dependency wheel SHA256s and obtain a qualified runtime observation, not silently resolve latest package versions; (4) independent decisive Oracle/fixture receipt and role blindness are unavailable. All four `claim_specific_applicability_approved=false`, final manifest SHA `null`, behavioral promotions forbidden.
+
+The artifact is explicit about **no evaluated run**, no approved target and Release NO. No historical old SE10 Gold/SE11 hidden-truth protocol changes and no unreviewed PASS claims. Independent Fresh R2 may accept/reject the candidate as a *basis for subsequent target approval*; it cannot count as a runtime execution receipt.
+
+Next authority step: independent reviewer checks source→candidate pins and dependency provenance, approves applicability by exact claims in a **separate signed record** (and retains DIVERGED cases as BLOCKED if unproven), followed by a private calibrated deterministic Oracle. Do not require another whole-environment reinstall or duplicate historical Docker probes.
