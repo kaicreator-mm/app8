@@ -54,7 +54,7 @@ def sample_manifest():
     }
 
 
-def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True):
+def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, review_edited=False):
     events = ledger._load()
     manifest = events[0]["data"]
     body = freeze_witness_body(manifest, events[0]["mac"])
@@ -62,15 +62,23 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True):
     row = {"id": COMMENT_ID, "node_id": "I_fakeid",
            "body": body, "created_at": ts, "updated_at": ts,
            "user": {"login": LOGIN}}
-    review = {"id": REVIEW_ID, "body": (
+    review = {"id": REVIEW_ID, "node_id": "I_reviewid", "body": (
         "VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY\n" if verdict else
         "VERDICT=NEEDS_REVISION\n"),
         "created_at": "2026-10-14T00:00:00Z",
+        "updated_at": "2026-10-14T00:00:00Z",
         "user": {"login": REVIEWER}}
     graph = {"data": {"node": {
         "id": "I_fakeid", "createdAt": ts, "lastEditedAt": ts if edited else None,
         "author": {"login": LOGIN},
         "userContentEdits": {"totalCount": 1 if edited else 0},
+    }}}
+    review_graph = {"data": {"node": {
+        "id": "I_reviewid",
+        "createdAt": "2026-10-14T00:00:00Z",
+        "lastEditedAt": "2026-10-14T00:02:00Z" if review_edited else None,
+        "author": {"login": REVIEWER},
+        "userContentEdits": {"totalCount": 1 if review_edited else 0},
     }}}
     matches = [row]
     if duplicate:
@@ -81,7 +89,8 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True):
         if url.endswith("/issues/comments/" + str(REVIEW_ID)):
             return review
         if graphql is not None:
-            return graph
+            return (review_graph if graphql.get("variables", {}).get("id")
+                    == "I_reviewid" else graph)
         if "per_page=100" in url:
             return matches
         raise AssertionError("unexpected synthetic URL " + url)
@@ -120,6 +129,10 @@ class WitnessTests(unittest.TestCase):
     def test_edit_history_blocks_even_when_rest_body_matches(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "edit history"):
             self.verified(edited=True)
+
+    def test_reviewer_edit_from_needs_revision_to_pass_blocks(self):
+        with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "reviewer comment"):
+            self.verified(review_edited=True)
 
     def test_duplicate_campaign_witness_blocks(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "duplicate"):
