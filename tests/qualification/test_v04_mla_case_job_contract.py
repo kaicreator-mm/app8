@@ -27,6 +27,7 @@ def fixture():
         "claim_contract": "Fixture description of a bounded source capability",
         "negative_boundary": "Fixture counterexample, no real execution",
         "evaluation_intent": "SOURCE_SEMANTIC",
+        "requires_runtime_observation": False,
         "origin": "OPERATOR_PROPOSED_NOT_GOLD",
     } for slot in slots]
     return slots, jobs
@@ -141,6 +142,31 @@ class ProspectiveJobContractTests(unittest.TestCase):
         jobs[0]["evaluation_intent"] = {"invalid": True}
         with self.assertRaisesRegex(PilotBlocked, "intent"):
             prepare_case_job_commitments(pilot(slots), SEED, jobs)
+
+    def test_behavior_claim_cannot_be_reclassified_as_source_only(self):
+        slots, jobs = fixture()
+        jobs[0]["requires_runtime_observation"] = True
+        with self.assertRaisesRegex(PilotBlocked, "intent"):
+            prepare_case_job_commitments(pilot(slots), SEED, jobs)
+
+    def test_source_job_cannot_be_reclassified_as_behavior_without_recommit(self):
+        slots, jobs = fixture()
+        jobs[0]["evaluation_intent"] = "BEHAVIOR_CANDIDATE"
+        with self.assertRaisesRegex(PilotBlocked, "intent"):
+            prepare_case_job_commitments(pilot(slots), SEED, jobs)
+
+    def test_boolean_required_and_runtime_intent_frozen_in_hash(self):
+        slots, jobs = fixture()
+        original = prepare_case_job_commitments(pilot(slots), SEED, jobs)
+        jobs[0]["requires_runtime_observation"] = 1
+        with self.assertRaisesRegex(PilotBlocked, "intent"):
+            prepare_case_job_commitments(pilot(slots), SEED, jobs)
+        jobs[0]["requires_runtime_observation"] = True
+        jobs[0]["evaluation_intent"] = "BEHAVIOR_CANDIDATE"
+        changed = prepare_case_job_commitments(pilot(slots), SEED, jobs)
+        self.assertNotEqual(
+            original["job_contract_digests_by_asset"][jobs[0]["asset"]][jobs[0]["case_id"]],
+            changed["job_contract_digests_by_asset"][jobs[0]["asset"]][jobs[0]["case_id"]])
 
     def test_empty_job_rejected(self):
         slots, jobs = fixture()
