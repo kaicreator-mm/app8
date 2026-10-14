@@ -4,6 +4,8 @@ app8 aims to turn existing software knowledge and **real observed behavior** int
 
 ## Current delivery state: v0.4 empirical evaluation reentry (package: v0.1.0a0 alpha)
 
+**Product decision adopted:** [V04-PO-MLA-001](docs/product/v0.4/MULTI_LLM_OWNER_DECISION.md) — independent model adversarial proposals, deterministic source/real execution verification, and final human review limited to sampled/exception cases; [V04-MLA-1](docs/product/v0.4/MULTI_LLM_SUCCESSOR_PROTOCOL.md) is a contract candidate pending independent review and pre-run metric freeze. This does not constitute SE10/SE11 empirical PASS.
+
 [v0.3 two-environment real CPython pilot terminal](docs/release/v0.3/REAL_CPYTHON_PILOT_TERMINAL.md): Windows Docker Desktop and Ubuntu WSL2 native Linux Engine P01/N01 scoped signed Evidence PASS, F01 signed REFUTED, B01 drift BLOCKED; Windows full pytest 200 passed / 1 skipped; Ubuntu targeted 20/20 PASS. **These are two runtime environments, not independently proven physical machines.** [v0.2 security engineering terminal](docs/release/v0.2/SECURE_EXECUTION_SCOPE_TERMINAL.md) and [v0.1 technical preview](docs/release/v0.1/TECHNICAL_PREVIEW_TERMINAL.md) are retained. **Full Product Release PASS has not been demonstrated.**
 
 | Area | Status |
@@ -17,7 +19,7 @@ app8 aims to turn existing software knowledge and **real observed behavior** int
 | LibreOffice official target | #69 26.8.1.1 install identity/non-evaluative smoke documented, scope PASS |
 | OS-level sandbox | **Scoped PASS** on documented Windows/Ubuntu Docker hosts and fixed digest-pinned policy; no blanket security certification |
 | Trusted Evidence | Privileged Docker runner, signed v2 receipts, durable nonce and SQLite ingress; real pinned JSON Capability scoped PASS on Windows and Ubuntu WSL2 |
-| SE10/SE11 empirical studies | **NOT_RUN / BLOCKED**: independent SE10 Gold + separate reviewer attestation absent; SE11 approved final target/applicability and independent 80-claim hidden truth absent. Public structural preflight and Stage B tests PASS, not empirical evidence |
+| SE10/SE11 empirical studies | **Original frozen studies NOT_RUN/BLOCKED**. [Owner-approved multi-LLM + deterministic evidence + bounded human protocol](docs/product/v0.4/MULTI_LLM_OWNER_DECISION.md) will use a separately reviewed successor contract; no MLA scores or Release PASS yet |
 | Full release qualification | **NO** |
 
 The installed `app8` CLI currently produces **`ILLUSTRATIVE_UNVERIFIED` Capability previews**, not authorized executable exports. CLI/MCP/Skill/Docs/Search projections are metadata representations of a single Capability snapshot, not working MCP/Skill installers or complete runtime adapters.
