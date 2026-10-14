@@ -1,0 +1,124 @@
+{
+  "schema_version": "v04-mla-four-target-reentry-candidate-v1",
+  "study_id": "V04-MLA-1",
+  "authority": "DATA_ONLY_CANDIDATE_NOT_APPROVED",
+  "parent_issues": [
+    147,
+    150,
+    166
+  ],
+  "source_selection_path": "research/e11/execution-targets/execution-target-selection.json",
+  "source_selection_git_blob": "ee247c95eb56081e4014210f1013fb66f783345a",
+  "source_pack_git_blob": "4b3c9b62b1899653524f19a286924f942605210a",
+  "reentry_evidence": {
+    "four_software_host_sha_recheck_comment": 6169808548,
+    "pandas_wheel_hash_and_offline_closure_comment": 6171773808,
+    "formal_software_oracle_executed": false,
+    "runtime_installed_or_modified_by_evidence_collection": false
+  },
+  "targets": [
+    {
+      "asset": "FFmpeg",
+      "knowledge_source_commit": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8",
+      "source_to_target_relation": "SAME",
+      "runtime_lane": "linux-x86_64-ubuntu24.04-docker",
+      "container_image_digest": "sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55",
+      "binary_sha256": [
+        {
+          "name": "ffmpeg",
+          "sha256": "fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023"
+        },
+        {
+          "name": "ffprobe",
+          "sha256": "bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f"
+        }
+      ],
+      "host_readonly_bytes_rechecked": true,
+      "current_bytes_changed": false,
+      "claim_specific_applicability_approved": false,
+      "readiness": "CANDIDATE_PENDING_INDEPENDENT_APPROVAL"
+    },
+    {
+      "asset": "pandas",
+      "knowledge_source_commit": "82c18c170b9aea7cbb96ef54b8005bed07c94220",
+      "source_to_target_relation": "SAME",
+      "runtime_lane": "linux-x86_64-cpython3.12-bookworm-docker",
+      "container_image_digest": "sha256:5560e9ab8709f459489e5b8aa696eda8a07ef821e14bb122be62d91234bfa98b",
+      "pandas_wheel": {
+        "name": "pandas-0+untagged.1.g82c18c1-cp312-cp312-linux_x86_64.whl",
+        "sha256": "e57b0784bf6fe3abd3f292284c124ffc1c6367e35e5b97cc298f63d53431ce08"
+      },
+      "candidate_python": "CPython 3.12.15",
+      "candidate_glibc": "2.36",
+      "dependency_closure": "OFFLINE_DRY_RUN_RESOLVED_NO_INSTALL",
+      "dependencies": [
+        {
+          "distribution": "numpy",
+          "version": "2.5.4",
+          "wheel_filename": "numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "fbde6962867ee75b48b0ee29b2b9372ec5d617799dbaf38e82dc0596f2f7738a",
+          "size_bytes": 16727283
+        },
+        {
+          "distribution": "python-dateutil",
+          "version": "2.9.0.post0",
+          "wheel_filename": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+          "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+          "size_bytes": 229892
+        },
+        {
+          "distribution": "six",
+          "version": "1.17.0",
+          "wheel_filename": "six-1.17.0-py2.py3-none-any.whl",
+          "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
+          "size_bytes": 11050
+        }
+      ],
+      "host_reported_sha_cross_check": "HOST_CONTAINER_PYPI_LISTING_MATCH",
+      "runtime_import_abi_verified": false,
+      "runtime_install_performed": false,
+      "claim_specific_applicability_approved": false,
+      "readiness": "CANDIDATE_PENDING_INDEPENDENT_APPROVAL"
+    },
+    {
+      "asset": "MinIO",
+      "knowledge_source_commit": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+      "source_to_target_relation": "SAME",
+      "runtime_lane": "windows-amd64-native",
+      "binary_name": "minio.exe",
+      "binary_sha256": "94d0b2677e6ed5a719fe1fc5fccbd60669beecb9901a3bb6a8bc71507bd55981",
+      "embedded_vcs_revision": "7aac2a2c5b7c882e68c1ce017d8256be2feea27f",
+      "host_readonly_bytes_rechecked": true,
+      "claim_specific_applicability_approved": false,
+      "readiness": "CANDIDATE_PENDING_INDEPENDENT_APPROVAL"
+    },
+    {
+      "asset": "LibreOffice",
+      "knowledge_source_commit": "016fd5d049256dc849111f60870f15201fcd1526",
+      "source_to_target_relation": "DIVERGED",
+      "runtime_lane": "windows-x86_64-native-msi",
+      "official_release": "26.8.1",
+      "package_version": "26.8.1.1",
+      "official_installer_sha256": "c6298b10cfa1748bcbedad94c62ce771e240e5021bfd6d7a967cd571b04b5312",
+      "installed_product_code": "{87B289F9-6172-4C3D-A091-EE36A40E1287}",
+      "installed_msi_and_version_host_rechecked": true,
+      "source_release_mapping": "DIVERGED",
+      "claim_specific_release_applicability_proof_sha256": null,
+      "claim_specific_applicability_approved": false,
+      "behavior_scoring_permitted": false,
+      "readiness": "BLOCKED_PENDING_INDEPENDENT_CLAIM_APPLICABILITY"
+    }
+  ],
+  "approval": {
+    "independent_review_receipt_sha256": null,
+    "private_oracle_commitment_sha256": null,
+    "approved_final_execution_manifest_sha256": null,
+    "trusted_runtime_import_or_binary_probe_receipt_sha256": null,
+    "all_four_targets_eligible": false,
+    "behavior_promotion_authorized": false,
+    "original_se10_status": "NOT_RUN",
+    "original_se11_status": "NOT_RUN",
+    "successor_pilot_status": "NOT_RUN",
+    "release_qualified": false
+  }
+}
