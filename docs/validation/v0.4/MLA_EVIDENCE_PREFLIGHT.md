@@ -14,3 +14,5 @@ python -m pytest tests -q
 \`\`\`
 
 Synthetic tests only; no provider credentials, hidden Gold, Docker probes or real target executions. This is not the original SE10/SE11 empirical score, independent Fresh review, metric freeze, formal Release, or a successor qualification PASS.
+
+This research qualification tool intentionally lives under `scripts/`, not the installed `app8` runtime package: it relies on a source-checkout-only immutable research allowlist. Installed-wheel behavior and product Capability authority remain unchanged.
