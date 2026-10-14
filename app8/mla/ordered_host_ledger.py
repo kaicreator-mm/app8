@@ -208,6 +208,16 @@ class OrderedMLAHostLedger:
                 raise MLAChronologyBlocked("24-call model limit reached")
             if asset not in ASSETS or role not in (*ROLES, "J"):
                 raise MLAChronologyBlocked("invalid asset or model role")
+            # Execute P for every asset before any R/X/J output exists.
+            # This enforces one useful ordering boundary; it does NOT prove
+            # provider-side access controls or independent model identities.
+            p_assets = {e["data"]["asset"] for e in past
+                        if e["data"]["role"] == "P"}
+            if role in ("R", "X") and len(p_assets) != 4:
+                raise MLAChronologyBlocked("P prediction batches must all precede R/X")
+            if role == "P" and any(e["data"]["role"] in ("R", "X", "J")
+                                   for e in past):
+                raise MLAChronologyBlocked("P cannot be dispatched after R/X")
             if role in ROLES:
                 if (case_id is not None
                         or request_sha256 != freeze["model_input_sha256"][asset][role]
