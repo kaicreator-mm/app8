@@ -65,7 +65,8 @@ def build_jh_candidate_queue(pilot_public: dict, judge_rows: list[dict],
         cid = row["case_id"]
         if not isinstance(cid, str) or cid not in selected or cid in submissions:
             raise PilotBlocked("H decision outside precommitted sample or duplicate")
-        if (row["decision"] not in DECISIONS
+        if (not isinstance(row["decision"], str)
+                or row["decision"] not in DECISIONS
                 or row["decision_origin"] != "HUMAN_SELF_REPORT_UNVERIFIED"
                 or any(not _sha(row[k]) for k in
                        ("reviewer_id_sha256", "evidence_ref_sha256",
