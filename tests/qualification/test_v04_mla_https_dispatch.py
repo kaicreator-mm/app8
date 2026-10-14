@@ -135,6 +135,20 @@ class HTTPSDispatchTests(unittest.TestCase):
             self.dispatch(profile=changed)
         self.assertEqual(self.ledger.audit()["reservation_count"], 0)
 
+    def test_spend_currency_mismatch_denied_before_transport(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)
+            with OrderedMLAHostLedger(path / "currency-ledger.sqlite",
+                                      host_hmac_key=KEY) as other:
+                manifest = freeze(self.digest)
+                manifest["budget"]["billing_currency"] = "EUR"
+                other.freeze(manifest)
+                fake = FakeTransport()
+                with self.assertRaisesRegex(ProviderDispatchBlocked, "currency"):
+                    self.dispatch(ledger=other, transport=fake)
+                self.assertEqual(fake.called, 0)
+                self.assertEqual(other.audit()["reservation_count"], 0)
+
     def test_redirect_url_paths_disallowed(self):
         changed = dict(self.p, path="/v1/../chat/completions")
         with self.assertRaisesRegex(ProviderDispatchBlocked, "API path"):
