@@ -169,8 +169,8 @@ class LocalHostChronologyTests(unittest.TestCase):
         self.l.freeze(m)
         call(self.l, m)
         with self.assertRaisesRegex(MLAChronologyBlocked, "resource reservation"):
-            self.l.reserve(role="R", asset="FFmpeg", case_id=None,
-                           request_sha256=m["model_input_sha256"]["FFmpeg"]["R"])
+            self.l.reserve(role="P", asset="pandas", case_id=None,
+                           request_sha256=m["model_input_sha256"]["pandas"]["P"])
 
     def test_j_call_requires_all_12_baseline_reservations(self):
         m = freeze()
