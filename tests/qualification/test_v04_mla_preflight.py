@@ -4,9 +4,41 @@ from __future__ import annotations
 import copy
 import unittest
 
+import hashlib
+import json
+
 from app8.mla.preflight import reduce_evidence_preflight
-from scripts.v04_mla_pilot_reducer import PilotBlocked
-from tests.qualification.test_v04_mla_pilot_reducer import synthetic_pilot
+from scripts.v04_mla_pilot_reducer import PilotBlocked, ROOT, ALLOWLIST, SOURCE_BLOB
+
+
+def synthetic_pilot():
+    anchors = json.loads((ROOT / ALLOWLIST).read_text(encoding="utf-8"))["assets"]
+    cases = []
+    for asset in ("FFmpeg", "pandas", "MinIO", "LibreOffice"):
+        path, blob = sorted(anchors[asset].items())[0]
+        for i in range(6):
+            cases.append({
+                "case_id": "V04-" + asset.upper() + "-" + str(i + 1).zfill(3),
+                "asset": asset,
+                "source_anchor": {"path": path, "blob": blob},
+                "model_prediction_sha256": "a" * 64,
+                "reference_proposer_sha256": "b" * 64,
+                "adversarial_challenger_sha256": "c" * 64,
+                "source_verification_claim": "CANDIDATE_ONLY",
+                "behavior_observation_sha256": None,
+                "high_impact_unresolved": False,
+                "oracle_visible_to_predictor": False,
+                "model_consensus": False,
+            })
+    return {
+        "schema_version": "v04-mla-pilot-public-v1",
+        "study_id": "V04-MLA-1",
+        "source_pack_git_blob": SOURCE_BLOB,
+        "reference_origin": "LLM_PROPOSED",
+        "frozen_before_model_outputs": True,
+        "human_selection_seed_sha256": hashlib.sha256(b"precommitted-test-seed").hexdigest(),
+        "cases": cases,
+    }
 
 
 def rows(pilot):
