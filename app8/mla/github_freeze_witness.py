@@ -182,8 +182,29 @@ def verify_github_freeze_witness(ledger: OrderedMLAHostLedger) -> dict:
             or "VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY" not in body.splitlines()
             or not isinstance(review.get("user"), dict)
             or review["user"].get("login") != reviewer_login
-            or _iso(review.get("created_at")) > created):
+            or not isinstance(review.get("node_id"), str)
+            or not review["node_id"]
+            or _iso(review.get("created_at")) > created
+            or _iso(review.get("created_at")) != _iso(review.get("updated_at"))):
         raise ExternalFreezeWitnessBlocked("independent PASS-for-provisional reviewer not witnessed")
+    # Reviewer cannot turn a pre-outcome NEEDS_REVISION into a retrospective
+    # PASS by editing its original comment, while keeping created_at intact.
+    review_graph = _request_json("https://api.github.com/graphql", token, graphql={
+        "query": ("query($id:ID!){node(id:$id){... on IssueComment{"
+                  "id createdAt lastEditedAt author{login} "
+                  "userContentEdits(first:1){totalCount}}}}"),
+        "variables": {"id": review["node_id"]},
+    })
+    review_node = (review_graph.get("data", {}).get("node")
+                   if isinstance(review_graph, dict) else None)
+    if (not isinstance(review_node, dict)
+            or review_node.get("id") != review["node_id"]
+            or _iso(review_node.get("createdAt")) != _iso(review["created_at"])
+            or review_node.get("lastEditedAt") is not None
+            or review_node.get("author", {}).get("login") != reviewer_login
+            or review_node.get("userContentEdits", {}).get("totalCount") != 0
+            or review_graph.get("errors")):
+        raise ExternalFreezeWitnessBlocked("independent reviewer comment was edited or history unknown")
     _strict_single_witness(
         token=token, target_comment_id=comment_id, exact_body=expected_body)
     return {
