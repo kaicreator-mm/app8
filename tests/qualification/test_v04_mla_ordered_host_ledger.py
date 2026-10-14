@@ -69,6 +69,21 @@ class LocalHostChronologyTests(unittest.TestCase):
         self.assertEqual(audit["response_count"], 1)
         self.assertFalse(audit["formal_product_release_qualified"])
 
+    def test_memory_or_relative_ledger_is_forbidden(self):
+        for candidate in (":memory:", "relative_ledger.sqlite"):
+            with self.subTest(candidate=candidate):
+                with self.assertRaisesRegex(MLAChronologyBlocked, "durable"):
+                    OrderedMLAHostLedger(candidate, host_hmac_key=KEY)
+
+    def test_symlinked_ledger_is_forbidden(self):
+        link = Path(self.tmp.name) / "link.sqlite"
+        try:
+            link.symlink_to(self.db)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks unavailable on host")
+        with self.assertRaisesRegex(MLAChronologyBlocked, "non-symlink"):
+            OrderedMLAHostLedger(link, host_hmac_key=KEY)
+
     def test_provider_reservation_requires_freeze(self):
         m = freeze()
         with self.assertRaisesRegex(MLAChronologyBlocked, "no committed"):
