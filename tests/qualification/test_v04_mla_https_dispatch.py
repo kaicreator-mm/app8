@@ -1,5 +1,6 @@
 """No-network provider adapter tests, all transport bytes are synthetic."""
 import hashlib
+import inspect
 import json
 import os
 from pathlib import Path
@@ -112,6 +113,10 @@ class HTTPSDispatchTests(unittest.TestCase):
                           side_effect=lambda _self, url, body, key, timeout:
                               simulated_https.send(url, body, key, timeout)):
             return dispatch_frozen_completion(**args)
+
+    def test_production_api_has_no_transport_injection_argument(self):
+        self.assertNotIn("transport",
+                         inspect.signature(dispatch_frozen_completion).parameters)
 
     def test_fake_response_is_stored_but_never_provider_attested(self):
         x = self.dispatch()
