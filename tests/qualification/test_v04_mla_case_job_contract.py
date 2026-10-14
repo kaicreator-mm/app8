@@ -135,6 +135,12 @@ class ProspectiveJobContractTests(unittest.TestCase):
         with self.assertRaisesRegex(PilotBlocked, "duplicate"):
             prepare_case_job_commitments(pilot(slots), SEED, jobs)
 
+    def test_invalid_job_intent_type_rejected(self):
+        slots, jobs = fixture()
+        jobs[0]["evaluation_intent"] = {"invalid": True}
+        with self.assertRaisesRegex(PilotBlocked, "intent"):
+            prepare_case_job_commitments(pilot(slots), SEED, jobs)
+
     def test_empty_job_rejected(self):
         slots, jobs = fixture()
         jobs[0]["user_job"] = ""
