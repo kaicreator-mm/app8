@@ -7,7 +7,7 @@ from scripts.v04_mla_pilot_reducer import PilotBlocked
 
 def config():
     return {
-        "max_calls": 24, "max_j_calls": 12,
+        "max_calls": 24, "max_j_calls": 12, "billing_currency": "USD",
         "max_total_input_tokens": 1_000_000,
         "max_total_output_tokens": 1_000_000,
         "max_total_cost_microunits": 200_000_000,
@@ -58,6 +58,12 @@ class ModelSpendPreflightTests(unittest.TestCase):
     def test_boolean_budget_not_accepted_as_int(self):
         c = config()
         c["max_per_call_wall_ms"] = True
+        with self.assertRaisesRegex(PilotBlocked, "fixed budget"):
+            check_budget(c, [], frozen_case_ids=cases(), eligible_j_case_ids=set())
+
+    def test_billing_currency_required_and_uppercase(self):
+        c = config()
+        c["billing_currency"] = "usd"
         with self.assertRaisesRegex(PilotBlocked, "fixed budget"):
             check_budget(c, [], frozen_case_ids=cases(), eligible_j_case_ids=set())
 
