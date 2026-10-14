@@ -16,6 +16,7 @@ from scripts.v04_mla_role_cohort_binding import bind_role_cohort
 JOB_KEYS = frozenset({
     "case_id", "asset", "source_anchor", "user_job",
     "claim_contract", "negative_boundary", "evaluation_intent", "origin",
+    "requires_runtime_observation",
 })
 INTENTS = frozenset({"SOURCE_SEMANTIC", "BEHAVIOR_CANDIDATE"})
 
@@ -54,7 +55,11 @@ def prepare_case_job_commitments(pilot_public: dict, seed_sha256: str,
                 or job["source_anchor"] != pilot["source_anchor"]
                 or job["origin"] != "OPERATOR_PROPOSED_NOT_GOLD"
                 or not isinstance(job["evaluation_intent"], str)
-                or job["evaluation_intent"] not in INTENTS):
+                or job["evaluation_intent"] not in INTENTS
+                or type(job["requires_runtime_observation"]) is not bool
+                or job["evaluation_intent"] != (
+                    "BEHAVIOR_CANDIDATE" if job["requires_runtime_observation"]
+                    else "SOURCE_SEMANTIC")):
             raise PilotBlocked("job source, intent or independent-Gold claim mismatch")
         if (not _bounded(job["user_job"], 2400)
                 or not _bounded(job["claim_contract"], 2400)
