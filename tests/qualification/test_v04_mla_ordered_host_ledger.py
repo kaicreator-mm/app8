@@ -88,6 +88,14 @@ class LocalHostChronologyTests(unittest.TestCase):
             self.l.reserve(role="P", asset="FFmpeg", case_id=None,
                            request_sha256=m["model_input_sha256"]["FFmpeg"]["P"])
 
+    def test_reference_cannot_run_before_all_p_predictions(self):
+        m = freeze()
+        self.l.freeze(m)
+        call(self.l, m, role="P", asset="FFmpeg")
+        with self.assertRaisesRegex(MLAChronologyBlocked, "precede R/X"):
+            self.l.reserve(role="R", asset="FFmpeg", case_id=None,
+                           request_sha256=m["model_input_sha256"]["FFmpeg"]["R"])
+
     def test_outstanding_ambiguous_call_stops_next(self):
         m = freeze()
         self.l.freeze(m)
