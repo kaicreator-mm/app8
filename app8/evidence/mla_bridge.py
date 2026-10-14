@@ -16,6 +16,7 @@ from app8.evidence.attestation import AttestationGate
 from app8.storage import EvidenceStore, IntegrityError
 
 SHA = re.compile(r"[0-9a-f]{64}\Z")
+CASE_ID = re.compile(r"V04-[A-Z0-9_-]{3,48}\Z")
 RELATIONS = frozenset({"SAME", "KNOWLEDGE_SOURCE_ANCESTOR",
                        "KNOWLEDGE_SOURCE_DESCENDANT", "DIVERGED", "UNRESOLVED"})
 
@@ -55,13 +56,14 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     Must be called only by the trusted ingress service. No keys, raw runtime
     observations, sensitive fixtures or oracle verdicts emitted in this report.
     """
-    if type(gate) is not AttestationGate or type(store) is not EvidenceStore:
+    if (type(gate) is not AttestationGate or type(store) is not EvidenceStore
+            or type(scope) is not FrozenExecutionScope):
         raise MLAEvidenceBlocked("trusted durable evidence store and verification gate required")
     if (not isinstance(case, dict)
             or case.get("oracle_visible_to_predictor") is not False
             or case.get("source_verification_claim") != "CANDIDATE_ONLY"
             or not isinstance(case.get("case_id"), str)
-            or not case["case_id"].startswith("V04-")):
+            or not CASE_ID.fullmatch(case["case_id"])):
         raise MLAEvidenceBlocked("invalid case origin or hidden oracle exposure")
     if scope.relation in {"DIVERGED", "UNRESOLVED"}:
         raise MLAEvidenceBlocked("claim-specific independently reviewed target applicability required")
