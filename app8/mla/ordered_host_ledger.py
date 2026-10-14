@@ -101,8 +101,17 @@ class OrderedMLAHostLedger:
     def __init__(self, db_path: str | Path, *, host_hmac_key: bytes):
         if not isinstance(host_hmac_key, bytes) or len(host_hmac_key) < 32:
             raise MLAChronologyBlocked("privileged HMAC key required")
+        # In-memory/relative paths silently destroy the promised durability,
+        # and symlinked database paths are unsafe for sealed host evidence.
+        if not isinstance(db_path, (str, Path)):
+            raise MLAChronologyBlocked("absolute durable database path required")
+        target = Path(db_path)
+        if (not target.is_absolute() or target.is_symlink()
+                or not target.parent.is_dir() or target.parent.is_symlink()
+                or (target.exists() and not target.is_file())):
+            raise MLAChronologyBlocked("durable non-symlink SQLite path required")
         self._key = host_hmac_key
-        self.db = sqlite3.connect(db_path, isolation_level=None, timeout=15)
+        self.db = sqlite3.connect(target, isolation_level=None, timeout=15)
         try:
             self.db.execute("PRAGMA synchronous=FULL")
             self.db.execute("""CREATE TABLE IF NOT EXISTS mla_host_events(
