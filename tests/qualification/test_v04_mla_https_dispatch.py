@@ -9,7 +9,8 @@ from unittest.mock import patch
 
 from app8.mla.ordered_host_ledger import OrderedMLAHostLedger, MLAChronologyBlocked
 from app8.mla.trusted_provider_dispatch import (
-    ProviderDispatchBlocked, frozen_invocation_digest, dispatch_frozen_completion
+    ProviderDispatchBlocked, TrustedHTTPSCompletionClient,
+    frozen_invocation_digest, dispatch_frozen_completion
 )
 from app8.storage import EvidenceStore
 
@@ -101,12 +102,16 @@ class HTTPSDispatchTests(unittest.TestCase):
         self.addCleanup(self.secrets.stop)
 
     def dispatch(self, **opts):
+        simulated_https = opts.pop("transport", FakeTransport())
         args = dict(ledger=self.ledger, sealed_store=self.store,
                     role="P", asset="FFmpeg", profile=self.p,
-                    request_bytes=self.req, approved_origins=ORIGINS,
-                    transport=FakeTransport())
+                    request_bytes=self.req, approved_origins=ORIGINS)
         args.update(opts)
-        return dispatch_frozen_completion(**args)
+        # Isolated no-network patch, NOT an injectable production argument.
+        with patch.object(TrustedHTTPSCompletionClient, "send", autospec=True,
+                          side_effect=lambda _self, url, body, key, timeout:
+                              simulated_https.send(url, body, key, timeout)):
+            return dispatch_frozen_completion(**args)
 
     def test_fake_response_is_stored_but_never_provider_attested(self):
         x = self.dispatch()
