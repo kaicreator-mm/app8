@@ -65,6 +65,9 @@ def freeze(req_sha):
         "source_pack_git_blob": "4b3c9b62b1899653524f19a286924f942605210a",
         "protocol_sha256": "a" * 64, "scorer_sha256": "b" * 64,
         "cohort_sha256": "c" * 64, "case_job_sha256": "d" * 64,
+        "campaign_nonce": "1" * 64, "human_selection_seed_sha256": "2" * 64,
+        "source_selection_seed_sha256": "3" * 64,
+        "r2_verdict_comment_id": 6172212383,
         "model_input_sha256": {asset: {
             role: req_sha for role in ("P", "R", "X")}
             for asset in ("FFmpeg", "pandas", "MinIO", "LibreOffice")},

@@ -19,6 +19,10 @@ def freeze():
             "4b3c9b62b1899653524f19a286924f942605210a",
         "protocol_sha256": "b" * 64, "scorer_sha256": "c" * 64,
         "cohort_sha256": "d" * 64, "case_job_sha256": "e" * 64,
+        "campaign_nonce": "1" * 64,
+        "human_selection_seed_sha256": "2" * 64,
+        "source_selection_seed_sha256": "3" * 64,
+        "r2_verdict_comment_id": 6172212383,
         "model_input_sha256": {
             asset: {role: hashlib.sha256((asset + role).encode()).hexdigest()
                     for role in ("P", "R", "X")}
@@ -68,6 +72,39 @@ class LocalHostChronologyTests(unittest.TestCase):
         self.assertEqual(audit["reservation_count"], 1)
         self.assertEqual(audit["response_count"], 1)
         self.assertFalse(audit["formal_product_release_qualified"])
+
+    def test_missing_prospective_human_seed_cannot_freeze(self):
+        m = freeze()
+        del m["human_selection_seed_sha256"]
+        with self.assertRaisesRegex(MLAChronologyBlocked, "freeze fields"):
+            self.l.freeze(m)
+
+    def test_invalid_campaign_nonce_and_reviewer_id_cannot_freeze(self):
+        m = freeze()
+        m["campaign_nonce"] = "bad"
+        with self.assertRaisesRegex(MLAChronologyBlocked, "campaign"):
+            self.l.freeze(m)
+        m = freeze()
+        m["r2_verdict_comment_id"] = True
+        with self.assertRaisesRegex(MLAChronologyBlocked, "reviewer"):
+            self.l.freeze(m)
+
+    def test_audit_seed_cannot_change_after_host_freeze(self):
+        m = freeze()
+        self.l.freeze(m)
+        accepted = {"study_id": "V04-MLA-1",
+                    "human_selection_seed_sha256": m["human_selection_seed_sha256"]}
+        self.l.verify_precommitted_human_seed(accepted)
+        with self.assertRaisesRegex(MLAChronologyBlocked, "drift"):
+            self.l.verify_precommitted_human_seed(
+                dict(accepted, human_selection_seed_sha256="f" * 64))
+
+    def test_refreeze_with_changed_nonce_is_denied(self):
+        self.l.freeze(freeze())
+        changed = freeze()
+        changed["campaign_nonce"] = "f" * 64
+        with self.assertRaisesRegex(MLAChronologyBlocked, "already frozen"):
+            self.l.freeze(changed)
 
     def test_memory_or_relative_ledger_is_forbidden(self):
         for candidate in (":memory:", "relative_ledger.sqlite"):
