@@ -183,6 +183,8 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
     url = _validate_profile(profile, approved_origins)
     digest = frozen_invocation_digest(profile, request_bytes,
                                       approved_origins=approved_origins)
+    if profile["billing_currency"] != ledger.frozen_billing_currency():
+        raise ProviderDispatchBlocked("provider price currency differs from frozen spending ledger")
     secret = os.environ.get(profile["api_key_env"], "")
     if not secret or "\n" in secret or "\r" in secret:
         raise ProviderDispatchBlocked("provider credential unavailable or invalid")
