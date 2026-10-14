@@ -96,6 +96,14 @@ class JHQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(PilotBlocked, "claimed-authoritative"):
             build_jh_candidate_queue(p, [], [row])
 
+    def test_non_string_h_decision_fails_closed(self):
+        p = fixture()
+        cid = assess(ROOT, p)["human_sample_case_ids"][0]
+        row = hrow(cid)
+        row["decision"] = {"malformed": "CONFIRM"}
+        with self.assertRaisesRegex(PilotBlocked, "invalid or claimed-authoritative"):
+            build_jh_candidate_queue(p, [], [row])
+
     def test_hidden_h_truth_rejected(self):
         p = fixture()
         cid = assess(ROOT, p)["human_sample_case_ids"][0]
