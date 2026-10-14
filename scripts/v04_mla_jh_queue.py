@@ -34,7 +34,7 @@ def build_jh_candidate_queue(pilot_public: dict, judge_rows: list[dict],
     base = assess(repo_root, pilot_public)
     selected = set(base["human_sample_case_ids"])
     cases = {case["case_id"]: case for case in pilot_public["cases"]}
-    if not isinstance(judge_rows, list) or len(judge_rows) > 24:
+    if not isinstance(judge_rows, list) or len(judge_rows) > 12:
         raise PilotBlocked("invalid J escalation budget")
     if not isinstance(human_rows, list) or len(human_rows) > 12:
         raise PilotBlocked("invalid H submission budget")
