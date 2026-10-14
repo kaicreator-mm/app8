@@ -112,10 +112,28 @@ class HTTPSDispatchTests(unittest.TestCase):
                     request_bytes=self.req, approved_origins=ORIGINS)
         args.update(opts)
         # Isolated no-network patch, NOT an injectable production argument.
-        with patch.object(TrustedHTTPSCompletionClient, "send", autospec=True,
+        with patch("app8.mla.trusted_provider_dispatch.verify_github_freeze_witness",
+                   return_value={"status": "FAKE_UNIT_TEST_ONLY"}), \
+             patch.object(TrustedHTTPSCompletionClient, "send", autospec=True,
                           side_effect=lambda _self, url, body, key, timeout:
                               simulated_https.send(url, body, key, timeout)):
             return dispatch_frozen_completion(**args)
+
+    def test_missing_github_witness_blocks_before_provider(self):
+        from app8.mla.github_freeze_witness import ExternalFreezeWitnessBlocked
+        client = FakeTransport()
+        with patch("app8.mla.trusted_provider_dispatch.verify_github_freeze_witness",
+                   side_effect=ExternalFreezeWitnessBlocked("no live public witness")), \
+             patch.object(TrustedHTTPSCompletionClient, "send", autospec=True,
+                          side_effect=lambda _self, url, body, key, timeout:
+                              client.send(url, body, key, timeout)):
+            with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "witness"):
+                dispatch_frozen_completion(
+                    ledger=self.ledger, sealed_store=self.store,
+                    role="P", asset="FFmpeg", profile=self.p,
+                    request_bytes=self.req, approved_origins=ORIGINS)
+        self.assertEqual(client.called, 0)
+        self.assertEqual(self.ledger.audit()["reservation_count"], 0)
 
     def test_production_api_has_no_transport_injection_argument(self):
         self.assertNotIn("transport",
