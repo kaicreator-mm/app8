@@ -10,7 +10,7 @@ import hashlib
 import json
 import re
 
-from scripts.v04_mla_pilot_reducer import SOURCE_BLOB
+SOURCE_BLOB = "4b3c9b62b1899653524f19a286924f942605210a"
 
 ROLES = ("P", "R", "X")
 CONFIG_FIELDS = {"model_family", "provider", "model_version",
