@@ -47,7 +47,6 @@ def rows(pilot):
         "requested_outcome": "BEHAVIOR_SUPPORTED",
         "reference_origin": "LLM_PROPOSED",
         "behavior_observation_sha256": c["behavior_observation_sha256"],
-        "oracle_commitment_sha256": None,
     } for c in pilot["cases"]]
 
 
@@ -133,13 +132,12 @@ class UnqualifiedEvidencePreflightTests(unittest.TestCase):
         with self.assertRaisesRegex(PilotBlocked, "swapped"):
             reduce_evidence_preflight(pilot, claims)
 
-    def test_oracle_hash_cannot_certify_trusted_oracle(self):
+    def test_oracle_commitment_not_allowed_in_public_status(self):
         pilot = synthetic_pilot()
         claims = rows(pilot)
         claims[0]["oracle_commitment_sha256"] = "c" * 64
-        result = reduce_evidence_preflight(pilot, claims)
-        self.assertTrue(result["cases"][0]["oracle_commitment_present"])
-        self.assertFalse(result["independent_behavior_oracles_verified"])
+        with self.assertRaisesRegex(PilotBlocked, "unexpected candidate fields"):
+            reduce_evidence_preflight(pilot, claims)
 
     def test_human_exception_budget_fail_closed(self):
         pilot = synthetic_pilot()
