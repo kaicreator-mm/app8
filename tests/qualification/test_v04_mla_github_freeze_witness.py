@@ -11,7 +11,7 @@ import os
 from app8.mla.ordered_host_ledger import OrderedMLAHostLedger
 from app8.mla.github_freeze_witness import (
     ExternalFreezeWitnessBlocked, freeze_witness_body,
-    verify_github_freeze_witness
+    admission_subject_sha256, verify_github_freeze_witness
 )
 
 KEY = b"synthetic-test-only-secret-ledger-key!" * 2
@@ -54,7 +54,7 @@ def sample_manifest():
     }
 
 
-def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, review_edited=False):
+def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, review_edited=False, mismatched_subject=False):
     events = ledger._load()
     manifest = events[0]["data"]
     body = freeze_witness_body(manifest, events[0]["mac"])
@@ -62,8 +62,12 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, revie
     row = {"id": COMMENT_ID, "node_id": "I_fakeid",
            "body": body, "created_at": ts, "updated_at": ts,
            "user": {"login": LOGIN}}
+    expected_subject = admission_subject_sha256(manifest)
+    supplied_subject = ("e" * 64 if mismatched_subject else expected_subject)
     review = {"id": REVIEW_ID, "node_id": "I_reviewid", "body": (
-        "VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY\n" if verdict else
+        ("VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY\n"
+         + "ADMISSION_SUBJECT_SHA256=" + supplied_subject + "\n")
+        if verdict else
         "VERDICT=NEEDS_REVISION\n"),
         "created_at": "2026-10-14T00:00:00Z",
         "updated_at": "2026-10-14T00:00:00Z",
@@ -129,6 +133,23 @@ class WitnessTests(unittest.TestCase):
     def test_edit_history_blocks_even_when_rest_body_matches(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "edit history"):
             self.verified(edited=True)
+
+    def test_unedited_pass_from_different_campaign_blocks(self):
+        with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "reviewer"):
+            self.verified(mismatched_subject=True)
+
+    def test_admission_subject_changes_with_model_input_and_budget(self):
+        m = sample_manifest()
+        expected = admission_subject_sha256(m)
+        modified = copy.deepcopy(m)
+        modified["model_input_sha256"]["pandas"]["R"] = "f" * 64
+        self.assertNotEqual(expected, admission_subject_sha256(modified))
+        modified = copy.deepcopy(m)
+        modified["budget"]["max_total_input_tokens"] += 1
+        self.assertNotEqual(expected, admission_subject_sha256(modified))
+        modified = copy.deepcopy(m)
+        modified["r2_verdict_comment_id"] = REVIEW_ID + 42
+        self.assertEqual(expected, admission_subject_sha256(modified))
 
     def test_reviewer_edit_from_needs_revision_to_pass_blocks(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "reviewer comment"):
