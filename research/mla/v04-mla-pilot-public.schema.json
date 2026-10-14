@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-v04-mla-pilot-public-v1",
+  "title": "Public-only adversarial MLA pilot case commitments, NOT evaluated truth",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "study_id",
+    "source_pack_git_blob",
+    "reference_origin",
+    "frozen_before_model_outputs",
+    "human_selection_seed_sha256",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v04-mla-pilot-public-v1"
+    },
+    "study_id": {
+      "const": "V04-MLA-1"
+    },
+    "source_pack_git_blob": {
+      "const": "4b3c9b62b1899653524f19a286924f942605210a"
+    },
+    "reference_origin": {
+      "const": "LLM_PROPOSED"
+    },
+    "frozen_before_model_outputs": {
+      "const": true
+    },
+    "human_selection_seed_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 24,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "asset",
+          "source_anchor",
+          "model_prediction_sha256",
+          "reference_proposer_sha256",
+          "adversarial_challenger_sha256",
+          "source_verification_claim",
+          "behavior_observation_sha256",
+          "high_impact_unresolved",
+          "oracle_visible_to_predictor",
+          "model_consensus"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^V04-[A-Z0-9_-]{3,48}$"
+          },
+          "asset": {
+            "enum": [
+              "FFmpeg",
+              "pandas",
+              "MinIO",
+              "LibreOffice"
+            ]
+          },
+          "source_anchor": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "blob"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blob": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              }
+            }
+          },
+          "model_prediction_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "reference_proposer_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "adversarial_challenger_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_verification_claim": {
+            "const": "CANDIDATE_ONLY"
+          },
+          "behavior_observation_sha256": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            ]
+          },
+          "high_impact_unresolved": {
+            "type": "boolean"
+          },
+          "oracle_visible_to_predictor": {
+            "const": false
+          },
+          "model_consensus": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
