@@ -10,14 +10,14 @@ app8 aims to turn existing software knowledge and **real observed behavior** int
 |---|---|
 | Product definition | Scope/design owner-approved (#92); empirical qualification not claimed |
 | L2 architecture | ADR01–ADR08 adopted (#94 / PR #96) |
-| Task DAG | Engineering **18/18 scoped PASS**; v0.4 **1/4 Task complete, 3/4 reopened** after honest BLOCKED terminal. Two support PRs #159/#160 need exact HEAD tests; **0/2 empirical studies PASS**; formal Release NO |
+| Task DAG | Engineering **18/18 scoped PASS**; v0.4 **1/4 formal Task complete, 3/4 open**; support #157/#158 completed via merged PR #159/#160 with exact-host tests; **0/2 empirical studies PASS**; formal Release NO |
 | Python package | Source/doc discovery, hypothesis and falsification plan freezing, SQLite evidence ledger, readiness reducer, in-memory BM25, projection metadata, CLI preview |
 | Windows host validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, trusted runner R1 21/21; Evidence-integrity fix 72/72 source tests |
 | Ubuntu WSL2 validation | v0.1 R2 84/84; v0.2 Docker isolation 11/11, runner R1 21/21; v0.3 source identity verified, 20/20 targeted qualification and scoped signed JSON pilot PASS |
 | LibreOffice official target | #69 26.8.1.1 install identity/non-evaluative smoke documented, scope PASS |
 | OS-level sandbox | **Scoped PASS** on documented Windows/Ubuntu Docker hosts and fixed digest-pinned policy; no blanket security certification |
 | Trusted Evidence | Privileged Docker runner, signed v2 receipts, durable nonce and SQLite ingress; real pinned JSON Capability scoped PASS on Windows and Ubuntu WSL2 |
-| SE10/SE11 empirical studies | **NOT_RUN / BLOCKED**, active reentry: private independent SE10 Gold missing, SE11 approved target and hidden truth missing; historical blocked terminal preserved |
+| SE10/SE11 empirical studies | **NOT_RUN / BLOCKED**: independent SE10 Gold + separate reviewer attestation absent; SE11 approved final target/applicability and independent 80-claim hidden truth absent. Public structural preflight and Stage B tests PASS, not empirical evidence |
 | Full release qualification | **NO** |
 
 The installed `app8` CLI currently produces **`ILLUSTRATIVE_UNVERIFIED` Capability previews**, not authorized executable exports. CLI/MCP/Skill/Docs/Search projections are metadata representations of a single Capability snapshot, not working MCP/Skill installers or complete runtime adapters.
