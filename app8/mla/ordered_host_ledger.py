@@ -36,6 +36,8 @@ FREEZE_FIELDS = frozenset({
     "schema_version", "study_id", "protocol_sha256", "scorer_sha256",
     "source_pack_git_blob", "cohort_sha256", "case_job_sha256",
     "model_input_sha256", "eligible_j_case_ids", "budget",
+    "campaign_nonce", "human_selection_seed_sha256",
+    "source_selection_seed_sha256", "r2_verdict_comment_id",
 })
 
 
@@ -61,8 +63,12 @@ def _validate_freeze(doc: dict) -> None:
                 != "4b3c9b62b1899653524f19a286924f942605210a"):
         raise MLAChronologyBlocked("incorrect frozen study identity")
     if any(not _sha(doc[k]) for k in
-           ("protocol_sha256", "scorer_sha256", "cohort_sha256", "case_job_sha256")):
-        raise MLAChronologyBlocked("frozen protocol/scorer/job digest absent")
+           ("protocol_sha256", "scorer_sha256", "cohort_sha256", "case_job_sha256",
+            "campaign_nonce", "human_selection_seed_sha256",
+            "source_selection_seed_sha256")):
+        raise MLAChronologyBlocked("missing pre-run campaign, seeds or protocol commitment")
+    if type(doc["r2_verdict_comment_id"]) is not int or doc["r2_verdict_comment_id"] <= 0:
+        raise MLAChronologyBlocked("independent reviewer comment ID must be pinned")
     pins = doc["model_input_sha256"]
     if not isinstance(pins, dict) or set(pins) != set(ASSETS):
         raise MLAChronologyBlocked("four complete asset model-input pins required")
@@ -197,6 +203,23 @@ class OrderedMLAHostLedger:
         except BaseException:
             self.db.execute("ROLLBACK")
             raise
+
+    def verify_precommitted_human_seed(self, public_pilot: dict) -> None:
+        """Structural cross-check against pre-output human sampling commitment.
+
+        Cannot prove when the freeze occurred. External witness gate must attest
+        chronology before any live provider transport.
+        """
+        events = self._load()
+        if not events or events[0]["kind"] != "FREEZE":
+            raise MLAChronologyBlocked("no committed frozen sampling seed")
+        manifest = events[0]["data"]
+        _validate_freeze(manifest)
+        if (not isinstance(public_pilot, dict)
+                or public_pilot.get("study_id") != manifest["study_id"]
+                or public_pilot.get("human_selection_seed_sha256")
+                   != manifest["human_selection_seed_sha256"]):
+            raise MLAChronologyBlocked("human audit selection seed drift")
 
     def reserve(self, *, role: str, asset: str, case_id: str | None,
                 request_sha256: str) -> dict:
