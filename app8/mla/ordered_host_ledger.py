@@ -294,6 +294,14 @@ class OrderedMLAHostLedger:
             self.db.execute("ROLLBACK")
             raise
 
+    def frozen_billing_currency(self) -> str:
+        """Return the pinned ledger currency only after verifying its MAC chain."""
+        events = self._load()
+        if not events or events[0]["kind"] != "FREEZE":
+            raise MLAChronologyBlocked("trusted spend freeze unavailable")
+        _validate_freeze(events[0]["data"])
+        return events[0]["data"]["budget"]["billing_currency"]
+
     def audit(self) -> dict:
         """Verify HMAC chain; never disclose raw request or provider prompt bytes."""
         events = self._load()
