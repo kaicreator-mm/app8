@@ -53,6 +53,7 @@ def prepare_case_job_commitments(pilot_public: dict, seed_sha256: str,
         if (job["asset"] != pilot["asset"]
                 or job["source_anchor"] != pilot["source_anchor"]
                 or job["origin"] != "OPERATOR_PROPOSED_NOT_GOLD"
+                or not isinstance(job["evaluation_intent"], str)
                 or job["evaluation_intent"] not in INTENTS):
             raise PilotBlocked("job source, intent or independent-Gold claim mismatch")
         if (not _bounded(job["user_job"], 2400)
