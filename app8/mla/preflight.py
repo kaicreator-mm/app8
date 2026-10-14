@@ -18,7 +18,7 @@ OUTCOMES = frozenset({
 })
 ROW_KEYS = frozenset({
     "case_id", "requested_outcome", "reference_origin",
-    "behavior_observation_sha256", "oracle_commitment_sha256",
+    "behavior_observation_sha256",
 })
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 
@@ -57,9 +57,8 @@ def reduce_evidence_preflight(pilot_public: dict, candidate_rows: list[dict],
         if row["reference_origin"] != "LLM_PROPOSED":
             raise PilotBlocked("J or human cannot self-attest semantic Gold")
         obs = row["behavior_observation_sha256"]
-        oracle = row["oracle_commitment_sha256"]
-        if not _sha_or_null(obs) or not _sha_or_null(oracle):
-            raise PilotBlocked("invalid observation/oracle commitment")
+        if not _sha_or_null(obs):
+            raise PilotBlocked("invalid observation commitment")
         if obs != original_cases[cid]["behavior_observation_sha256"]:
             raise PilotBlocked("swapped or post-frozen observation SHA")
         candidates[requested] += 1
@@ -74,7 +73,6 @@ def reduce_evidence_preflight(pilot_public: dict, candidate_rows: list[dict],
             "candidate_outcome": requested,
             "admitted_outcome": disposition,
             "observation_reference_present": obs is not None,
-            "oracle_commitment_present": oracle is not None,
             "independent_oracle_verified": False,
             "behavior_promotion_allowed": False,
         })
