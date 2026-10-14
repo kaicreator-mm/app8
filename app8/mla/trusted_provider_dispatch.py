@@ -168,8 +168,7 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
                                sealed_store: EvidenceStore, role: str,
                                asset: str, profile: dict, request_bytes: bytes,
                                approved_origins: set[str],
-                               timeout_seconds: int = 60,
-                               transport: TrustedHTTPSCompletionClient | None = None) -> dict:
+                               timeout_seconds: int = 60) -> dict:
     """Privileged single request; preserve all raw bytes off-repository.
 
     An unresolved reservation remains if a network call or usage check fails.
@@ -194,7 +193,9 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
         raise ProviderDispatchBlocked("sealed request integrity mismatch")
     reserved = ledger.reserve(role=role, asset=asset, case_id=None,
                               request_sha256=digest)
-    client = transport if transport is not None else TrustedHTTPSCompletionClient()
+    # No caller-controlled transport injection: production always uses TLS.
+    # Unit tests replace this class method in an isolated process only.
+    client = TrustedHTTPSCompletionClient()
     start = time.monotonic_ns()
     try:
         raw = client.send(url, request_bytes, secret, timeout_seconds)
