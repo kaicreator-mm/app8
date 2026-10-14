@@ -138,6 +138,14 @@ class JHQueueTests(unittest.TestCase):
         with self.assertRaisesRegex(PilotBlocked, "cannot claim oracle"):
             build_jh_candidate_queue(p, [row], [])
 
+    def test_j_hard_limit_12(self):
+        p = fixture()
+        for c in p["cases"][:13]:
+            c["high_impact_unresolved"] = True
+        judges = [jrow(c["case_id"]) for c in p["cases"][:13]]
+        with self.assertRaisesRegex(PilotBlocked, "J escalation budget"):
+            build_jh_candidate_queue(p, judges, [])
+
     def test_j_duplicate_forbidden(self):
         p = fixture()
         p["cases"][0]["high_impact_unresolved"] = True
