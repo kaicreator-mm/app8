@@ -24,12 +24,12 @@ FIELDS = frozenset(("case_id", "source_anchor"))
 
 def _complete_prefix(raw: bytes) -> bytes:
     """Full raw bytes if short; otherwise longest whole-line prefix <= 32 KiB."""
-    if type(raw) is not bytes or not raw or b"\\x00" in raw:
+    if type(raw) is not bytes or not raw or b"\x00" in raw:
         raise PilotBlocked("missing or invalid frozen source bytes")
     if len(raw) <= MAX_PREFIX_BYTES:
         result = raw
     else:
-        pos = raw.rfind(b"\\n", 0, MAX_PREFIX_BYTES + 1)
+        pos = raw.rfind(b"\n", 0, MAX_PREFIX_BYTES + 1)
         if pos < 0:
             raise PilotBlocked("cannot excerpt a complete source line")
         result = raw[:pos + 1]
@@ -127,5 +127,5 @@ def public_excerpt_digest(private_compiled: dict) -> str:
     if not isinstance(private_compiled, dict) or private_compiled.get("schema_version") != SCHEMA:
         raise PilotBlocked("excerpt compiler output required")
     payload = (json.dumps(private_compiled, ensure_ascii=False,
-                          sort_keys=True, separators=(",", ":"), allow_nan=False) + "\\n").encode("utf-8")
+                          sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
