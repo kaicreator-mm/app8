@@ -2,8 +2,9 @@
 
 > Live task-status register, not a replacement for the frozen v0.1 normative design.
 > Source of truth for current state: linked GitHub Issue/PR terminal and exact-SHA evidence.
-> Update snapshot: 2026-10-14; main reference before this document:
-> `1c220fd343faa1e6fd481dc7515a9d527c72b3c2`.
+> Update snapshot: 2026-10-15; main reference before this update:
+> `de978a313f7130806679088a4f721a1badfe7d6b`.
+> This is a living planning view. Actual Issue/PR and exact evidence at GitHub take precedence.
 > An Issue marked CLOSED does **not** imply full Product Release Qualification.
 
 ## Current portfolio snapshot (v0.4 active reentry after blocked terminal)
@@ -27,6 +28,65 @@ The 18-task register below is intentionally preserved as the completed **enginee
 
 **Historical terminal immutability:** [v0.4 2026-10-14 BLOCKED report](../release/v0.4/CORE_EMPIRICAL_TERMINAL.md) remains a truthful outcome *at that date*. Reopening #149/#150/#151 upon owner instruction does not relabel its missing data as PASS; it resumes only the unmet evidence work. **PR #159 / #160 are MERGED**. [#159 exact-head Windows terminal](https://github.com/kaicreator-mm/app8/pull/159#issuecomment-6156122089): 5/5 targeted, 212 pass + 1 skip full. [#160 R2 exact-head Windows terminal](https://github.com/kaicreator-mm/app8/pull/160#issuecomment-6156421474): 6/6 targeted, 213 pass + 1 skip full. New [#149 sealed-store structural report](https://github.com/kaicreator-mm/app8/issues/149#issuecomment-6160398313) and [#150 structural report](https://github.com/kaicreator-mm/app8/issues/150#issuecomment-6160398688) additionally executed: public preflight 7/7, Stage-B validators 35 PASS; **both public metadata preflights correctly return BLOCKED**. These are tooling tests, not independent true Gold or evaluated SE10/SE11 metrics.
 
+
+## Active v0.4 critical path and truthful status (2026-10-15)
+
+**Formal Task DAG unchanged:** `#148 CLOSED → (#149 OPEN ∥ #150 OPEN) → #151 OPEN`, under controller `#147 OPEN`. These are **4** new tasks, of which **1** is closed. The other 18 engineering tasks remain CLOSED: **19/22 formally closed (86.4%)**. **Support #165 CLOSED → #166 OPEN** is a separate implementation/evidence branch under #147; it is **not** a fifth v0.4 task. Counting closed support PRs/Issues as formal task completion is prohibited.
+
+The prior `CORE_EMPIRICAL_BLOCKED` terminal remains a dated historical result, not a permanently satisfied qualification. The original byte-frozen SE10 and SE11 studies remain `NOT_RUN`; their human-Gold and 80-hidden-truth outcomes cannot be inferred from successor multi-LLM candidates.
+
+### Successor V04-MLA-1 admission and execution DAG
+
+```text
+Owner-approved successor methodology                      DONE (#147 decision)
+    ↓
+#165 typed contracts, deterministic fail-closed reducers  DONE / CLOSED
+    ↓
+Exact 76-source provenance + four target reentry          DONE AS CANDIDATE, NO TARGET APPROVAL
+    ↓
+24 prospective jobs + private seed + official compiler    DONE AS CANDIDATE
+    ↓
+Independent 24/24 job/intent semantic review               DONE AS CANDIDATE (#166)
+    ↓
+12 role instruction drafts (4 P / 4 R / 4 X)              DONE AS AUTHOR DRAFT, NOT FROZEN
+    ↓
+12 exact provider/request byte envelopes, R/X family
+independence, cohort/job/protocol/scorer/budget pins       BLOCKED — HOST CONFIG / PRIVATE INPUTS
+    ↓
+Fresh independent PRE-OUTPUT provisional admission
+verdict bound to exact campaign SHA256                     NOT_RUN
+    ↓
+Host ledger FREEZE → unique unedited GitHub public
+commitment, witness verification before each dispatch     NOT_RUN
+    ↓
+12 trusted blind P/R/X invocations, 24 cases immutable    NOT_RUN; 0/24 evaluated
+    ↓
+Source-only disagreement/coverage, H sample + mandatory
+exceptions; behavior requires independent target/oracle   NOT_RUN
+    ↓
+#149 / #150 honest empirical terminals → #151             NOT_RUN / BLOCKED
+    ↓
+v0.4 core qualification and Release decision              RELEASE NO
+```
+
+**Exact evidence ledger:** PR #182–#188 (including #188 [independently reviewed and merged](https://github.com/kaicreator-mm/app8/pull/188) into `de978a31`) provide bounded protocol/input/host protections, **not real provider runs**. [#166 24-case source review](https://github.com/kaicreator-mm/app8/issues/166#issuecomment-6176183752) reports **24/24 structurally correct and independently reviewed prospective jobs**, comprising 19 source-semantic and 5 behavior-candidate intents. [#166 latest private-host readiness](https://github.com/kaicreator-mm/app8/issues/166#issuecomment-6188060513) reports that its local environment could **not locate the separately delivered private 12-role author-draft JSON**; model provider/version/sampling/budget choices were not authorized, and final 12 exact outbound envelopes were therefore **BLOCKED**. The private JSON must remain outside Git; provide its existing download to the host, **not regenerate those 24 jobs or invent model profile defaults**.
+
+**Minimal prerequisites for an honest source-semantic pilot:** same 24/24 frozen cases, all 12 final outbound request and profile digests, source excerpts bounded to the frozen anchors, different-family R/X, predeclared budget and scope, independent campaign-specific provisional reviewer verdict, live GitHub immutable public witness, then actual P/R/X execution and usage reconciliation. A source-only dry run cannot claim independent Gold, semantic precision/F1, behavior support, or promotion. The five behavior-intent cases remain in the fixed 24 denominator and **BLOCKED until exact target claim-specific applicability + independently calibrated deterministic Oracle**; LibreOffice remains `DIVERGED` and unapproved, pandas ABI import smoke is not the same as target/claim approval.
+
+**Minimal H authority:** precommitted at least one audit card per asset plus all derived impactful unresolved cases; cap 12, excess BLOCKED. H may `CONFIRM/REJECT/DEFER` with evidence and must not silently upgrade model-derived truth. Formal original SE10 48-Gold / SE11 80-hidden results remain separate, `NOT_RUN`, and the successor 24-case calibration pilot cannot replace them or authorize production Release.
+
+**Avoid repetition:** small code fixes → diff-only tests and independent incremental review; use one version-candidate full regression, not a fresh environmental campaign per PR. Do not repeat #150 wheel downloads/ABI smoke, 24-job semantic audit or prior Docker/LibreOffice installs absent identified evidence drift. No automatic live model call, no fake freeze comment, no opportunistic old PASS reuse.
+
+### Blocker ownership at handoff
+
+| Blocker | Status | Correct next owner or channel |
+|---|---|---|
+| Private author 12-role JSON delivery to host | FILE AVAILABLE TO USER; HOST DID NOT SEE FILE | User transfers existing private file, local Agent reads it; no Git upload |
+| Frozen real provider profiles + exact P/R/X requests + token budget | BLOCKED / NOT CONFIGURED | Real host operator, with explicit model/price/permission inputs |
+| Campaign-specific fresh independent provisional admission | NOT_RUN | Different-family reviewer on exact pre-output manifest |
+| Pre-dispatch GitHub unedited witness proof | GRAPHQL FIELD READ-ONLY PROBE PASS; LIVE FREEZE NOT_RUN | Privileged host after admission only |
+| Four approved behavior targets and independent calibrated Oracle | NOT READY; LibreOffice DIVERGED | Real host and independent claim-specific reviewer |
+| Formal #149/#150 studies and #151 terminal | NOT_RUN / BLOCKED | Actual evidence first; status `BLOCKED` if infeasible, no invented PASS |
 
 ## Task totals
 
@@ -99,7 +159,7 @@ IMPLEMENTATION_TASKS_CLOSED=18
 IMPLEMENTATION_TASKS_OPEN=0
 V03_T02_REAL_PILOT=#140_CLOSED_SCOPED_REAL_PILOT
 V03_CONTROLLER=#138_CLOSED_NOT_COUNTED_AS_IMPLEMENTATION_TASK
-OPEN_PR=NONE
+OPEN_PR_AT_V03_SCOPED_CLOSEOUT=NONE
 SE10_SE11_GENERAL_PRODUCT_EFFICACY=UNPROVEN
 FORMAL_PRODUCT_RELEASE_QUALIFIED=NO
 ```
