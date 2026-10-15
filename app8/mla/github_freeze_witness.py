@@ -74,6 +74,31 @@ def _iso(value) -> datetime:
     return dt.astimezone(timezone.utc)
 
 
+def admission_subject_sha256(manifest: dict) -> str:
+    """Hash all prospective admission fields, excluding the reviewer comment ID.
+
+    A self-referential GitHub comment ID cannot be known before posting the
+    review. All substantive frozen fields, including 24-job digest, 12 exact
+    model-input hashes, two seeds, campaign nonce, protocol and numeric budget,
+    MUST be fixed before the review is published.
+    """
+    if not isinstance(manifest, dict):
+        raise ExternalFreezeWitnessBlocked("reviewed admission manifest missing")
+    if (set(manifest) != {
+        "schema_version", "study_id", "source_pack_git_blob",
+        "protocol_sha256", "scorer_sha256", "cohort_sha256",
+        "case_job_sha256", "campaign_nonce", "human_selection_seed_sha256",
+        "source_selection_seed_sha256", "r2_verdict_comment_id",
+        "model_input_sha256", "eligible_j_case_ids", "budget",
+    }):
+        raise ExternalFreezeWitnessBlocked("admission manifest fields drift")
+    subject = {key: value for key, value in manifest.items()
+               if key != "r2_verdict_comment_id"}
+    raw = (json.dumps(subject, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
 def freeze_witness_body(manifest: dict, first_freeze_mac: str) -> str:
     """Exact GitHub comment body to post BEFORE first provider dispatch."""
     if not _SHA.fullmatch(first_freeze_mac):
@@ -178,8 +203,15 @@ def verify_github_freeze_witness(ledger: OrderedMLAHostLedger) -> dict:
     review = _request_json(
         f"https://api.github.com/repos/{_REPO}/issues/comments/{review_id}", token)
     body = review.get("body") if isinstance(review, dict) else None
+    subject_pin = admission_subject_sha256(manifest)
+    # A different campaign's unedited PASS is NOT an admission for this
+    # campaign, even if a privileged actor repoints r2_verdict_comment_id.
     if (not isinstance(body, str)
             or "VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY" not in body.splitlines()
+            or body.splitlines().count(
+                "ADMISSION_SUBJECT_SHA256=" + subject_pin) != 1
+            or sum(line.startswith("ADMISSION_SUBJECT_SHA256=")
+                   for line in body.splitlines()) != 1
             or not isinstance(review.get("user"), dict)
             or review["user"].get("login") != reviewer_login
             or not isinstance(review.get("node_id"), str)
