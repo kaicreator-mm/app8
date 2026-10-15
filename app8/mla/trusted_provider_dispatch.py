@@ -185,6 +185,8 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
                                       approved_origins=approved_origins)
     if profile["billing_currency"] != ledger.frozen_billing_currency():
         raise ProviderDispatchBlocked("provider price currency differs from frozen spending ledger")
+    if timeout_seconds * 1000 > ledger.frozen_per_call_wall_ms():
+        raise ProviderDispatchBlocked("provider timeout exceeds frozen per-call wall budget")
     secret = os.environ.get(profile["api_key_env"], "")
     if not secret or "\n" in secret or "\r" in secret:
         raise ProviderDispatchBlocked("provider credential unavailable or invalid")

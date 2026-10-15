@@ -325,6 +325,14 @@ class OrderedMLAHostLedger:
         _validate_freeze(events[0]["data"])
         return events[0]["data"]["budget"]["billing_currency"]
 
+    def frozen_per_call_wall_ms(self) -> int:
+        """Return exact HMAC-authenticated single-call wall-clock budget."""
+        events = self._load()
+        if not events or events[0]["kind"] != "FREEZE":
+            raise MLAChronologyBlocked("trusted spend freeze unavailable")
+        _validate_freeze(events[0]["data"])
+        return events[0]["data"]["budget"]["max_per_call_wall_ms"]
+
     def audit(self) -> dict:
         """Verify HMAC chain; never disclose raw request or provider prompt bytes."""
         events = self._load()
