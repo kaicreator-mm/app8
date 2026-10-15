@@ -14,13 +14,13 @@ from scripts.v04_mla_deterministic_source_excerpt import (
 
 class PrefixExcerptTests(unittest.TestCase):
     def test_short_blob_unchanged(self):
-        self.assertEqual(_complete_prefix(b"first\\nsecond"), b"first\\nsecond")
+        self.assertEqual(_complete_prefix(b"first\nsecond"), b"first\nsecond")
 
     def test_long_blob_uses_last_complete_line_not_cherrypicked_sections(self):
-        raw = (b"first evidence\\n" + b"x" * (MAX_PREFIX_BYTES - 20)
-               + b"\\nfollow-on private topic" + b"x" * 8000)
+        raw = (b"first evidence\n" + b"x" * (MAX_PREFIX_BYTES - 20)
+               + b"\nfollow-on private topic" + b"x" * 8000)
         out = _complete_prefix(raw)
-        self.assertTrue(out.endswith(b"\\n"))
+        self.assertTrue(out.endswith(b"\n"))
         self.assertTrue(len(out) <= MAX_PREFIX_BYTES)
         self.assertEqual(out, raw[:len(out)])
         self.assertNotIn(b"follow-on private topic", out)
@@ -33,9 +33,9 @@ class PrefixExcerptTests(unittest.TestCase):
         with self.assertRaises(PilotBlocked):
             _complete_prefix(b"")
         with self.assertRaises(PilotBlocked):
-            _complete_prefix(b"\\xff\\xfe\\n")
+            _complete_prefix(b"\xff\xfe\n")
         with self.assertRaises(PilotBlocked):
-            _complete_prefix(b"hi\\x00there")
+            _complete_prefix(b"hi\x00there")
 
     def test_digest_binds_private_excerpt_bytes(self):
         x = {"schema_version": "v04-mla-ffmpeg-fixed-prefix-excerpts-v1",
