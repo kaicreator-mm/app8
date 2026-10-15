@@ -180,6 +180,32 @@ class HTTPSDispatchTests(unittest.TestCase):
                 self.assertEqual(fake.called, 0)
                 self.assertEqual(other.audit()["reservation_count"], 0)
 
+    def test_timeout_longer_than_wall_budget_denied_before_provider(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with OrderedMLAHostLedger(
+                    Path(folder) / "short-wall.sqlite", host_hmac_key=KEY) as other:
+                manifest = freeze(self.digest)
+                manifest["budget"]["max_per_call_wall_ms"] = 10_000
+                other.freeze(manifest)
+                fake = FakeTransport()
+                with self.assertRaisesRegex(ProviderDispatchBlocked, "timeout exceeds"):
+                    self.dispatch(ledger=other, timeout_seconds=60, transport=fake)
+                self.assertEqual(fake.called, 0)
+                self.assertEqual(other.audit()["reservation_count"], 0)
+
+    def test_timeout_equal_wall_budget_is_synthetically_allowed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with OrderedMLAHostLedger(
+                    Path(folder) / "equal-wall.sqlite", host_hmac_key=KEY) as other:
+                manifest = freeze(self.digest)
+                manifest["budget"]["max_per_call_wall_ms"] = 60_000
+                other.freeze(manifest)
+                fake = FakeTransport()
+                result = self.dispatch(ledger=other, timeout_seconds=60,
+                                       transport=fake)
+                self.assertEqual(fake.called, 1)
+                self.assertFalse(result["trusted_remote_provider_identity_independently_verified"])
+
     def test_redirect_url_paths_disallowed(self):
         changed = dict(self.p, path="/v1/../chat/completions")
         with self.assertRaisesRegex(ProviderDispatchBlocked, "API path"):
