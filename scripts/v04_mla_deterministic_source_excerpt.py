@@ -16,8 +16,8 @@ from scripts.v04_mla_pilot_reducer import (
 )
 
 SCHEMA = "v04-mla-ffmpeg-fixed-prefix-excerpts-v1"
-MAX_PREFIX_BYTES = 32768
-MAX_TOTAL_EXCERPT_BYTES = 196608
+MAX_PREFIX_BYTES = 65536
+MAX_TOTAL_EXCERPT_BYTES = 393216
 EXPECTED_IDS = frozenset(f"V04-FFMPEG-{i:03d}" for i in range(1, 7))
 FIELDS = frozenset(("case_id", "source_anchor"))
 
@@ -29,7 +29,7 @@ def _complete_prefix(raw: bytes) -> bytes:
     if len(raw) <= MAX_PREFIX_BYTES:
         result = raw
     else:
-        pos = raw.rfind(b"\n", 0, MAX_PREFIX_BYTES + 1)
+        pos = raw.rfind(b"\n", 0, MAX_PREFIX_BYTES)
         if pos < 0:
             raise PilotBlocked("cannot excerpt a complete source line")
         result = raw[:pos + 1]
@@ -37,6 +37,8 @@ def _complete_prefix(raw: bytes) -> bytes:
         result.decode("utf-8", errors="strict")
     except UnicodeDecodeError as exc:
         raise PilotBlocked("frozen source excerpt is not UTF-8") from exc
+    if len(result) > MAX_PREFIX_BYTES:
+        raise PilotBlocked("excerpt exceeds frozen per-source byte cap")
     return result
 
 
@@ -114,7 +116,7 @@ def compile_ffmpeg_prefix_context(
         "study_id": "V04-MLA-1",
         "source_pack_git_blob": SOURCE_BLOB,
         "asset": "FFmpeg",
-        "selection_rule": "FIRST_32768_BYTES_LAST_COMPLETE_NEWLINE",
+        "selection_rule": "FIRST_65536_BYTES_LAST_COMPLETE_NEWLINE",
         "case_denominator_preserved": 6,
         "source_context_is_partial": any(row["excerpt_kind"] != "COMPLETE_BLOB" for row in selected),
         "oracle_or_behavior_verified": False,
