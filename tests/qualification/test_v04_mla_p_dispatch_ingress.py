@@ -10,7 +10,26 @@ from app8.mla.ordered_host_ledger import OrderedMLAHostLedger
 from app8.storage import EvidenceStore
 from scripts.v04_mla_pilot_reducer import ALLOWLIST, ROOT, PilotBlocked
 from scripts.v04_mla_p_dispatch_ingress import dispatch_and_ingest_p
-from tests.qualification.test_v04_mla_https_dispatch import profile, request, ORIGINS
+# Local synthetic fixtures: tests/ may not be importable as an installed package.
+ORIGINS = {"https://example-model-provider.com"}
+
+
+def profile():
+    return {
+        "origin": "https://example-model-provider.com",
+        "path": "/v1/chat/completions",
+        "provider": "synthetic", "model_family": "synthetic-p",
+        "model_id": "test-model",
+        "api_key_env": "APP8_MLA_PROVIDER_TEST",
+        "billing_currency": "USD",
+        "input_cost_microunits_per_million_tokens": 1_000_000,
+        "output_cost_microunits_per_million_tokens": 1_000_000,
+    }
+
+
+def request():
+    return b'{"model":"test-model","messages":[{"role":"user","content":"fixture"}]}'
+
 
 
 class SealedPIngressTests(TestCase):
