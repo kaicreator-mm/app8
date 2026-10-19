@@ -23,7 +23,7 @@ FIELDS = frozenset(("case_id", "source_anchor"))
 
 
 def _complete_prefix(raw: bytes) -> bytes:
-    """Full raw bytes if short; otherwise longest whole-line prefix <= 32 KiB."""
+    """Full raw bytes if short; otherwise longest whole-line prefix <= 64 KiB."""
     if type(raw) is not bytes or not raw or b"\x00" in raw:
         raise PilotBlocked("missing or invalid frozen source bytes")
     if len(raw) <= MAX_PREFIX_BYTES:
