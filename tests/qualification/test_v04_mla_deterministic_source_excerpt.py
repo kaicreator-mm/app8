@@ -27,24 +27,24 @@ class PrefixExcerptTests(unittest.TestCase):
 
     def test_exact_last_allowed_lf_is_included(self):
         raw = (b"x" * (MAX_PREFIX_BYTES - 1)
-               + b"\\n" + b"after bounded context")
+               + b"\n" + b"after bounded context")
         result = _complete_prefix(raw)
         self.assertEqual(len(result), MAX_PREFIX_BYTES)
         self.assertEqual(result, raw[:MAX_PREFIX_BYTES])
 
     def test_lf_one_byte_past_cap_blocks_not_overreads(self):
         raw = (b"x" * MAX_PREFIX_BYTES
-               + b"\\n" + b"outside frozen limit")
+               + b"\n" + b"outside frozen limit")
         with self.assertRaisesRegex(PilotBlocked, "complete source line"):
             _complete_prefix(raw)
 
     def test_substantive_automatic_stream_rules_fit_sixtyfour_kib_prefix(self):
         # Source-independent synthetic fixture: assert material semantic lines
         # are included when positioned after 32 KiB but before 64 KiB.
-        raw = (b"intro\\n" + b"i" * 32768 + b"\\n"
-               + b"for video, it is the stream with the highest resolution,\\n"
-               + b"for audio, it is the stream with the most channels,\\n"
-               + b"Data or attachment streams are not automatically selected\\n"
+        raw = (b"intro\n" + b"i" * 32768 + b"\n"
+               + b"for video, it is the stream with the highest resolution,\n"
+               + b"for audio, it is the stream with the most channels,\n"
+               + b"Data or attachment streams are not automatically selected\n"
                + b"x" * MAX_PREFIX_BYTES)
         out = _complete_prefix(raw)
         self.assertIn(b"highest resolution", out)
