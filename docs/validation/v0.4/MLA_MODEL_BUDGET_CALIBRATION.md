@@ -44,12 +44,29 @@ deepseek-v4-pro).
    dispatch fails closed, the ledger reservation stays outstanding, and no
    retry is permitted — budget must be sized before dispatch, with margin
    above observed reasoning, not at it.
+7. **For unbounded-thinking models, budget sizing alone is the wrong tool**
+   (v3 lesson, paid ≈$0.36): the same glm-5.3-flash request that completed at
+   16,384 in v2 burned 16,382/16,384 reasoning tokens with **zero content**
+   in v3 — reasoning is non-deterministic and scales with whatever budget is
+   granted. GLM-5.3/5.3-Flash use *forced* thinking that cannot be disabled
+   (no `thinking.type: disabled` for the 5.3 series).
+8. **The official knob is `reasoning_effort`** (Z.ai chat-completion API,
+   GLM-5.2+): allowed `max/xhigh/high/medium/low/minimal/none`, **default
+   `max`** — bodies that omit it run unbounded reasoning. GLM-5.3 and
+   GLM-5.3-Flash honor only `low/high/max`; thinking stays forced (enabled)
+   at every level, with depth controlled by this parameter. Bounding effort
+   (e.g. `high`) plus a generous `max_tokens` keeps forced-thinking models
+   compatible with the fail-closed budget; `max_tokens` ranges to 131,072
+   (128K output on the 5.3 series). DeepSeek-family calls in this campaign
+   never needed it (4/4 and 4/4 completions at 16,384 across v2/v3).
 
 ## Sizing rule for future campaigns
 
-`max_tokens >= observed_reasoning_on_the_asset / 0.6` (i.e. keep reasoning
-under ~60% of the budget), and never size exactly at a previous truncation
-point. For this study: P/X bodies 16384 everywhere except LibreOffice-pair
-32768; per-call wall 420,000 ms at the observed token rate. Input excerpts and
-batching (6 cases/call) stay as frozen: input is not the binding constraint
-and smaller batches would triple the call count without shrinking reasoning.
+For bounded-reasoning models: `max_tokens >= observed_reasoning_on_the_asset /
+0.6`. For forced/unbounded-thinking models (GLM-5.3 series): pin
+`reasoning_effort` explicitly (never rely on the `max` default), keep
+`max_tokens` generous (observed content need is ~2–7k tokens), and treat any
+completion at `reasoning_effort: max` as a calibration finding, not a sizing
+failure. Input excerpts and batching (6 cases/call) stay as frozen: input is
+not the binding constraint and smaller batches would triple the call count
+without shrinking reasoning.
