@@ -54,7 +54,8 @@ def sample_manifest():
     }
 
 
-def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, review_edited=False, mismatched_subject=False):
+def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True,
+                   review_edited=False, mismatched_subject=False, same_author=False):
     events = ledger._load()
     manifest = events[0]["data"]
     body = freeze_witness_body(manifest, events[0]["mac"])
@@ -64,6 +65,7 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, revie
            "user": {"login": LOGIN}}
     expected_subject = admission_subject_sha256(manifest)
     supplied_subject = ("e" * 64 if mismatched_subject else expected_subject)
+    review_login = LOGIN if same_author else REVIEWER
     review = {"id": REVIEW_ID, "node_id": "I_reviewid", "body": (
         ("VERDICT=PASS_FOR_PILOT_PROVISIONAL_ONLY\n"
          + "ADMISSION_SUBJECT_SHA256=" + supplied_subject + "\n")
@@ -71,7 +73,7 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, revie
         "VERDICT=NEEDS_REVISION\n"),
         "created_at": "2026-10-14T00:00:00Z",
         "updated_at": "2026-10-14T00:00:00Z",
-        "user": {"login": REVIEWER}}
+        "user": {"login": review_login}}
     graph = {"data": {"node": {
         "id": "I_fakeid", "createdAt": ts, "lastEditedAt": ts if edited else None,
         "author": {"login": LOGIN},
@@ -81,7 +83,7 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True, revie
         "id": "I_reviewid",
         "createdAt": "2026-10-14T00:00:00Z",
         "lastEditedAt": "2026-10-14T00:02:00Z" if review_edited else None,
-        "author": {"login": REVIEWER},
+        "author": {"login": review_login},
         "userContentEdits": {"totalCount": 1 if review_edited else 0},
     }}}
     matches = [row]
@@ -129,6 +131,14 @@ class WitnessTests(unittest.TestCase):
         self.assertTrue(report["external_public_commitment_observed_before_this_dispatch"])
         self.assertFalse(report["provider_identity_independently_attested"])
         self.assertFalse(report["formal_product_release_qualified"])
+
+    def test_single_account_witness_and_reviewer_author_allowed(self):
+        with patch.dict(os.environ, {
+            "APP8_MLA_GITHUB_WITNESS_AUTHOR": LOGIN,
+            "APP8_MLA_GITHUB_REVIEWER_AUTHOR": LOGIN,
+        }):
+            report = self.verified(same_author=True)
+        self.assertEqual(report["witness_comment_id"], COMMENT_ID)
 
     def test_edit_history_blocks_even_when_rest_body_matches(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "edit history"):

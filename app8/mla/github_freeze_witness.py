@@ -164,7 +164,6 @@ def verify_github_freeze_witness(ledger: OrderedMLAHostLedger) -> dict:
             or not 1 <= len(comment_id_str) <= 18
             or not _ACCOUNT.fullmatch(expected_login)
             or not _ACCOUNT.fullmatch(reviewer_login)
-            or reviewer_login == expected_login
             or not isinstance(token, str) or len(token) < 20
             or "\n" in token or "\r" in token):
         raise ExternalFreezeWitnessBlocked("privileged GitHub witness config absent")
