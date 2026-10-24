@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app8-v04-mla-role-batch-response-contract-v1",
+  "title": "Candidate P/R/X role-batch response format contract (structural only, NOT evaluated truth)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "study_id",
+    "asset",
+    "role",
+    "source_context_sha256",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "v04-mla-role-batch-v1"
+    },
+    "study_id": {
+      "const": "V04-MLA-1"
+    },
+    "asset": {
+      "enum": ["FFmpeg", "pandas", "MinIO", "LibreOffice"]
+    },
+    "role": {
+      "enum": ["P", "R", "X"]
+    },
+    "source_context_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "source_anchor",
+          "origin",
+          "kind",
+          "proposal",
+          "constraints"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^V04-(FFMPEG|PANDAS|MINIO|LIBREOFFICE)-00[1-6]$"
+          },
+          "source_anchor": {
+            "description": "MUST be the frozen {path,blob} object exactly; string renderings are the v4 pilot defect (issue #166 Step H: 0/72 rows conformant) and fail closed",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "blob"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blob": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              }
+            }
+          },
+          "origin": {
+            "const": "LLM_PROPOSED"
+          },
+          "kind": {
+            "enum": [
+              "P_CAPABILITY_PREDICTION",
+              "R_SEMANTIC_REFERENCE_PROPOSAL",
+              "X_ADVERSARIAL_COUNTERHYPOTHESIS"
+            ]
+          },
+          "proposal": {
+            "description": "Bounded to the app8 ingress 2000-character limit, the strictest of the two enforcement bounds",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "constraints": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400
+            }
+          }
+        }
+      }
+    }
+  }
+}
