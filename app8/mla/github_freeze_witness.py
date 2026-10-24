@@ -117,13 +117,38 @@ def freeze_witness_body(manifest: dict, first_freeze_mac: str) -> str:
     )) + "\n"
 
 
-def _strict_single_witness(*, token: str, target_comment_id: int, exact_body: str):
-    """Fail if any second freeze witness for the same study remains visible.
+def _witness_campaign_nonce(body: str):
+    """Parse the CAMPAIGN_NONCE line of a witness body, or None if malformed.
+
+    Witness bodies are pinned by freeze_witness_body, which puts a 64-hex
+    nonce on the third line. A same-study body that deviates returns None and
+    therefore stays in scope for every campaign in _strict_single_witness, so
+    a garbled or future-format record can never be scoped out of uniqueness
+    enforcement.
+    """
+    lines = body.splitlines()
+    if len(lines) < 3 or not lines[2].startswith("CAMPAIGN_NONCE="):
+        return None
+    nonce = lines[2][len("CAMPAIGN_NONCE="):]
+    return nonce if _SHA.fullmatch(nonce) else None
+
+
+def _strict_single_witness(*, token: str, target_comment_id: int,
+                           exact_body: str, campaign_nonce: str):
+    """Fail unless exactly one freeze witness of this study AND campaign nonce
+    remains visible.
+
+    Uniqueness is scoped to (STUDY, CAMPAIGN_NONCE): the settled historical
+    campaign's immutable witness carries a different nonce and must not block
+    a fresh campaign's lawful admission. A second witness for the same nonce,
+    or a same-study body without a parsable nonce, still blocks.
 
     Small list pages keep every response under the fixed _request_json size
     guard on long-running issues whose full 100-per-page listing alone can
     exceed it.
     """
+    if not _SHA.fullmatch(campaign_nonce):
+        raise ExternalFreezeWitnessBlocked("campaign nonce missing for witness scope")
     root = f"https://api.github.com/repos/{_REPO}/issues/{_ISSUE}/comments"
     observed = []
     for page in range(1, 26):
@@ -133,7 +158,8 @@ def _strict_single_witness(*, token: str, target_comment_id: int, exact_body: st
         for row in records:
             body = row.get("body") if isinstance(row, dict) else None
             if (isinstance(body, str)
-                    and body.startswith(_PREFIX + "\nSTUDY=V04-MLA-1\n")):
+                    and body.startswith(_PREFIX + "\nSTUDY=V04-MLA-1\n")
+                    and _witness_campaign_nonce(body) in (campaign_nonce, None)):
                 observed.append((row.get("id"), body))
         if len(records) < 10:
             break
@@ -241,8 +267,8 @@ def verify_github_freeze_witness(ledger: OrderedMLAHostLedger) -> dict:
             or review_node.get("userContentEdits", {}).get("totalCount") != 0
             or review_graph.get("errors")):
         raise ExternalFreezeWitnessBlocked("independent reviewer comment was edited or history unknown")
-    _strict_single_witness(
-        token=token, target_comment_id=comment_id, exact_body=expected_body)
+    _strict_single_witness(token=token, target_comment_id=comment_id,
+                           exact_body=expected_body, campaign_nonce=nonce)
     return {
         "status": "GITHUB_UNEDITED_PUBLIC_FREEZE_ORDER_VERIFIED_ONLY",
         "witness_comment_id": comment_id,

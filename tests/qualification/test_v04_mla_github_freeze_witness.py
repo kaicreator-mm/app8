@@ -16,6 +16,7 @@ from app8.mla.github_freeze_witness import (
 
 KEY = b"synthetic-test-only-secret-ledger-key!" * 2
 NONCE = "f" * 64
+OLDER_NONCE = "2" * 64  # settled historical campaign, immutable witness stays visible
 COMMENT_ID = 888801
 REVIEW_ID = 777701
 LOGIN = "witness-operator"
@@ -55,7 +56,8 @@ def sample_manifest():
 
 
 def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True,
-                   review_edited=False, mismatched_subject=False, same_author=False):
+                   review_edited=False, mismatched_subject=False, same_author=False,
+                   older_nonces=()):
     events = ledger._load()
     manifest = events[0]["data"]
     body = freeze_witness_body(manifest, events[0]["mac"])
@@ -89,6 +91,16 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True,
     matches = [row]
     if duplicate:
         matches.append(dict(row, id=COMMENT_ID + 1))
+    for offset, older_nonce in enumerate(older_nonces):
+        older_manifest = dict(sample_manifest(), campaign_nonce=older_nonce)
+        matches.append({
+            "id": COMMENT_ID - 10 - offset,
+            "node_id": "I_older" + str(offset),
+            "body": freeze_witness_body(older_manifest, "a" * 64),
+            "created_at": "2026-10-01T00:00:00Z",
+            "updated_at": "2026-10-01T00:00:00Z",
+            "user": {"login": LOGIN},
+        })
     def fetch(url, token, graphql=None):
         if url.endswith("/issues/comments/" + str(COMMENT_ID)):
             return row
@@ -168,6 +180,15 @@ class WitnessTests(unittest.TestCase):
     def test_duplicate_campaign_witness_blocks(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "duplicate"):
             self.verified(duplicate=True)
+
+    def test_previous_campaign_witness_coexists_without_deleting_history(self):
+        report = self.verified(older_nonces=(OLDER_NONCE,))
+        self.assertEqual(report["witness_comment_id"], COMMENT_ID)
+        self.assertTrue(report["external_public_commitment_observed_before_this_dispatch"])
+
+    def test_previous_campaign_witness_does_not_admit_duplicate_current(self):
+        with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "duplicate"):
+            self.verified(duplicate=True, older_nonces=(OLDER_NONCE,))
 
     def test_review_needs_revision_blocks(self):
         with self.assertRaisesRegex(ExternalFreezeWitnessBlocked, "reviewer"):
