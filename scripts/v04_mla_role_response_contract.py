@@ -46,6 +46,11 @@ def validate_response_contract(*, role: str, asset: str, content_bytes: bytes,
         raise PilotBlocked("unknown study role or asset")
     if type(content_bytes) is not bytes or not 0 < len(content_bytes) <= MAX_CONTENT_BYTES:
         raise PilotBlocked("candidate response content missing or oversized")
+    if (content_bytes.lstrip().startswith(b"```")
+            or content_bytes.rstrip().endswith(b"```")):
+        raise PilotBlocked(
+            "response content is not strict machine-parseable JSON: markdown "
+            "code fence or wrapper detected (v4 R-role sealed-output defect)")
     batch = read_json(content_bytes)
     if not isinstance(batch, dict):
         raise PilotBlocked("response content is not a JSON object")

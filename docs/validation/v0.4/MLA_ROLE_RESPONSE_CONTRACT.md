@@ -20,7 +20,11 @@ the compiler, all proposals already within the 2000-character bound.
 ## v5 contract (what a response must look like)
 
 1. **Strict machine-parseable JSON**: exactly one JSON object as the full
-   response content. No markdown code fences, prose preamble or wrapper.
+   response content. No markdown code fences, prose preamble or wrapper. The
+   rehearsal gate detects fence wrappers with a distinct error before any
+   structural check — in v4, all four sealed R batches were markdown-fenced
+   (```` ```json ```` … ```` ``` ````), so their raw bytes failed strict JSON
+   parsing and needed an off-contract fence-strip to inspect at all.
 2. **`source_anchor` object form**: each case carries the exact frozen
    `{path, blob}` JSON object for its slot. String renderings fail closed.
 3. **Bounds pinned at the strictest enforcement point**: proposal ≤ 2000
