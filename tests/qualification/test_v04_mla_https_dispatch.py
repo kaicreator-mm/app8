@@ -206,6 +206,29 @@ class HTTPSDispatchTests(unittest.TestCase):
                 self.assertEqual(fake.called, 1)
                 self.assertFalse(result["trusted_remote_provider_identity_independently_verified"])
 
+    def test_timeout_up_to_360_synthetically_allowed_with_matching_wall(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with OrderedMLAHostLedger(
+                    Path(folder) / "long-wall.sqlite", host_hmac_key=KEY) as other:
+                manifest = freeze(self.digest)
+                manifest["budget"]["max_per_call_wall_ms"] = 300_000
+                other.freeze(manifest)
+                fake = FakeTransport()
+                self.dispatch(ledger=other, timeout_seconds=300, transport=fake)
+                self.assertEqual(fake.called, 1)
+
+    def test_timeout_above_360_sanity_ceiling_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with OrderedMLAHostLedger(
+                    Path(folder) / "huge-wall.sqlite", host_hmac_key=KEY) as other:
+                manifest = freeze(self.digest)
+                manifest["budget"]["max_per_call_wall_ms"] = 400_000
+                other.freeze(manifest)
+                fake = FakeTransport()
+                with self.assertRaisesRegex(ProviderDispatchBlocked, "base role required"):
+                    self.dispatch(ledger=other, timeout_seconds=361, transport=fake)
+                self.assertEqual(fake.called, 0)
+
     def test_redirect_url_paths_disallowed(self):
         changed = dict(self.p, path="/v1/../chat/completions")
         with self.assertRaisesRegex(ProviderDispatchBlocked, "API path"):
