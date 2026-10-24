@@ -3,7 +3,10 @@
 **State:** structural output-format contract + offline rehearsal gate, added
 after the v4 pilot finding in issue #166 Step H. No model was invoked to
 produce or validate this contract; it pins how a *future* P/R/X response must
-be rendered so format defects fail before any billable dispatch.
+be rendered, so the defect classes v4 actually hit can be caught in zero-cost
+rehearsal. Conformance of a real provider response can only be checked after
+the call that produced it is already metered — see the rehearsal-gate section
+below.
 
 ## v4 lesson (counts only, no content)
 
@@ -38,7 +41,7 @@ The machine-readable shape lives in
 authoritative binding (frozen slots, role↔kind, context digest) is code, not
 schema.
 
-## Rehearsal gate (run before any dispatch or sealing)
+## Rehearsal gate (zero-cost on synthetic bytes only)
 
 ```python
 from scripts.v04_mla_role_response_contract import validate_response_contract
@@ -52,7 +55,14 @@ validate_response_contract(
 
 `scripts/v04_mla_role_response_contract.py` is offline and read-only: it
 parses the exact candidate bytes, fails closed on every deviation with a
-distinct error, and returns digests/metadata only. Run it on a rehearsal
-response (or the first sealed bytes of a real call) BEFORE spending the
-campaign budget. A pass proves format conformance only — never transport
-identity, semantic gold, behavior oracle, promotion or release qualification.
+distinct error, and returns digests/metadata only. Run it on synthetic
+rehearsal bytes before dispatch — that rehearsal costs nothing. The gate
+cannot validate unknown future provider response bytes: the first real
+response can only be run through it after the call that produced the bytes
+is already metered, and passing rehearsal fixtures does not prove any real
+response will conform. If a real sealed response fails the gate, the paid
+call is preserved fail-closed as an incident; never silently retry, autofix
+sealed output or promote post-hoc normalization into pre-output validity. A
+pass proves format conformance of the examined bytes only — never transport
+identity, semantic gold, behavior oracle, promotion or release
+qualification.
