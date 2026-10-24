@@ -130,6 +130,24 @@ class ResponseContractTests(unittest.TestCase):
         with self.assertRaises(PilotBlocked):
             run(content_bytes=fenced, slots=slots, context=context)
 
+    def test_markdown_fenced_content_rejected_with_distinct_error(self):
+        # v4 Step H defect: all four R sealed batches were markdown-fenced.
+        slots, context, doc = batch()
+        body = json.dumps(doc, sort_keys=True, ensure_ascii=False)
+        for fenced in (
+                ("```json\n" + body + "\n```").encode("utf-8"),
+                ("```\n" + body + "\n```").encode("utf-8")):
+            with self.assertRaisesRegex(PilotBlocked, "code fence"):
+                run(content_bytes=fenced, slots=slots, context=context)
+
+    def test_whitespace_padding_still_accepted_no_false_fence_positive(self):
+        slots, context, doc = batch()
+        padded = (b"\n  "
+                  + json.dumps(doc, sort_keys=True, ensure_ascii=False).encode("utf-8")
+                  + b"  \n")
+        out = run(content_bytes=padded, slots=slots, context=context)
+        self.assertEqual(out["status"], "RESPONSE_CONTRACT_STRUCTURAL_PASS_ONLY")
+
     def test_identity_kind_and_coverage_fail_closed(self):
         slots, context, doc = batch(role="R")
         raw = (json.dumps(doc, sort_keys=True, ensure_ascii=False)
