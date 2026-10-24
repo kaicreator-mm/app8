@@ -97,7 +97,7 @@ def fake_responses(ledger, *, edited=False, duplicate=False, verdict=True,
         if graphql is not None:
             return (review_graph if graphql.get("variables", {}).get("id")
                     == "I_reviewid" else graph)
-        if "per_page=100" in url:
+        if "per_page=10&page=" in url:
             return matches
         raise AssertionError("unexpected synthetic URL " + url)
     return fetch

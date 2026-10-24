@@ -118,11 +118,16 @@ def freeze_witness_body(manifest: dict, first_freeze_mac: str) -> str:
 
 
 def _strict_single_witness(*, token: str, target_comment_id: int, exact_body: str):
-    """Fail if any second freeze witness for the same study remains visible."""
+    """Fail if any second freeze witness for the same study remains visible.
+
+    Small list pages keep every response under the fixed _request_json size
+    guard on long-running issues whose full 100-per-page listing alone can
+    exceed it.
+    """
     root = f"https://api.github.com/repos/{_REPO}/issues/{_ISSUE}/comments"
     observed = []
-    for page in range(1, 11):
-        records = _request_json(f"{root}?per_page=100&page={page}", token)
+    for page in range(1, 26):
+        records = _request_json(f"{root}?per_page=10&page={page}", token)
         if not isinstance(records, list):
             raise ExternalFreezeWitnessBlocked("GitHub witness listing unavailable")
         for row in records:
@@ -130,7 +135,7 @@ def _strict_single_witness(*, token: str, target_comment_id: int, exact_body: st
             if (isinstance(body, str)
                     and body.startswith(_PREFIX + "\nSTUDY=V04-MLA-1\n")):
                 observed.append((row.get("id"), body))
-        if len(records) < 100:
+        if len(records) < 10:
             break
     else:
         raise ExternalFreezeWitnessBlocked("cannot exhaustively inspect witnesses")
