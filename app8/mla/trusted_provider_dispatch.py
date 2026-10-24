@@ -178,8 +178,8 @@ def dispatch_frozen_completion(*, ledger: OrderedMLAHostLedger,
     if (type(ledger) is not OrderedMLAHostLedger
             or type(sealed_store) is not EvidenceStore
             or role not in _ROLES or type(timeout_seconds) is not int
-            or not 1 <= timeout_seconds <= 360):
-        # 360s transport sanity ceiling; the frozen per-call wall budget is the
+            or not 1 <= timeout_seconds <= 600):
+        # 600s transport sanity ceiling; the frozen per-call wall budget is the
         # operative gate and must stay >= every admitted timeout.
         raise ProviderDispatchBlocked("trusted host ledger/store/base role required")
     url = _validate_profile(profile, approved_origins)
