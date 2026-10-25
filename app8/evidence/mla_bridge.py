@@ -61,7 +61,8 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     Must be called only by the trusted ingress service. No keys, raw runtime
     observations, sensitive fixtures or oracle verdicts emitted in this report.
     DIVERGED mappings additionally require an authority-MAC'd, pre-outcome
-    ledger-admitted ApplicabilityApproval checked by an exact-type verifier;
+    ledger-admitted ApplicabilityApproval checked by an out-of-band
+    provisioned verifier (exact type AND registered provisioning provenance);
     UNRESOLVED stays unconditionally blocked.
     """
     if (type(gate) is not AttestationGate or type(store) is not EvidenceStore
@@ -76,7 +77,8 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     if (scope.relation == "UNRESOLVED"
             or (scope.relation == "DIVERGED"
                 and (type(applicability) is not ApplicabilityApproval
-                     or type(applicability_verifier) is not ApplicabilityVerifier))):
+                     or type(applicability_verifier) is not ApplicabilityVerifier
+                     or not ApplicabilityVerifier.is_provisioned(applicability_verifier)))):
         raise MLAEvidenceBlocked("claim-specific independently reviewed target applicability required")
     try:
         validate_contract("evidence", evidence)
@@ -109,7 +111,7 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
         try:
             applicability_verifier.verify(approval=applicability,
                                           case_id=case["case_id"], scope=scope,
-                                          outcome_recorded_at=evidence["observation"]["recorded_at"])
+                                          evidence=evidence, case=case)
         except ApplicabilityAdmissionError as exc:
             raise MLAEvidenceBlocked(
                 "independently admitted applicability approval rejected") from exc

@@ -1,11 +1,22 @@
 """Claim-specific DIVERGED applicability admission; NEVER behavioral truth.
 
-The authority MAC key is provisioned only to the independent applicability
-authority service and MUST NEVER be the execution AttestationGate/runner HMAC
-key (R13 §1, R15 P1). An approval becomes admissible only when the trusted
-ingress `admit()`s it into the ledger strictly before the real oracle outcome;
-`verify()` inside the bridge never creates a first ledger row and never trusts
-the signer-declared `issued_at` for ordering (R16 condition 2).
+Authority trust is anchored out-of-band (R1 review P1-01): the deployment
+pins the SHA256 fingerprint of the authority ROOT key exactly once via
+pin_authority_root(), and only ApplicabilityVerifier.provision() — which
+checks that fingerprint and derives the authority-specific MAC key from the
+root — registers a working verifier. Directly constructed instances stay
+inert (seal/admit/verify/witness all refuse them), so a caller-chosen
+key/id/db can never mint or vouch for an approval. The derived authority key
+is domain-separated and MUST NEVER be the execution AttestationGate/runner
+HMAC key (R13 §1, R15 P1).
+
+Chronology is witnessed inside this single ledger (R1 review P1-02): admit()
+journals an ADMISSION row, and the trusted ingress journals an
+EXECUTION_WITNESS row bound to the exact canonical Evidence digest at runner
+acceptance time. verify() requires the admission row to strictly precede the
+witness row on the journal's one AUTOINCREMENT sequence; the runner-supplied
+observation.recorded_at never participates in ordering, and the signer
+declared issued_at is audit text only (R16 condition 2).
 """
 from __future__ import annotations
 
@@ -24,10 +35,33 @@ _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 _COMMIT = re.compile(r"[0-9a-f]{40}\Z|[0-9a-f]{64}\Z")
 _CASE_ID = re.compile(r"V04-[A-Z0-9_-]{3,48}\Z")
 MAC_PLACEHOLDER = "0" * 64
+_ROOT_DERIVATION_INFO = b"app8-applicability-authority-key-v1|"
+_ADMISSION = "ADMISSION"
+_EXECUTION_WITNESS = "EXECUTION_WITNESS"
+
+# Module-private provisioning state: the out-of-band root fingerprint pin and
+# the registry of provisioned verifiers. Only provision() writes either after
+# its fingerprint preimage check; a runtime caller cannot register a verifier.
+_ROOT_PIN: dict[str, str] = {}
+_PROVISIONED: dict[str, "ApplicabilityVerifier"] = {}
 
 
 class ApplicabilityAdmissionError(ValueError):
     """Untrusted, mis-scoped, replayed or chronologically inadmissible approval."""
+
+
+def pin_authority_root(*, root_key_fingerprint_sha256: str) -> None:
+    """Deployment-time out-of-band pin of the authority root key fingerprint.
+
+    Exactly-once per process: a second call with the same fingerprint is a
+    no-op, any different value fails closed. Nothing else establishes trust.
+    """
+    _digest(root_key_fingerprint_sha256)
+    pinned = _ROOT_PIN.get("fingerprint")
+    if pinned is None:
+        _ROOT_PIN["fingerprint"] = root_key_fingerprint_sha256
+    elif not hmac.compare_digest(pinned, root_key_fingerprint_sha256):
+        raise ApplicabilityAdmissionError("authority root pin is immutable")
 
 
 def _canonical(value: dict) -> bytes:
@@ -106,8 +140,10 @@ class ApplicabilityApproval:
 class ApplicabilityVerifier:
     """Single trusted construction route for applicability admission.
 
-    Holds the authority-specific MAC key and its OWN sqlite ledger; this is
-    deliberately not the execution AttestationGate, its nonce db, or its key.
+    Working instances exist only via provision() (root-fingerprint checked);
+    this holds the derived authority-specific MAC key and its OWN sqlite
+    ledger, deliberately not the execution AttestationGate, its nonce db, or
+    its key.
     """
 
     def __init__(self, *, authority_key: bytes, authority_id: str,
@@ -118,11 +154,64 @@ class ApplicabilityVerifier:
             raise ApplicabilityAdmissionError("authority identity required")
         self._key = authority_key
         self._authority_id = authority_id
+        self._rooted = False
         self._db = sqlite3.connect(approval_db, isolation_level=None, timeout=15)
         self._db.execute('CREATE TABLE IF NOT EXISTS admitted ('
                          'case_id TEXT PRIMARY KEY, approval_sha256 TEXT NOT NULL, '
                          'authority_id TEXT NOT NULL, accepted_at TEXT NOT NULL)')
-    def close(self): self._db.close()
+        self._db.execute('CREATE TABLE IF NOT EXISTS authority_journal ('
+                         'seq INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, '
+                         'subject TEXT NOT NULL, recorded_at TEXT NOT NULL)')
+
+    @classmethod
+    def provision(cls, *, root_key: bytes, authority_id: str,
+                  approval_db: str | Path) -> "ApplicabilityVerifier":
+        """The only route that yields a rooted, registered verifier."""
+        if not isinstance(root_key, bytes) or len(root_key) < 32:
+            raise ApplicabilityAdmissionError("authority root key must be >=32 private bytes")
+        if not isinstance(authority_id, str) or not authority_id or len(authority_id) > 128:
+            raise ApplicabilityAdmissionError("authority identity required")
+        pinned = _ROOT_PIN.get("fingerprint")
+        if pinned is None:
+            raise ApplicabilityAdmissionError("authority root fingerprint is not pinned out-of-band")
+        if not hmac.compare_digest(hashlib.sha256(root_key).hexdigest(), pinned):
+            raise ApplicabilityAdmissionError("root key does not match the pinned authority root")
+        derived = hmac.new(root_key, _ROOT_DERIVATION_INFO + authority_id.encode("utf-8"),
+                           hashlib.sha256).digest()
+        verifier = cls(authority_key=derived, authority_id=authority_id,
+                       approval_db=approval_db)
+        verifier._rooted = True
+        _PROVISIONED[authority_id] = verifier
+        return verifier
+
+    @classmethod
+    def is_provisioned(cls, verifier: object) -> bool:
+        """Total provenance check for the bridge; False for anything else."""
+        return (type(verifier) is cls
+                and verifier._rooted is True
+                and _PROVISIONED.get(verifier._authority_id) is verifier)
+
+    def _require_provisioned(self) -> None:
+        if (self._rooted is not True
+                or _PROVISIONED.get(self._authority_id) is not self):
+            raise ApplicabilityAdmissionError(
+                "verifier is not the provisioned authority instance")
+
+    def _journal(self, kind: str, subject: str) -> None:
+        self._db.execute('INSERT INTO authority_journal (kind, subject, recorded_at) '
+                         'VALUES (?, ?, ?)',
+                         (kind, subject,
+                          datetime.now(timezone.utc).isoformat(timespec="microseconds")))
+
+    def _evidence_digest(self, evidence) -> str:
+        if not isinstance(evidence, dict):
+            raise ApplicabilityAdmissionError("exact signed Evidence record required")
+        return hashlib.sha256(_canonical(evidence)).hexdigest()
+
+    def close(self):
+        if _PROVISIONED.get(self._authority_id) is self:
+            del _PROVISIONED[self._authority_id]
+        self._db.close()
     def __enter__(self): return self
     def __exit__(self, *_): self.close()
 
@@ -132,6 +221,7 @@ class ApplicabilityVerifier:
 
     def seal(self, approval: ApplicabilityApproval) -> ApplicabilityApproval:
         """Authority minting route: the only place a valid MAC is produced."""
+        self._require_provisioned()
         if type(approval) is not ApplicabilityApproval:
             raise ApplicabilityAdmissionError("exact frozen approval record required")
         if approval.authority_id != self._authority_id:
@@ -140,6 +230,7 @@ class ApplicabilityVerifier:
 
     def admit(self, approval: ApplicabilityApproval) -> str:
         """Trusted-ingress pre-outcome acceptance; idempotent per exact digest."""
+        self._require_provisioned()
         if type(approval) is not ApplicabilityApproval:
             raise ApplicabilityAdmissionError("exact frozen approval record required")
         if approval.authority_id != self._authority_id:
@@ -154,17 +245,44 @@ class ApplicabilityVerifier:
                 raise ApplicabilityAdmissionError("conflicting approval already admitted for case")
             return digest
         accepted_at = datetime.now(timezone.utc).isoformat(timespec="microseconds")
-        self._db.execute('INSERT INTO admitted VALUES (?, ?, ?, ?)',
-                         (approval.case_id, digest, self._authority_id, accepted_at))
+        self._db.execute('BEGIN IMMEDIATE')
+        try:
+            self._db.execute('INSERT INTO admitted VALUES (?, ?, ?, ?)',
+                             (approval.case_id, digest, self._authority_id, accepted_at))
+            self._journal(_ADMISSION, approval.case_id)
+            self._db.execute('COMMIT')
+        except BaseException:
+            self._db.execute('ROLLBACK')
+            raise
         return digest
 
-    def verify(self, *, approval, case_id: str, scope, outcome_recorded_at: str) -> None:
+    def witness_execution(self, evidence: dict) -> str:
+        """Trusted ingress: journal the accepted runner outcome by exact digest.
+
+        Called immediately after the execution gate accepts the Evidence, this
+        row is the authority-ledger witness of the runner's accepted outcome;
+        only journal order against the ADMISSION row decides chronology.
+        """
+        self._require_provisioned()
+        digest = self._evidence_digest(evidence)
+        row = self._db.execute('SELECT seq FROM authority_journal WHERE kind=? AND subject=?',
+                               (_EXECUTION_WITNESS, digest)).fetchone()
+        if row is None:
+            self._journal(_EXECUTION_WITNESS, digest)
+        return digest
+
+    def verify(self, *, approval, case_id: str, scope, evidence: dict,
+               case: dict) -> None:
         """Bridge-side check; raises instead of returning trust. No first admission.
 
         The caller (trusted ingress) guarantees exact FrozenExecutionScope type;
         binding here compares the frozen approval against that scope's four
-        pinned SHA256 identities and the case id.
+        pinned SHA256 identities, the case id, the independently frozen
+        Evidence source revision, the case-pinned release commit and claim
+        scope (R1 review P2-01), and the single-ledger journal order of
+        admission before the witnessed runner acceptance (R1 review P1-02).
         """
+        self._require_provisioned()
         if type(approval) is not ApplicabilityApproval:
             raise ApplicabilityAdmissionError("exact frozen approval record required")
         if approval.authority_id != self._authority_id:
@@ -178,14 +296,36 @@ class ApplicabilityVerifier:
                 or approval.plan_sha256 != scope.plan_sha256
                 or approval.fixture_sha256 != scope.fixture_sha256):
             raise ApplicabilityAdmissionError("approval scope does not match frozen execution scope")
-        row = self._db.execute('SELECT approval_sha256, accepted_at FROM admitted WHERE case_id=?',
+        source = evidence.get("source") if isinstance(evidence, dict) else None
+        if not isinstance(source, dict) or approval.source_revision != source.get("revision"):
+            raise ApplicabilityAdmissionError(
+                "approval source revision does not match the frozen evidence source")
+        if not isinstance(case, dict):
+            raise ApplicabilityAdmissionError("frozen case record required")
+        if approval.release_commit != case.get("target_release_commit"):
+            raise ApplicabilityAdmissionError(
+                "approval release commit does not match the case-pinned release")
+        if approval.claim_scope_sha256 != case.get("claim_scope_sha256"):
+            raise ApplicabilityAdmissionError(
+                "approval claim scope does not match the case-pinned claim scope")
+        row = self._db.execute('SELECT approval_sha256 FROM admitted WHERE case_id=?',
                                (case_id,)).fetchone()
         if row is None:
             raise ApplicabilityAdmissionError("approval was not admitted before the outcome")
         digest = approval.record_digest()
         if row[0] != digest:
             raise ApplicabilityAdmissionError("conflicting approval already admitted for case")
-        accepted_at = _parse_instant(row[1], "accepted_at")
-        outcome_at = _parse_instant(outcome_recorded_at, "outcome_recorded_at")
-        if accepted_at >= outcome_at:
-            raise ApplicabilityAdmissionError("approval acceptance is not strictly before the observed outcome")
+        admission_seq = self._db.execute(
+            'SELECT MIN(seq) FROM authority_journal WHERE kind=? AND subject=?',
+            (_ADMISSION, case_id)).fetchone()
+        if admission_seq is None or admission_seq[0] is None:
+            raise ApplicabilityAdmissionError("approval was not admitted before the outcome")
+        witness_seq = self._db.execute(
+            'SELECT MIN(seq) FROM authority_journal WHERE kind=? AND subject=?',
+            (_EXECUTION_WITNESS, self._evidence_digest(evidence))).fetchone()
+        if witness_seq is None or witness_seq[0] is None:
+            raise ApplicabilityAdmissionError(
+                "runner acceptance was not witnessed in the authority ledger")
+        if not admission_seq[0] < witness_seq[0]:
+            raise ApplicabilityAdmissionError(
+                "approval acceptance did not precede the witnessed runner acceptance")

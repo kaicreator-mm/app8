@@ -1,8 +1,11 @@
 """DIVERGED applicability admission tests; synthetic keys, NOT evaluated claims.
 
-R17 contract: 17 negatives + 1 positive pin. The authority key below is
-deliberately different bytes from the execution runner key in test_mla_bridge;
-production provisioning must never share the AttestationGate HMAC either.
+R17 contract: 17 negatives + 1 positive pin. R1 review (R22) additions
+N18-N23: self-issued verifier injection, unprovisioned/wrong-root
+provisioning, unwitnessed execution, release-commit / source-revision /
+claim-scope swap negatives. The synthetic authority ROOT key is pinned once
+per module; the derived authority MAC key is domain-separated from the
+execution runner key in test_mla_bridge and can never equal it.
 """
 from __future__ import annotations
 
@@ -16,7 +19,7 @@ import unittest
 
 from app8.evidence.applicability import (
     MAC_PLACEHOLDER, ApplicabilityAdmissionError, ApplicabilityApproval,
-    ApplicabilityVerifier,
+    ApplicabilityVerifier, pin_authority_root,
 )
 from app8.evidence.mla_bridge import (
     FrozenExecutionScope, MLAEvidenceBlocked, reconcile_observation,
@@ -25,7 +28,8 @@ from app8.evidence.attestation import AttestationGate
 from app8.storage import EvidenceStore
 
 RUNNER_KEY = b"s" * 32
-AUTHORITY_KEY = b"a" * 32  # never equal to RUNNER_KEY; separate MAC domain
+AUTHORITY_ROOT_KEY = b"r" * 32  # synthetic dev root; pinned fingerprint below
+IMPOSTOR_KEY = b"x" * 32       # attacker-chosen; never matches the root pin
 POLICY = "b" * 64
 IMAGE = "c" * 64
 SOURCE = "d" * 64
@@ -34,9 +38,15 @@ PLAN = "f" * 64
 FIXTURE = "1" * 64
 CLAIM_SCOPE = "9" * 64
 RELEASE_COMMIT = "3" * 40
+SOURCE_REVISION = "frozen-branch"
 AUTHORITY_ID = "lo-mapping-authority"
-PRE_OUTCOME_AT = "2027-01-01T00:00:00Z"   # run happens after ledger admission
-POST_OUTCOME_AT = "2020-01-01T00:00:00Z"  # run predates any possible admission
+FUTURE_RECORDED_AT = "2027-01-01T00:00:00Z"  # runner-supplied claim, never load-bearing
+PAST_RECORDED_AT = "2020-01-01T00:00:00Z"
+
+
+def setUpModule():
+    pin_authority_root(
+        root_key_fingerprint_sha256=hashlib.sha256(AUTHORITY_ROOT_KEY).hexdigest())
 
 
 def canonical(obj):
@@ -44,13 +54,13 @@ def canonical(obj):
                        ensure_ascii=False, allow_nan=False) + "\n").encode()
 
 
-def make_diverged_evidence(recorded_at=PRE_OUTCOME_AT):
+def make_diverged_evidence(recorded_at=FUTURE_RECORDED_AT):
     return {
         "schema_version":"app8-evidence-v1",
         "evidence_id":"ev:v04-mla-lo002",
         "claim_id":"V04-LO-002",
         "capability_id":"cap:mla-lo-test",
-        "source":{"repository":"libreoffice/core","revision":"frozen-branch",
+        "source":{"repository":"libreoffice/core","revision":SOURCE_REVISION,
                   "content_sha256":SOURCE},
         "target":{"identity":"libreoffice-26.8.1.1-msi", "package_sha256":TARGET,
                   "environment_id":"clean-pinned", "mapping_relation":"DIVERGED"},
@@ -88,14 +98,16 @@ def make_runner_receipt(evidence, nonce="a"*32):
 
 def make_unsigned_approval(case_id="V04-LO-002", source_sha=SOURCE, target_sha=TARGET,
                            plan_sha=PLAN, fixture_sha=FIXTURE,
-                           claim_scope=CLAIM_SCOPE):
+                           claim_scope=CLAIM_SCOPE,
+                           source_revision=SOURCE_REVISION,
+                           release_commit=RELEASE_COMMIT):
     return ApplicabilityApproval(
         schema_version="app8-applicability-approval-v1",
         case_id=case_id,
         authority_id=AUTHORITY_ID,
-        source_revision="frozen-branch@3317-ahead",
+        source_revision=source_revision,
         source_content_sha256=source_sha,
-        release_commit=RELEASE_COMMIT,
+        release_commit=release_commit,
         target_package_sha256=target_sha,
         claim_scope_sha256=claim_scope,
         plan_sha256=plan_sha,
@@ -104,6 +116,13 @@ def make_unsigned_approval(case_id="V04-LO-002", source_sha=SOURCE, target_sha=T
         issued_at="2026-10-26T00:00:00Z",
         mac_sha256=MAC_PLACEHOLDER,
     )
+
+
+def forge_with_key(approval, key):
+    """Externally MAC an approval under an attacker key (seal() is closed)."""
+    mac = hmac.new(key, canonical(approval.unsigned_payload()),
+                   hashlib.sha256).hexdigest()
+    return replace(approval, mac_sha256=mac)
 
 
 class DivergedApplicabilityAdmissionTests(unittest.TestCase):
@@ -117,9 +136,9 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                                     policy_sha256=POLICY, image_sha256=IMAGE,
                                     nonce_db=path/"accepted.sqlite")
         self.addCleanup(self.gate.close)
-        self.verifier = ApplicabilityVerifier(authority_key=AUTHORITY_KEY,
-                                              authority_id=AUTHORITY_ID,
-                                              approval_db=path/"applicability.sqlite")
+        self.verifier = ApplicabilityVerifier.provision(
+            root_key=AUTHORITY_ROOT_KEY, authority_id=AUTHORITY_ID,
+            approval_db=path/"applicability.sqlite")
         self.addCleanup(self.verifier.close)
         self.approval = self.verifier.seal(make_unsigned_approval())
         self.evidence = make_diverged_evidence()
@@ -129,11 +148,22 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                                           relation="DIVERGED")
         self.case = {"case_id":"V04-LO-002",
                      "source_verification_claim":"CANDIDATE_ONLY",
-                     "oracle_visible_to_predictor":False}
+                     "oracle_visible_to_predictor":False,
+                     "target_release_commit":RELEASE_COMMIT,
+                     "claim_scope_sha256":CLAIM_SCOPE}
+
+    def _fresh_verifier(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        verifier = ApplicabilityVerifier.provision(
+            root_key=AUTHORITY_ROOT_KEY, authority_id=AUTHORITY_ID,
+            approval_db=Path(tmp.name)/"applicability.sqlite")
+        self.addCleanup(verifier.close)
+        return verifier
 
     def _record(self):
         self.store.append_evidence(self.evidence)
         self.gate.accept(self.evidence, self.receipt)
+        self.verifier.witness_execution(self.evidence)
 
     def _admit(self):
         self.verifier.admit(self.approval)
@@ -146,7 +176,7 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         return reconcile_observation(**payload)
 
     def test_positive_diverged_with_preoutcome_admission_reports_two_keys_only(self):
-        self._record(); self._admit()
+        self._admit(); self._record()  # admission strictly precedes execution
         report = self._bridge()
         self.assertEqual(report["status"],
                          "AUTHENTICATED_EXECUTION_NOT_INDEPENDENT_SEMANTIC_ORACLE")
@@ -189,7 +219,7 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         class SubVerifier(ApplicabilityVerifier):
             pass
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
-        sub = SubVerifier(authority_key=AUTHORITY_KEY, authority_id=AUTHORITY_ID,
+        sub = SubVerifier(authority_key=AUTHORITY_ROOT_KEY, authority_id=AUTHORITY_ID,
                           approval_db=Path(tmp.name)/"sub.sqlite")
         self.addCleanup(sub.close)
         with self.assertRaisesRegex(MLAEvidenceBlocked, "applicability required"):
@@ -202,12 +232,7 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
 
     def test_n06_self_signed_wrong_authority_key_rejected(self):
         self._record()
-        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
-        impostor = ApplicabilityVerifier(authority_key=b"x"*32, authority_id=AUTHORITY_ID,
-                                         approval_db=Path(tmp.name)/"imp.sqlite")
-        self.addCleanup(impostor.close)
-        forged = impostor.seal(make_unsigned_approval())
-        impostor.admit(forged)
+        forged = forge_with_key(make_unsigned_approval(), IMPOSTOR_KEY)
         with self.assertRaises(MLAEvidenceBlocked):
             self._bridge(applicability=forged, applicability_verifier=self.verifier)
 
@@ -261,8 +286,9 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
             self._bridge(applicability=conflicting)
 
     def test_n14_approval_after_outcome_rejected(self):
-        self.evidence = make_diverged_evidence(recorded_at=POST_OUTCOME_AT)
-        self.receipt = make_runner_receipt(self.evidence)
+        # Runner acceptance witnessed first, admission only afterwards: the
+        # journal order must block it even though the runner-supplied
+        # recorded_at claims a far-future instant (R1 review P1-02).
         self._record(); self._admit()
         with self.assertRaises(MLAEvidenceBlocked):
             self._bridge()
@@ -292,6 +318,74 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                                      relation="UNRESOLVED")
         with self.assertRaisesRegex(MLAEvidenceBlocked, "applicability required"):
             self._bridge(scope=scope, evidence=evidence, receipt=receipt)
+
+    def test_n18_self_issued_verifier_injected_rejected(self):
+        # Full P1-01 attack: attacker-chosen key/db/id, self-consistent forged
+        # approval, and the impostor verifier itself passed to the bridge.
+        self._record()
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        impostor = ApplicabilityVerifier(authority_key=IMPOSTOR_KEY,
+                                         authority_id=AUTHORITY_ID,
+                                         approval_db=Path(tmp.name)/"imp.sqlite")
+        self.addCleanup(impostor.close)
+        forged = forge_with_key(make_unsigned_approval(), IMPOSTOR_KEY)
+        with self.assertRaises(ApplicabilityAdmissionError):
+            impostor.admit(forged)   # minting/ledger route closed to unprovisioned
+        with self.assertRaises(ApplicabilityAdmissionError):
+            impostor.verify(approval=forged, case_id="V04-LO-002", scope=self.scope,
+                            evidence=self.evidence, case=self.case)
+        with self.assertRaisesRegex(MLAEvidenceBlocked, "applicability required"):
+            self._bridge(applicability=forged, applicability_verifier=impostor)
+
+    def test_n19_wrong_root_key_provisioning_rejected(self):
+        self._record()
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        with self.assertRaises(ApplicabilityAdmissionError):
+            ApplicabilityVerifier.provision(root_key=IMPOSTOR_KEY,
+                                            authority_id=AUTHORITY_ID,
+                                            approval_db=Path(tmp.name)/"x.sqlite")
+        inert = ApplicabilityVerifier(authority_key=IMPOSTOR_KEY,
+                                      authority_id=AUTHORITY_ID,
+                                      approval_db=Path(tmp.name)/"y.sqlite")
+        self.addCleanup(inert.close)
+        with self.assertRaises(ApplicabilityAdmissionError):
+            inert.seal(make_unsigned_approval())
+
+    def test_n20_unwitnessed_execution_rejected(self):
+        self._admit()
+        self.store.append_evidence(self.evidence)
+        self.gate.accept(self.evidence, self.receipt)  # acceptance never witnessed
+        with self.assertRaises(MLAEvidenceBlocked):
+            self._bridge()
+
+    def test_n21_approval_release_commit_swap_rejected(self):
+        # Validly sealed and admitted on a fresh ledger, but bound to another
+        # tagged release than the case pin (R1 review P2-01).
+        self._record()
+        other = self._fresh_verifier()
+        swapped = other.seal(make_unsigned_approval(release_commit="4"*40))
+        other.admit(swapped)
+        other.witness_execution(self.evidence)
+        with self.assertRaises(MLAEvidenceBlocked):
+            self._bridge(applicability=swapped, applicability_verifier=other)
+
+    def test_n22_approval_source_revision_swap_rejected(self):
+        self._record()
+        other = self._fresh_verifier()
+        swapped = other.seal(make_unsigned_approval(source_revision="other-branch"))
+        other.admit(swapped)
+        other.witness_execution(self.evidence)
+        with self.assertRaises(MLAEvidenceBlocked):
+            self._bridge(applicability=swapped, applicability_verifier=other)
+
+    def test_n23_approval_claim_scope_swap_rejected(self):
+        self._record()
+        other = self._fresh_verifier()
+        swapped = other.seal(make_unsigned_approval(claim_scope="8"*64))
+        other.admit(swapped)
+        other.witness_execution(self.evidence)
+        with self.assertRaises(MLAEvidenceBlocked):
+            self._bridge(applicability=swapped, applicability_verifier=other)
 
 
 if __name__=="__main__":
