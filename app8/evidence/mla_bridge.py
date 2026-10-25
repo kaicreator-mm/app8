@@ -12,6 +12,9 @@ import json
 import re
 
 from app8.contracts import validate_contract, ContractError
+from app8.evidence.applicability import (
+    ApplicabilityAdmissionError, ApplicabilityApproval, ApplicabilityVerifier,
+)
 from app8.evidence.attestation import AttestationGate
 from app8.storage import EvidenceStore, IntegrityError
 
@@ -50,11 +53,16 @@ def _digest(document: dict) -> str:
 
 def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
                           store: EvidenceStore, gate: AttestationGate,
-                          scope: FrozenExecutionScope) -> dict:
+                          scope: FrozenExecutionScope,
+                          applicability: ApplicabilityApproval | None = None,
+                          applicability_verifier: ApplicabilityVerifier | None = None) -> dict:
     """Report authenticated execution fact, NEVER inferred behavior truth or PASS.
 
     Must be called only by the trusted ingress service. No keys, raw runtime
     observations, sensitive fixtures or oracle verdicts emitted in this report.
+    DIVERGED mappings additionally require an authority-MAC'd, pre-outcome
+    ledger-admitted ApplicabilityApproval checked by an exact-type verifier;
+    UNRESOLVED stays unconditionally blocked.
     """
     if (type(gate) is not AttestationGate or type(store) is not EvidenceStore
             or type(scope) is not FrozenExecutionScope):
@@ -65,7 +73,10 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
             or not isinstance(case.get("case_id"), str)
             or not CASE_ID.fullmatch(case["case_id"])):
         raise MLAEvidenceBlocked("invalid case origin or hidden oracle exposure")
-    if scope.relation in {"DIVERGED", "UNRESOLVED"}:
+    if (scope.relation == "UNRESOLVED"
+            or (scope.relation == "DIVERGED"
+                and (type(applicability) is not ApplicabilityApproval
+                     or type(applicability_verifier) is not ApplicabilityVerifier))):
         raise MLAEvidenceBlocked("claim-specific independently reviewed target applicability required")
     try:
         validate_contract("evidence", evidence)
@@ -92,7 +103,20 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     if not gate.is_accepted(evidence, receipt):
         raise MLAEvidenceBlocked("receipt not authenticated and accepted in durable nonce ledger")
 
-    return {
+    applicability_authority = None
+    applicability_claim_scope = None
+    if scope.relation == "DIVERGED":
+        try:
+            applicability_verifier.verify(approval=applicability,
+                                          case_id=case["case_id"], scope=scope,
+                                          outcome_recorded_at=evidence["observation"]["recorded_at"])
+        except ApplicabilityAdmissionError as exc:
+            raise MLAEvidenceBlocked(
+                "independently admitted applicability approval rejected") from exc
+        applicability_authority = applicability.authority_id
+        applicability_claim_scope = applicability.claim_scope_sha256
+
+    report = {
         "schema_version": "v04-mla-authenticated-observation-ref-v1",
         "case_id": case["case_id"],
         "evidence_id": evidence["evidence_id"],
@@ -109,3 +133,7 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
         "capability_promotion_allowed": False,
         "formal_product_release_qualified": False,
     }
+    if applicability_authority is not None:
+        report["applicability_authority"] = applicability_authority
+        report["applicability_claim_scope_sha256"] = applicability_claim_scope
+    return report
