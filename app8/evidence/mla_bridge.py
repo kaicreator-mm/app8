@@ -64,9 +64,12 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     ledger-admitted ApplicabilityApproval checked by an out-of-band
     provisioned verifier (exact type AND registered provisioning provenance)
     whose reserved runner entry strictly postdates the approval admission;
-    UNRESOLVED stays unconditionally blocked. The emitted release binding is
-    attributed EXTERNAL_PROVISIONAL_CANDIDATE (caller-supplied frozen case
-    pins), never an approved release claim or promotion.
+    UNRESOLVED stays unconditionally blocked. A successful DIVERGED report
+    gains EXACTLY the two keys authorized by R19 — applicability_authority
+    and applicability_claim_scope_sha256 — and nothing else; the
+    external-provisional release interpretation is journaled privately in
+    the authority's own audit ledger by the verifier, never in this report
+    (R26 P1-02).
     """
     if (type(gate) is not AttestationGate or type(store) is not EvidenceStore
             or type(scope) is not FrozenExecutionScope):
@@ -110,7 +113,6 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
 
     applicability_authority = None
     applicability_claim_scope = None
-    applicability_release_commit = None
     if scope.relation == "DIVERGED":
         try:
             applicability_verifier.verify(approval=applicability,
@@ -122,7 +124,6 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
                 "independently admitted applicability approval rejected") from exc
         applicability_authority = applicability.authority_id
         applicability_claim_scope = applicability.claim_scope_sha256
-        applicability_release_commit = applicability.release_commit
 
     report = {
         "schema_version": "v04-mla-authenticated-observation-ref-v1",
@@ -142,8 +143,9 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
         "formal_product_release_qualified": False,
     }
     if applicability_authority is not None:
+        # R26 P1-02: exactly the two R19-authorized extra keys; the
+        # external-provisional release interpretation stays in the
+        # verifier's private audit ledger, never in this report.
         report["applicability_authority"] = applicability_authority
         report["applicability_claim_scope_sha256"] = applicability_claim_scope
-        report["applicability_release_commit"] = applicability_release_commit
-        report["applicability_release_binding"] = "EXTERNAL_PROVISIONAL_CANDIDATE"
     return report

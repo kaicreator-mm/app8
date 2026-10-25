@@ -1,15 +1,20 @@
 """Claim-specific DIVERGED applicability admission; NEVER behavioral truth.
 
-Authority trust is fixed in reviewed source (R24 P1-02): the SHA256
-fingerprint of the authority ROOT key ships as the module constant
+Authority trust is fixed in reviewed source (R24 P1-02, R26 P1-01): the
+SHA256 fingerprint of the authority ROOT key ships as the module constant
 AUTHORITY_ROOT_FINGERPRINT_SHA256 with NO runtime first-writer pin API
-(pin_authority_root was removed). The shipped value deliberately has no
-known preimage — provisioning fails closed — and a real deployment replaces
-it via a reviewed commit before use. Only ApplicabilityVerifier.provision()
-— which checks that fingerprint and derives the authority-specific MAC key
-from the root — registers a working verifier; directly constructed instances
-stay inert. The derived authority key is domain-separated and MUST NEVER be
-the execution AttestationGate/runner HMAC key (R13 §1, R15 P1).
+(pin_authority_root was removed). The shipped value is an explicit UNUSABLE
+SENTINEL and provision() hard-denies while the constant is still the
+sentinel, so NO key — including any byte literal published in this
+repository — can provision against a shipped default. A real deployment
+replaces the constant with the actual authority root fingerprint via an
+independently reviewed commit before use; no usable root-key bytes or
+reconstructible preimage ever ship in source. Only
+ApplicabilityVerifier.provision() — which checks that fingerprint and
+derives the authority-specific MAC key from the root — registers a working
+verifier; directly constructed instances stay inert. The derived authority
+key is domain-separated and MUST NEVER be the execution
+AttestationGate/runner HMAC key (R13 §1, R15 P1).
 
 Chronology is anchored to the runner's entry, not to post-hoc writes (R24
 P1-01): the trusted ingress reserves the runner's entry BEFORE the run —
@@ -53,13 +58,15 @@ _ROOT_DERIVATION_INFO = b"app8-applicability-authority-key-v1|"
 _ADMISSION = "ADMISSION"
 _RESERVATION = "RESERVATION"
 
-# Out-of-band authority root pin, fixed in reviewed source (R24 P1-02): the
-# shipped fingerprint is over deployment-replacement marker text and has no
-# known preimage, so provisioning fails closed until a reviewed deployment
-# commit replaces it with the real authority root fingerprint.
-AUTHORITY_ROOT_FINGERPRINT_SHA256 = hashlib.sha256(
-    b"app8-applicability-authority-root:REPLACE-VIA-REVIEWED-DEPLOYMENT-COMMIT"
-).hexdigest()
+# Out-of-band authority root pin, fixed in reviewed source (R24 P1-02,
+# R26 P1-01): the shipped value is an explicit UNUSABLE SENTINEL — never a
+# fingerprint over any reconstructible published literal — and provision()
+# hard-denies while the constant is the sentinel, so provisioning fails
+# closed until a reviewed deployment commit replaces it with the real
+# authority root fingerprint. No usable root-key bytes or their preimage
+# ship in source.
+AUTHORITY_ROOT_FINGERPRINT_SENTINEL = "0" * 64
+AUTHORITY_ROOT_FINGERPRINT_SHA256 = AUTHORITY_ROOT_FINGERPRINT_SENTINEL
 
 # Module-private provisioning registry. Only provision() writes it, behind
 # the fingerprint preimage check; a runtime caller cannot register a verifier.
@@ -173,6 +180,14 @@ class ApplicabilityVerifier:
                          'source_sha256 TEXT NOT NULL, target_sha256 TEXT NOT NULL, '
                          'plan_sha256 TEXT NOT NULL, fixture_sha256 TEXT NOT NULL, '
                          'journal_seq INTEGER NOT NULL)')
+        # R26 P1-02: private, non-authoritative audit trail for the
+        # external-provisional release interpretation. Deliberately separate
+        # from authority_journal so it can never influence admission or
+        # reservation ordering, and never reaches the external report.
+        self._db.execute('CREATE TABLE IF NOT EXISTS provisional_release_audit ('
+                         'case_id TEXT NOT NULL, authority_id TEXT NOT NULL, '
+                         'release_commit TEXT NOT NULL, claim_scope_sha256 TEXT NOT NULL, '
+                         'binding TEXT NOT NULL, recorded_at TEXT NOT NULL)')
 
     @classmethod
     def provision(cls, *, root_key: bytes, authority_id: str,
@@ -182,6 +197,15 @@ class ApplicabilityVerifier:
             raise ApplicabilityAdmissionError("authority root key must be >=32 private bytes")
         if not isinstance(authority_id, str) or not authority_id or len(authority_id) > 128:
             raise ApplicabilityAdmissionError("authority identity required")
+        # R26 P1-01: hard-deny before any fingerprint comparison while the
+        # reviewed-source constant is still the unusable shipped sentinel —
+        # the shipped default must not provision ANY key.
+        if hmac.compare_digest(AUTHORITY_ROOT_FINGERPRINT_SHA256,
+                               AUTHORITY_ROOT_FINGERPRINT_SENTINEL):
+            raise ApplicabilityAdmissionError(
+                "authority root fingerprint is the unusable shipped sentinel; "
+                "provisioning is denied until a reviewed deployment commit "
+                "replaces it")
         if not hmac.compare_digest(hashlib.sha256(root_key).hexdigest(),
                                    AUTHORITY_ROOT_FINGERPRINT_SHA256):
             raise ApplicabilityAdmissionError("root key does not match the reviewed authority root fingerprint")
@@ -307,7 +331,10 @@ class ApplicabilityVerifier:
         the case id, the independently frozen Evidence source revision, the
         case-pinned release commit and claim scope (R1 P2-01), and the
         single-ledger journal order of admission strictly before the
-        reserved runner entry (R24 P1-01).
+        reserved runner entry (R24 P1-01). On success this journals a
+        private, non-authoritative EXTERNAL_PROVISIONAL_CANDIDATE audit row
+        (R26 P1-02) so the external report never needs more than the two
+        R19-authorized keys; the audit row admits and promotes nothing.
         """
         self._require_provisioned()
         if type(approval) is not ApplicabilityApproval:
@@ -368,3 +395,26 @@ class ApplicabilityVerifier:
         if not admission_seq[0] < reserved[5]:
             raise ApplicabilityAdmissionError(
                 "approval acceptance did not precede the reserved runner entry")
+        self._db.execute(
+            'INSERT INTO provisional_release_audit VALUES (?, ?, ?, ?, ?, ?)',
+            (case_id, self._authority_id, approval.release_commit,
+             approval.claim_scope_sha256, "EXTERNAL_PROVISIONAL_CANDIDATE",
+             datetime.now(timezone.utc).isoformat(timespec="microseconds")))
+
+    def provisional_release_audit(self, *, case_id: str) -> list[dict]:
+        """Read this authority's private release-binding audit rows for a case.
+
+        R26 P1-02: the EXTERNAL_PROVISIONAL_CANDIDATE interpretation of the
+        caller-pinned release commit lives ONLY in this authority-side
+        private audit trail — it is never emitted in the external report and
+        is not an approved release claim or promotion of any kind.
+        """
+        self._require_provisioned()
+        if not isinstance(case_id, str) or not _CASE_ID.fullmatch(case_id):
+            raise ApplicabilityAdmissionError("audit lookup requires a frozen case id")
+        rows = self._db.execute(
+            'SELECT release_commit, claim_scope_sha256, binding, recorded_at '
+            'FROM provisional_release_audit WHERE case_id=? ORDER BY rowid',
+            (case_id,)).fetchall()
+        return [{"release_commit": row[0], "claim_scope_sha256": row[1],
+                 "binding": row[2], "recorded_at": row[3]} for row in rows]

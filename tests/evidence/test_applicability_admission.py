@@ -7,9 +7,16 @@ nonce is embedded as the receipt nonce; admission must strictly precede the
 reservation on the ledger journal) and the post-hoc witness API is gone;
 the authority root fingerprint is fixed in reviewed source (no runtime pin
 function; the shipped constant fails closed, tests activate the synthetic
-development root in setUpModule). N24-N25 added accordingly. The synthetic
-authority root is domain-separated from the execution runner key in
-test_mla_bridge and can never equal it.
+development root in setUpModule and restore the shipped constant in
+tearDownModule). N24-N25 added accordingly. R3 review (R26) changes: the
+shipped constant is an explicit UNUSABLE SENTINEL that provision()
+hard-denies (N26 pins that the published R3 placeholder preimage cannot
+provision), the report keeps EXACTLY the two R19-authorized keys with the
+external-provisional interpretation moved to the verifier's private audit
+ledger, and the module teardown restores the shipped constant (N27 pins
+order-independent default-deny). The synthetic authority root is
+domain-separated from the execution runner key in test_mla_bridge and can
+never equal it.
 """
 from __future__ import annotations
 
@@ -47,17 +54,30 @@ RELEASE_COMMIT = "3" * 40
 SOURCE_REVISION = "frozen-branch"
 AUTHORITY_ID = "lo-mapping-authority"
 FUTURE_RECORDED_AT = "2027-01-01T00:00:00Z"  # runner-supplied claim, never load-bearing
+# The literal published in the R3 source as the "deployment-replacement
+# marker" preimage (R26 P1-01): a full 72-byte root key whose SHA256 was the
+# shipped R3 fingerprint. Kept here as the canonical public attacker input.
+PUBLISHED_PLACEHOLDER_ROOT_KEY = (
+    b"app8-applicability-authority-root:REPLACE-VIA-REVIEWED-DEPLOYMENT-COMMIT")
 SHIPPED_PIN = None  # the reviewed-source constant, saved before activation
 
 
 def setUpModule():
-    # Test-only activation: the shipped reviewed-source constant has no known
-    # preimage (provisioning fails closed until a reviewed deployment commit
-    # replaces it); tests activate the synthetic development root.
+    # Test-only activation: the shipped reviewed-source constant is the
+    # unusable sentinel (provisioning fails closed until a reviewed
+    # deployment commit replaces it); tests activate the synthetic
+    # development root.
     global SHIPPED_PIN
     SHIPPED_PIN = applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256
     applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256 = hashlib.sha256(
         AUTHORITY_ROOT_KEY).hexdigest()
+
+
+def tearDownModule():
+    # R26 P2: restore the shipped reviewed-source constant so later test
+    # modules in the same process see the factory default (default-deny)
+    # regardless of this module's position in the process-wide order.
+    applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256 = SHIPPED_PIN
 
 
 def canonical(obj):
@@ -194,7 +214,7 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         payload.update(changes)
         return reconcile_observation(**payload)
 
-    def test_positive_diverged_with_preoutcome_admission_reports_applicability_keys_only(self):
+    def test_positive_diverged_with_preoutcome_admission_reports_exactly_two_authorized_keys(self):
         self._admit(); self._record()  # admission -> reserved entry -> run
         report = self._bridge()
         self.assertEqual(report["status"],
@@ -205,9 +225,10 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         self.assertFalse(report["formal_product_release_qualified"])
         self.assertEqual(report["applicability_authority"], AUTHORITY_ID)
         self.assertEqual(report["applicability_claim_scope_sha256"], CLAIM_SCOPE)
-        self.assertEqual(report["applicability_release_commit"], RELEASE_COMMIT)
-        self.assertEqual(report["applicability_release_binding"],
-                         "EXTERNAL_PROVISIONAL_CANDIDATE")
+        # R26 P1-02: exactly the two R19-authorized keys; the R3 extra
+        # release keys must stay absent from the consumer-facing report.
+        self.assertNotIn("applicability_release_commit", report)
+        self.assertNotIn("applicability_release_binding", report)
         baseline = {"schema_version","case_id","evidence_id","evidence_sha256",
                     "receipt_sha256","source_sha256","target_sha256","plan_sha256",
                     "fixture_sha256","assessor_verdict","status",
@@ -215,8 +236,15 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                     "independent_behavior_oracle_verified",
                     "capability_promotion_allowed","formal_product_release_qualified"}
         self.assertEqual(set(report) - baseline,
-                         {"applicability_authority","applicability_claim_scope_sha256",
-                          "applicability_release_commit","applicability_release_binding"})
+                         {"applicability_authority","applicability_claim_scope_sha256"})
+        # The external-provisional interpretation lives ONLY in the
+        # verifier's private authority-side audit ledger (R26 P1-02).
+        audit = self.verifier.provisional_release_audit(
+            case_id=self.case["case_id"])
+        self.assertTrue(audit)
+        self.assertEqual(audit[0]["binding"], "EXTERNAL_PROVISIONAL_CANDIDATE")
+        self.assertEqual(audit[0]["release_commit"], RELEASE_COMMIT)
+        self.assertEqual(audit[0]["claim_scope_sha256"], CLAIM_SCOPE)
         again = self._bridge()  # idempotent same-digest ledger recheck
         self.assertEqual(again, report)
 
@@ -454,6 +482,47 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                     ApplicabilityVerifier.provision(
                         root_key=key, authority_id=AUTHORITY_ID,
                         approval_db=Path(tmp.name)/"p.sqlite")
+
+    def test_n26_published_placeholder_literal_cannot_provision(self):
+        # R26 P1-01: the R3 source shipped a fingerprint over a published
+        # 72-byte literal, making that literal a working root key. The R4
+        # shipped constant is the explicit unusable sentinel and provision()
+        # hard-denies on it, so the exact public placeholder literal — like
+        # every other key — is refused under every shipped default config.
+        self._record()
+        self.assertEqual(len(PUBLISHED_PLACEHOLDER_ROOT_KEY), 72)
+        self.assertEqual(SHIPPED_PIN,
+                         applicability.AUTHORITY_ROOT_FINGERPRINT_SENTINEL)
+        self.assertNotEqual(SHIPPED_PIN,
+                            hashlib.sha256(PUBLISHED_PLACEHOLDER_ROOT_KEY).hexdigest())
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        with mock.patch.object(applicability, "AUTHORITY_ROOT_FINGERPRINT_SHA256",
+                               SHIPPED_PIN):
+            for key in (PUBLISHED_PLACEHOLDER_ROOT_KEY, AUTHORITY_ROOT_KEY,
+                        IMPOSTOR_KEY):
+                with self.assertRaises(ApplicabilityAdmissionError):
+                    ApplicabilityVerifier.provision(
+                        root_key=key, authority_id=AUTHORITY_ID,
+                        approval_db=Path(tmp.name)/"p.sqlite")
+
+    def test_n27_restored_shipped_constant_default_deny_is_order_independent(self):
+        # R26 P2: exactly what tearDownModule does — restoring the shipped
+        # constant — must re-enable default-deny wherever this module sits in
+        # the process-wide test order. The synthetic pin is re-applied on the
+        # way out so this test is itself order-safe.
+        self._record()
+        test_pin = applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256
+        try:
+            applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256 = SHIPPED_PIN
+            tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+            for key in (AUTHORITY_ROOT_KEY, IMPOSTOR_KEY):
+                with self.assertRaises(ApplicabilityAdmissionError):
+                    ApplicabilityVerifier.provision(
+                        root_key=key, authority_id=AUTHORITY_ID,
+                        approval_db=Path(tmp.name)/"p.sqlite")
+        finally:
+            applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256 = test_pin
+        self.assertEqual(applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256, test_pin)
 
 
 if __name__=="__main__":
