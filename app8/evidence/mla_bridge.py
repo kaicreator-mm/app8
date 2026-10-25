@@ -62,8 +62,11 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     observations, sensitive fixtures or oracle verdicts emitted in this report.
     DIVERGED mappings additionally require an authority-MAC'd, pre-outcome
     ledger-admitted ApplicabilityApproval checked by an out-of-band
-    provisioned verifier (exact type AND registered provisioning provenance);
-    UNRESOLVED stays unconditionally blocked.
+    provisioned verifier (exact type AND registered provisioning provenance)
+    whose reserved runner entry strictly postdates the approval admission;
+    UNRESOLVED stays unconditionally blocked. The emitted release binding is
+    attributed EXTERNAL_PROVISIONAL_CANDIDATE (caller-supplied frozen case
+    pins), never an approved release claim or promotion.
     """
     if (type(gate) is not AttestationGate or type(store) is not EvidenceStore
             or type(scope) is not FrozenExecutionScope):
@@ -107,16 +110,19 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
 
     applicability_authority = None
     applicability_claim_scope = None
+    applicability_release_commit = None
     if scope.relation == "DIVERGED":
         try:
             applicability_verifier.verify(approval=applicability,
                                           case_id=case["case_id"], scope=scope,
-                                          evidence=evidence, case=case)
+                                          evidence=evidence, case=case,
+                                          receipt=receipt)
         except ApplicabilityAdmissionError as exc:
             raise MLAEvidenceBlocked(
                 "independently admitted applicability approval rejected") from exc
         applicability_authority = applicability.authority_id
         applicability_claim_scope = applicability.claim_scope_sha256
+        applicability_release_commit = applicability.release_commit
 
     report = {
         "schema_version": "v04-mla-authenticated-observation-ref-v1",
@@ -138,4 +144,6 @@ def reconcile_observation(*, case: dict, evidence: dict, receipt: dict,
     if applicability_authority is not None:
         report["applicability_authority"] = applicability_authority
         report["applicability_claim_scope_sha256"] = applicability_claim_scope
+        report["applicability_release_commit"] = applicability_release_commit
+        report["applicability_release_binding"] = "EXTERNAL_PROVISIONAL_CANDIDATE"
     return report

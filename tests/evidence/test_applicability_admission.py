@@ -1,11 +1,15 @@
 """DIVERGED applicability admission tests; synthetic keys, NOT evaluated claims.
 
 R17 contract: 17 negatives + 1 positive pin. R1 review (R22) additions
-N18-N23: self-issued verifier injection, unprovisioned/wrong-root
-provisioning, unwitnessed execution, release-commit / source-revision /
-claim-scope swap negatives. The synthetic authority ROOT key is pinned once
-per module; the derived authority MAC key is domain-separated from the
-execution runner key in test_mla_bridge and can never equal it.
+N18-N23. R2 review (R24) changes: chronology is anchored to a pre-run
+runner-entry RESERVATION (reserve_execution before the run; the reserved
+nonce is embedded as the receipt nonce; admission must strictly precede the
+reservation on the ledger journal) and the post-hoc witness API is gone;
+the authority root fingerprint is fixed in reviewed source (no runtime pin
+function; the shipped constant fails closed, tests activate the synthetic
+development root in setUpModule). N24-N25 added accordingly. The synthetic
+authority root is domain-separated from the execution runner key in
+test_mla_bridge and can never equal it.
 """
 from __future__ import annotations
 
@@ -16,10 +20,12 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
+from app8.evidence import applicability
 from app8.evidence.applicability import (
     MAC_PLACEHOLDER, ApplicabilityAdmissionError, ApplicabilityApproval,
-    ApplicabilityVerifier, pin_authority_root,
+    ApplicabilityVerifier,
 )
 from app8.evidence.mla_bridge import (
     FrozenExecutionScope, MLAEvidenceBlocked, reconcile_observation,
@@ -28,8 +34,8 @@ from app8.evidence.attestation import AttestationGate
 from app8.storage import EvidenceStore
 
 RUNNER_KEY = b"s" * 32
-AUTHORITY_ROOT_KEY = b"r" * 32  # synthetic dev root; pinned fingerprint below
-IMPOSTOR_KEY = b"x" * 32       # attacker-chosen; never matches the root pin
+AUTHORITY_ROOT_KEY = b"r" * 32  # synthetic dev root; activates the pin below
+IMPOSTOR_KEY = b"x" * 32       # attacker-chosen; never matches any pin
 POLICY = "b" * 64
 IMAGE = "c" * 64
 SOURCE = "d" * 64
@@ -41,12 +47,17 @@ RELEASE_COMMIT = "3" * 40
 SOURCE_REVISION = "frozen-branch"
 AUTHORITY_ID = "lo-mapping-authority"
 FUTURE_RECORDED_AT = "2027-01-01T00:00:00Z"  # runner-supplied claim, never load-bearing
-PAST_RECORDED_AT = "2020-01-01T00:00:00Z"
+SHIPPED_PIN = None  # the reviewed-source constant, saved before activation
 
 
 def setUpModule():
-    pin_authority_root(
-        root_key_fingerprint_sha256=hashlib.sha256(AUTHORITY_ROOT_KEY).hexdigest())
+    # Test-only activation: the shipped reviewed-source constant has no known
+    # preimage (provisioning fails closed until a reviewed deployment commit
+    # replaces it); tests activate the synthetic development root.
+    global SHIPPED_PIN
+    SHIPPED_PIN = applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256
+    applicability.AUTHORITY_ROOT_FINGERPRINT_SHA256 = hashlib.sha256(
+        AUTHORITY_ROOT_KEY).hexdigest()
 
 
 def canonical(obj):
@@ -141,8 +152,6 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
             approval_db=path/"applicability.sqlite")
         self.addCleanup(self.verifier.close)
         self.approval = self.verifier.seal(make_unsigned_approval())
-        self.evidence = make_diverged_evidence()
-        self.receipt = make_runner_receipt(self.evidence)
         self.scope = FrozenExecutionScope(source_sha256=SOURCE, target_sha256=TARGET,
                                           plan_sha256=PLAN, fixture_sha256=FIXTURE,
                                           relation="DIVERGED")
@@ -151,6 +160,10 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                      "oracle_visible_to_predictor":False,
                      "target_release_commit":RELEASE_COMMIT,
                      "claim_scope_sha256":CLAIM_SCOPE}
+        # Default evidence/receipt carry an UNRESERVED nonce; _reserve() is
+        # the protocol step that mints a reserved entry before the run.
+        self.evidence = make_diverged_evidence()
+        self.receipt = make_runner_receipt(self.evidence)
 
     def _fresh_verifier(self):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
@@ -160,10 +173,16 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         self.addCleanup(verifier.close)
         return verifier
 
+    def _reserve(self):
+        self.nonce = self.verifier.reserve_execution(case_id=self.case["case_id"],
+                                                     scope=self.scope)
+        self.evidence = make_diverged_evidence()
+        self.receipt = make_runner_receipt(self.evidence, nonce=self.nonce)
+
     def _record(self):
+        self._reserve()
         self.store.append_evidence(self.evidence)
         self.gate.accept(self.evidence, self.receipt)
-        self.verifier.witness_execution(self.evidence)
 
     def _admit(self):
         self.verifier.admit(self.approval)
@@ -175,8 +194,8 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         payload.update(changes)
         return reconcile_observation(**payload)
 
-    def test_positive_diverged_with_preoutcome_admission_reports_two_keys_only(self):
-        self._admit(); self._record()  # admission strictly precedes execution
+    def test_positive_diverged_with_preoutcome_admission_reports_applicability_keys_only(self):
+        self._admit(); self._record()  # admission -> reserved entry -> run
         report = self._bridge()
         self.assertEqual(report["status"],
                          "AUTHENTICATED_EXECUTION_NOT_INDEPENDENT_SEMANTIC_ORACLE")
@@ -186,6 +205,9 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         self.assertFalse(report["formal_product_release_qualified"])
         self.assertEqual(report["applicability_authority"], AUTHORITY_ID)
         self.assertEqual(report["applicability_claim_scope_sha256"], CLAIM_SCOPE)
+        self.assertEqual(report["applicability_release_commit"], RELEASE_COMMIT)
+        self.assertEqual(report["applicability_release_binding"],
+                         "EXTERNAL_PROVISIONAL_CANDIDATE")
         baseline = {"schema_version","case_id","evidence_id","evidence_sha256",
                     "receipt_sha256","source_sha256","target_sha256","plan_sha256",
                     "fixture_sha256","assessor_verdict","status",
@@ -193,7 +215,8 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
                     "independent_behavior_oracle_verified",
                     "capability_promotion_allowed","formal_product_release_qualified"}
         self.assertEqual(set(report) - baseline,
-                         {"applicability_authority","applicability_claim_scope_sha256"})
+                         {"applicability_authority","applicability_claim_scope_sha256",
+                          "applicability_release_commit","applicability_release_binding"})
         again = self._bridge()  # idempotent same-digest ledger recheck
         self.assertEqual(again, report)
 
@@ -286,9 +309,11 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
             self._bridge(applicability=conflicting)
 
     def test_n14_approval_after_outcome_rejected(self):
-        # Runner acceptance witnessed first, admission only afterwards: the
-        # journal order must block it even though the runner-supplied
-        # recorded_at claims a far-future instant (R1 review P1-02).
+        # The R2-review attack sequence: runner entry reserved and accepted
+        # FIRST, approval admitted only afterwards. The reservation nonce was
+        # handed out strictly before the late admission, so the journal order
+        # (ADMISSION must precede RESERVATION) blocks it — even though the
+        # runner-supplied recorded_at claims a far-future instant (R24 P1-01).
         self._record(); self._admit()
         with self.assertRaises(MLAEvidenceBlocked):
             self._bridge()
@@ -333,7 +358,8 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
             impostor.admit(forged)   # minting/ledger route closed to unprovisioned
         with self.assertRaises(ApplicabilityAdmissionError):
             impostor.verify(approval=forged, case_id="V04-LO-002", scope=self.scope,
-                            evidence=self.evidence, case=self.case)
+                            evidence=self.evidence, case=self.case,
+                            receipt=self.receipt)
         with self.assertRaisesRegex(MLAEvidenceBlocked, "applicability required"):
             self._bridge(applicability=forged, applicability_verifier=impostor)
 
@@ -351,41 +377,83 @@ class DivergedApplicabilityAdmissionTests(unittest.TestCase):
         with self.assertRaises(ApplicabilityAdmissionError):
             inert.seal(make_unsigned_approval())
 
-    def test_n20_unwitnessed_execution_rejected(self):
+    def test_n20_unreserved_runner_entry_rejected(self):
         self._admit()
         self.store.append_evidence(self.evidence)
-        self.gate.accept(self.evidence, self.receipt)  # acceptance never witnessed
+        self.gate.accept(self.evidence, self.receipt)  # nonce never reserved
         with self.assertRaises(MLAEvidenceBlocked):
             self._bridge()
 
     def test_n21_approval_release_commit_swap_rejected(self):
-        # Validly sealed and admitted on a fresh ledger, but bound to another
-        # tagged release than the case pin (R1 review P2-01).
+        # Validly sealed and admitted on a fresh ledger with a valid reserved
+        # and gate-accepted entry, but bound to another tagged release than
+        # the case pin.
         self._record()
         other = self._fresh_verifier()
         swapped = other.seal(make_unsigned_approval(release_commit="4"*40))
         other.admit(swapped)
-        other.witness_execution(self.evidence)
+        nonce = other.reserve_execution(case_id=self.case["case_id"], scope=self.scope)
+        receipt = make_runner_receipt(self.evidence, nonce=nonce)
+        self.gate.accept(self.evidence, receipt)
         with self.assertRaises(MLAEvidenceBlocked):
-            self._bridge(applicability=swapped, applicability_verifier=other)
+            self._bridge(applicability=swapped, applicability_verifier=other,
+                         receipt=receipt)
 
     def test_n22_approval_source_revision_swap_rejected(self):
         self._record()
         other = self._fresh_verifier()
         swapped = other.seal(make_unsigned_approval(source_revision="other-branch"))
         other.admit(swapped)
-        other.witness_execution(self.evidence)
+        nonce = other.reserve_execution(case_id=self.case["case_id"], scope=self.scope)
+        receipt = make_runner_receipt(self.evidence, nonce=nonce)
+        self.gate.accept(self.evidence, receipt)
         with self.assertRaises(MLAEvidenceBlocked):
-            self._bridge(applicability=swapped, applicability_verifier=other)
+            self._bridge(applicability=swapped, applicability_verifier=other,
+                         receipt=receipt)
 
     def test_n23_approval_claim_scope_swap_rejected(self):
         self._record()
         other = self._fresh_verifier()
         swapped = other.seal(make_unsigned_approval(claim_scope="8"*64))
         other.admit(swapped)
-        other.witness_execution(self.evidence)
+        nonce = other.reserve_execution(case_id=self.case["case_id"], scope=self.scope)
+        receipt = make_runner_receipt(self.evidence, nonce=nonce)
+        self.gate.accept(self.evidence, receipt)
         with self.assertRaises(MLAEvidenceBlocked):
-            self._bridge(applicability=swapped, applicability_verifier=other)
+            self._bridge(applicability=swapped, applicability_verifier=other,
+                         receipt=receipt)
+
+    def test_n24_reservation_scope_binding_mismatch_rejected(self):
+        # A receipt nonce reserved against a DIFFERENT frozen scope must not
+        # admit this execution (R24 P1-01 reservation binding).
+        self._admit()
+        wrong_scope = FrozenExecutionScope(source_sha256=SOURCE, target_sha256="0"*64,
+                                           plan_sha256=PLAN, fixture_sha256=FIXTURE,
+                                           relation="DIVERGED")
+        nonce = self.verifier.reserve_execution(case_id=self.case["case_id"],
+                                                scope=wrong_scope)
+        self.receipt = make_runner_receipt(self.evidence, nonce=nonce)
+        self.store.append_evidence(self.evidence)
+        self.gate.accept(self.evidence, self.receipt)
+        with self.assertRaises(MLAEvidenceBlocked):
+            self._bridge()
+
+    def test_n25_runtime_root_pin_bootstrap_removed(self):
+        # R24 P1-02: no runtime first-writer pin API exists; with the shipped
+        # reviewed-source constant restored, every provisioning key (including
+        # the synthetic dev root) fails closed until a reviewed deployment
+        # commit replaces the fingerprint.
+        self._record()
+        self.assertFalse(hasattr(applicability, "pin_authority_root"))
+        self.assertFalse(hasattr(applicability, "_ROOT_PIN"))
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        with mock.patch.object(applicability, "AUTHORITY_ROOT_FINGERPRINT_SHA256",
+                               SHIPPED_PIN):
+            for key in (AUTHORITY_ROOT_KEY, IMPOSTOR_KEY):
+                with self.assertRaises(ApplicabilityAdmissionError):
+                    ApplicabilityVerifier.provision(
+                        root_key=key, authority_id=AUTHORITY_ID,
+                        approval_db=Path(tmp.name)/"p.sqlite")
 
 
 if __name__=="__main__":
