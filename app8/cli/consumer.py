@@ -12,7 +12,7 @@ from typing import Any, Mapping
 
 from app8.evidence.attestation import AttestationGate
 from app8.execution.docker_policy import ContainerRequest
-from app8.execution.docker_runner import RealDockerRunner
+from app8.execution.docker_runner import RealDockerRunner, RunnerBlocked, freeze_execution_plan
 from app8.qualification.service import qualify_stored_capability
 from app8.storage import EvidenceStore
 
@@ -84,10 +84,32 @@ def run_agent_cli(
         raise AgentConsumerBlocked("target is not exact pinned OCI artifact")
     if runner._config.environment_id != target["environment_id"]:
         raise AgentConsumerBlocked("trusted runner environment mismatch")
-    req = ContainerRequest(image_ref=image_ref,
-                           command=bindings[0]["address"],
-                           args=args, docker_cli_sha256=docker_cli_sha256)
-    observation = runner.execute(req)
+    # The qualified ledger proves only specific observed tasks, not every
+    # argument accepted by this CLI. Match a previously accepted, supported,
+    # fully frozen request before an Agent can use its observed invocation.
+    # The full-ledger qualifier above has authenticated every stored receipt.
+    approved_request = None
+    for ev in store.list_evidence_for_capability(capability["capability_id"]):
+        plan = ev["plan"]
+        if plan["binding_id"] != binding_id or ev["assessment"]["verdict"] != "SUPPORTED":
+            continue
+        budget = plan["budget"]
+        candidate = ContainerRequest(
+            image_ref=image_ref, command=bindings[0]["address"],
+            args=args, docker_cli_sha256=docker_cli_sha256,
+            wall_seconds=budget["wall_seconds"],
+            max_output_bytes=budget["max_output_bytes"],
+        )
+        try:
+            frozen = freeze_execution_plan(binding_id, plan["assertions"], candidate)
+        except RunnerBlocked:
+            continue
+        if frozen["plan_sha256"] == plan["plan_sha256"]:
+            approved_request = candidate
+            break
+    if approved_request is None:
+        raise AgentConsumerBlocked("CLI arguments are not a signed, scoped observed plan")
+    observation = runner.execute(approved_request)
     result = AgentToolResult(
         capability_id=capability["capability_id"],
         revision=capability["revision"],
