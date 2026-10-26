@@ -1,4 +1,7 @@
-# app8 Current Task DAG — v0.1 → v0.4 (engineering + empirical qualification)
+# app8 Current Task DAG — v0.1 → v0.4 (engineering + historical empirical qualification)
+
+> **Prospective current Product focus (2026-10-26):** [Capability Compiler MVP scope](../product/v0.4/CAPABILITY_COMPILER_MVP_SCOPE_R1.md), [L2 delta](../architecture/v0.4/CAPABILITY_COMPILER_MVP_L2_DELTA_R1.md), [parallel DAG](v0.4/CAPABILITY_COMPILER_MVP_DAG_R1.md). New CC01 #205 / CC02 #206 / CC03 #207 run in parallel after Product/L2 interface review; CC04 #208 performs joined *real Agent consumption/reuse* closure. CC progress **0/4**, actually demonstrated end-to-end assets **0/2**. Original SE10/SE11 four-asset research stays OPEN/NOT_RUN but **DEFERRED from CC-MVP**. The old **19/22** below is intentionally historical, not new MVP progress. Owner product direction accepted; PR #209 scope/L2 review pending; version release still BLOCKED.
+>
 
 > Live task-status register, not a replacement for the frozen v0.1 normative design.
 > Source of truth for current state: linked GitHub Issue/PR terminal and exact-SHA evidence.

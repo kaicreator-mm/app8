@@ -2,7 +2,10 @@
 
 app8 aims to turn existing software knowledge and **real observed behavior** into reusable Capabilities, then project a single factual authority into CLI, MCP, Skill, Agent documentation and search.
 
-## Current delivery state: v0.4 empirical evaluation reentry (package: v0.1.0a0 alpha)
+## Current delivery state: v0.4 Capability Compiler MVP pivot (package: v0.1.0a0 alpha)
+
+**2026-10-26 Owner direction:** prioritize a real **software knowledge → model-proposed user-job Capability → verifiable scoped Evidence → real Agent invocation → repeated reuse** vertical. See prospective [v0.4 MVP Product scope](docs/product/v0.4/CAPABILITY_COMPILER_MVP_SCOPE_R1.md), [L2 delta](docs/architecture/v0.4/CAPABILITY_COMPILER_MVP_L2_DELTA_R1.md) and [parallel new Task DAG](docs/implementation/v0.4/CAPABILITY_COMPILER_MVP_DAG_R1.md); PR #209 awaits independent Product/L2 review, so this is **not** an approved Release or frozen acceptance yet. New CC01–CC04 #205–#208: **0/4 tasks and 0/2 real end-to-end assets** currently done. Old 19/22 completed tasks count *historical* implementation/research work only and must not be shown as MVP acceptance. Original SE10/SE11, 7 H decisions and four-asset benchmarking retain their previous factual status, but are not default CC-MVP critical path. No main merge/release.
+
 
 **Product decision adopted:** [V04-PO-MLA-001](docs/product/v0.4/MULTI_LLM_OWNER_DECISION.md) — independent model adversarial proposals, deterministic source/real execution verification, and final human review limited to sampled/exception cases; [V04-MLA-1](docs/product/v0.4/MULTI_LLM_SUCCESSOR_PROTOCOL.md) is a contract candidate pending independent review and pre-run metric freeze. This does not constitute SE10/SE11 empirical PASS.
 
