@@ -15,7 +15,7 @@ versioned software knowledge + permitted bindings
   -> bounded positive / negative real observation
   -> durable authenticated Evidence + deterministic readiness
   -> compiled single-meaning Capability
-  -> one real permitted Agent-facing CLI/SDK adapter
+  -> one real permitted Agent-facing CLI adapter
   -> successful invocation + second-use without rediscovery
 ```
 
@@ -38,13 +38,17 @@ versioned software knowledge + permitted bindings
 
 ## D. Prospectively frozen-after-review acceptance (not self-asserted)
 
-One **complete, demonstrable** user-job Capability for **each of two independent software types** (FFmpeg native CLI and pandas library) is the desired minimal scope:
+One **complete, demonstrable** user-job Capability for **each of two independent software types** (FFmpeg native CLI and pandas library through a reviewed, pinned CLI entry point) is the desired minimal scope:
 
 1. **Discovery/compile**: actual model-origin/previously generated source candidate, exact source/blob, target and binding identity, user job, arguments/types, outputs, failure modes, side effects, negative boundaries. Never call a hand-authored static demo `autonomously model-generated`. If v4 P prompt cannot be attributed to an approved app8 product prompt, report external-proposal provenance honestly.
 2. **Reality**: at least one real positive execution and one adversarial/negative input *per selected capability* within an allowed Host/runner. Signed Evidence only when verification owner, nonce, digest and admissible scope genuinely align; otherwise `BLOCKED/NOT_RUN` (never synthesize valid-looking signed receipts).
 3. **Compile/readiness**: stored full ledger (including contradictions), deterministic readiness, no guessed `export_ready`; supports positive, negative, stale, wrong-version, unsupported and missing-Evidence terminal paths. A narrowed variant may be a **new distinct bounded claim** with independent acceptance, not retroactive repair of a refuted frozen test.
-4. **Actually consume**: one minimal working Agent-facing CLI or SDK adapter using a scoped ready Capability and the already trusted execution path; verified output from the real target. Metadata projections do not count as working adapters. The second consumer/use reuses persisted Capability without full source reread or fresh model inference.
+4. **Actually consume**: one minimal working Agent-facing CLI adapter using a scoped ready Capability and the already trusted execution path; verified output from the real target. Metadata projections do not count as working adapters. The second consumer/use reuses persisted Capability without full source reread or fresh model inference.
 5. **Prove ROI**: record the source read/model calls, real target outcomes, both consumer invocations, reuse without re-generating a wrapper, and reasons for blocked unsupported requests. Report **actual journeys completed / 2 assets** and real scoped export status; no SE10 human-Gold/SE11 hidden-claim accuracy claims.
+
+**R1 review fixes — concurrent build vs real acceptance.** CC01, CC02 and CC03 independently implement and test contracts with synthetic fixtures. CC04 alone joins the chosen typed candidate, truly signed source/target-scoped Evidence and real Agent use; lane-local fixtures never qualify the final case. The join tuple is `capability_id/revision, semantic_sha256, source SHA, target SHA, environment_id, binding_id, evidence_snapshot_sha256`.
+
+**CLI-first scope:** both FFmpeg and pandas have an approved CLI binding. pandas uses a reviewed, pinned Python entry point inside the existing trusted runner. The current five-projection verifier blocks LIBRARY_API-only readiness, so no SDK-only acceptance is claimed. CC02 must independently ground license `REVIEWED_COMPATIBLE` and target relation `SAME`; model-origin proposals cannot set either trusted disposition. CC04 requires a real Agent/tool-caller receipt, then a second independent task/session receipt with the same package pins and **zero source reread or new model proposal**; repeating a manual CLI command does not count.
 
 All five items are mandatory for **scoped CC-MVP READY**; failing any item means **PARTIAL/BLOCKED**, not a threshold relaxation. General product / GA release requires separately reviewed criteria and remains unproven.
 
