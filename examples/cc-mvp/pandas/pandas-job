@@ -1,0 +1,28 @@
+#!/usr/local/bin/python
+"""Fixed read-only pandas Capability demo, not a general Python executor."""
+import argparse
+import json
+from pathlib import Path
+
+import pandas as pd
+
+CSV = Path("/opt/ccmvp/orders.csv")
+
+
+def main(argv=None, *, csv_path=CSV):
+    parser = argparse.ArgumentParser(description="Summarize immutable orders")
+    parser.add_argument("--group-by", required=True, choices=("category",))
+    ns = parser.parse_args(argv)
+    data = pd.read_csv(csv_path)
+    if list(data.columns) != ["category", "amount"] or data.isna().any().any():
+        raise ValueError("invalid pinned fixture")
+    if not pd.api.types.is_numeric_dtype(data["amount"]):
+        raise ValueError("amount must be numeric")
+    totals = data.groupby(ns.group_by, sort=True)["amount"].sum()
+    result = {"count": int(len(data)), "totals": {str(k): int(v) for k, v in totals.items()}}
+    print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
