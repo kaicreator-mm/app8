@@ -6,7 +6,8 @@ from unittest.mock import patch
 
 from app8.cli.consumer import run_agent_cli, AgentConsumerBlocked
 from app8.evidence.attestation import AttestationGate
-from app8.execution.docker_runner import RealDockerRunner, RunnerConfig, RunnerObservation
+from app8.execution.docker_policy import ContainerRequest
+from app8.execution.docker_runner import RealDockerRunner, RunnerConfig, RunnerObservation, freeze_execution_plan
 from app8.qualification.service import Qualification
 from app8.readiness.policy import Readiness
 from app8.storage import EvidenceStore
@@ -60,14 +61,25 @@ class ConsumerTests(unittest.TestCase):
             allowlist=frozenset({(IMAGE, "/usr/bin/ffmpeg")}),
         )
         self.runner = RealDockerRunner(conf, signing_key=b"k" * 32)
-
-    def run_case(self, doc=None, *, session="task-A", binding="binding:ffmpeg"):
-        return run_agent_cli(
-            cap() if doc is None else doc,
-            store=self.store, gate=self.gate, signed_attestations={},
-            runner=self.runner, binding_id=binding, docker_cli_sha256="f" * 64,
-            args=("-version",), session_id=session,
+        self.approved_plan = freeze_execution_plan(
+            "binding:ffmpeg", ["exit_code==0"],
+            ContainerRequest(image_ref=IMAGE, command="/usr/bin/ffmpeg",
+                             args=("-version",), docker_cli_sha256="f" * 64),
         )
+
+    def run_case(self, doc=None, *, session="task-A", binding="binding:ffmpeg",
+                 args=("-version",), plan=None):
+        # Real qualification authenticates the complete stored ledger. The
+        # isolated unit tests mock qualification and its accepted plan only.
+        record = {"plan": self.approved_plan if plan is None else plan,
+                  "assessment": {"verdict": "SUPPORTED"}}
+        with patch.object(self.store, "list_evidence_for_capability", return_value=[record]):
+            return run_agent_cli(
+                cap() if doc is None else doc,
+                store=self.store, gate=self.gate, signed_attestations={},
+                runner=self.runner, binding_id=binding, docker_cli_sha256="f" * 64,
+                args=args, session_id=session,
+            )
 
     def test_scoped_tool_invocation_and_existing_store_event(self):
         with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier()), \
@@ -137,6 +149,21 @@ class ConsumerTests(unittest.TestCase):
              patch.object(self.runner, "execute") as exec_run:
             with self.assertRaises(AgentConsumerBlocked):
                 self.run_case(document)
+        exec_run.assert_not_called()
+
+    def test_unobserved_cli_args_do_not_inherit_observed_readiness(self):
+        with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier()), \
+             patch.object(self.runner, "execute") as exec_run:
+            with self.assertRaisesRegex(AgentConsumerBlocked, "signed, scoped"):
+                self.run_case(args=("-hide_banner", "-version"))
+        exec_run.assert_not_called()
+
+    def test_tampered_frozen_plan_does_not_authorize_cli(self):
+        plan = {**self.approved_plan, "plan_sha256": "0" * 64}
+        with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier()), \
+             patch.object(self.runner, "execute") as exec_run:
+            with self.assertRaisesRegex(AgentConsumerBlocked, "signed, scoped"):
+                self.run_case(plan=plan)
         exec_run.assert_not_called()
 
     def test_wrong_trust_objects_and_unbounded_session_fail(self):
