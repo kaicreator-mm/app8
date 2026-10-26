@@ -90,6 +90,19 @@ class ConsumerTests(unittest.TestCase):
         self.assertNotIn("stdout_base64", str(history))
         self.assertNotIn("stderr_base64", str(history))
 
+    def test_two_session_reuse_preserves_identity_without_recompilation(self):
+        """Synthetic caller sessions only; real Agent provenance is CC04."""
+        with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier()) as qualify, \
+             patch.object(self.runner, "execute", return_value=observed()) as run:
+            first = self.run_case(session="agent-task-001")
+            second = self.run_case(session="agent-task-002")
+        self.assertEqual(qualify.call_count, 2)
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual(first.capability_id, second.capability_id)
+        self.assertEqual(first.evidence_snapshot_sha256, second.evidence_snapshot_sha256)
+        self.assertNotEqual(first.session_id, second.session_id)
+        self.assertEqual(len(self.store.history(first.capability_id)), 2)
+
     def test_not_ready_does_not_execute(self):
         with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier(False)), \
              patch.object(self.runner, "execute") as exec_run:
