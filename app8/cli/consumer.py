@@ -5,6 +5,7 @@ The CC04 journey must independently establish real Agent caller/session identity
 """
 from __future__ import annotations
 
+from base64 import b64encode
 from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any, Mapping
@@ -34,6 +35,10 @@ class AgentToolResult:
     exit_code: int | None
     stdout_sha256: str
     stderr_sha256: str
+    stdout_base64: str
+    stderr_base64: str
+    stdout_truncated: bool
+    stderr_truncated: bool
     output_class: str = "REAL_RUNNER_OBSERVATION_NOT_PRODUCT_RELEASE"
 
 
@@ -96,6 +101,13 @@ def run_agent_cli(
         exit_code=observation.exit_code,
         stdout_sha256=sha256(observation.stdout).hexdigest(),
         stderr_sha256=sha256(observation.stderr).hexdigest(),
+        stdout_base64=b64encode(observation.stdout).decode("ascii"),
+        stderr_base64=b64encode(observation.stderr).decode("ascii"),
+        stdout_truncated=observation.stdout_truncated,
+        stderr_truncated=observation.stderr_truncated,
     )
-    store.append_event(capability["capability_id"], "AGENT_CLI_OBSERVED", vars(result))
+    # Audit only identity/digests; deliver bounded raw data to caller, not to ledger.
+    audit = {name: value for name, value in vars(result).items()
+             if name not in {"stdout_base64", "stderr_base64"}}
+    store.append_event(capability["capability_id"], "AGENT_CLI_OBSERVED", audit)
     return result
