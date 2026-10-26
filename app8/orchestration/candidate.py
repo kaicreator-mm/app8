@@ -9,8 +9,8 @@ from app8.contracts import validate_contract
 from app8.discovery import SourceDocument
 from app8.orchestration.plans import PlanError
 
-_SHA = re.compile(r"[0-9a-f]{64}\\Z")
-_ID = re.compile(r"[a-z0-9][a-z0-9._-]{3,123}\\Z")
+_SHA = re.compile(r"[0-9a-f]{64}\Z")
+_ID = re.compile(r"[a-z0-9][a-z0-9._-]{3,123}\Z")
 _SEMANTIC = frozenset({
     "name", "purpose", "user_job", "inputs", "outputs", "variants",
     "constraints", "negative_boundaries", "failure_modes", "side_effects",
