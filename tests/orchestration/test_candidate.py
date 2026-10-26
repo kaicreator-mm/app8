@@ -1,5 +1,4 @@
 """CC01: a model-derived proposal must never become trusted execution evidence."""
-import copy
 import unittest
 
 from app8.discovery import SourceDocument
