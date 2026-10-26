@@ -81,7 +81,14 @@ class ConsumerTests(unittest.TestCase):
         self.assertEqual(result.execution_status, "EXECUTED")
         self.assertEqual(result.session_id, "task-A")
         self.assertEqual(result.evidence_snapshot_sha256, "b" * 64)
-        self.assertNotEqual(self.store.history("cap:ffmpeg-inspect"), [])
+        self.assertEqual(result.stdout_base64, "b2s=")
+        self.assertEqual(result.stderr_base64, "")
+        self.assertFalse(result.stdout_truncated)
+        self.assertFalse(result.stderr_truncated)
+        history = self.store.history("cap:ffmpeg-inspect")
+        self.assertNotEqual(history, [])
+        self.assertNotIn("stdout_base64", str(history))
+        self.assertNotIn("stderr_base64", str(history))
 
     def test_not_ready_does_not_execute(self):
         with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier(False)), \
