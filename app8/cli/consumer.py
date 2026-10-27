@@ -80,8 +80,10 @@ def run_agent_cli(
         raise AgentConsumerBlocked("mutating CLI bindings excluded from MVP consumer")
     target = capability["target"]
     image_ref = target["identity"]
-    if not isinstance(image_ref, str) or not image_ref.endswith("@sha256:" + target["package_sha256"]):
-        raise AgentConsumerBlocked("target is not exact pinned OCI artifact")
+    if not isinstance(image_ref, str) or not (
+            image_ref.endswith("@sha256:" + target["package_sha256"]) or
+            image_ref == "sha256:" + target["package_sha256"]):
+        raise AgentConsumerBlocked("target is not an exact pinned registry digest or local image ID")
     if runner._config.environment_id != target["environment_id"]:
         raise AgentConsumerBlocked("trusted runner environment mismatch")
     # The qualified ledger proves only specific observed tasks, not every

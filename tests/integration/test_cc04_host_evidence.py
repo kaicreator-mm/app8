@@ -113,6 +113,15 @@ class CC04HostPreflightTests(unittest.TestCase):
         self.assertNotEqual(prepared[0][1]["plan_sha256"],
                             prepared[1][1]["plan_sha256"])
 
+    def test_real_host_preflight_accepts_only_full_local_content_address(self):
+        job = config()
+        local_id = "sha256:" + SHA
+        job["capability"]["target"]["identity"] = local_id
+        cap, cases = validate_job(job)
+        prepared = freeze_cases(cap, job["docker"], cases)
+        self.assertEqual(prepared[0][0].image_ref, local_id)
+        self.assertEqual(prepared[0][1]["binding_id"], "binding:csv")
+
     def test_later_unknown_assertion_rejected_in_preflight(self):
         from app8.execution.docker_runner import RunnerBlocked
         spec = config()
