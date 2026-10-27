@@ -22,6 +22,7 @@ from app8.evidence.attestation import AttestationGate
 from app8.execution.docker_runner import (
     RealDockerRunner, RunnerConfig, load_signing_key, policy_source_sha256,
 )
+from app8.projections.render import digest
 from app8.storage import EvidenceStore
 
 
@@ -96,6 +97,9 @@ def consume(*, job_file: Path, private_dir: Path, case_index: int, session_id: s
     payload.update({
         "schema_version": "app8-cc04-agent-use-v1",
         "operator_case_index": case_index,
+        "semantic_sha256": digest(admitted["semantic"]),
+        "target_identity": target["identity"],
+        "environment_id": target["environment_id"],
         "session_authentication": "EXTERNALLY_REQUIRED_NOT_PROVEN_BY_THIS_CLI",
         "release_qualified": False,
     })
