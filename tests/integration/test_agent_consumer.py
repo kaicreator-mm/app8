@@ -1,4 +1,7 @@
 """CC03 CLI bridge unit tests. Synthetic qualifier and runner receipts, NOT real Host."""
+import hashlib
+import hmac
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -6,6 +9,7 @@ from unittest.mock import patch
 
 from app8.cli.consumer import run_agent_cli, AgentConsumerBlocked
 from app8.evidence.attestation import AttestationGate
+from app8.evidence.ingress import import_signed_observation
 from app8.execution.docker_policy import ContainerRequest
 from app8.execution.docker_runner import RealDockerRunner, RunnerConfig, RunnerObservation, freeze_execution_plan
 from app8.qualification.service import Qualification
@@ -165,6 +169,102 @@ class ConsumerTests(unittest.TestCase):
             with self.assertRaisesRegex(AgentConsumerBlocked, "signed, scoped"):
                 self.run_case(plan=plan)
         exec_run.assert_not_called()
+
+    def test_genuine_accepted_ledger_runs_two_scoped_reuses(self):
+        """Exercise REAL local HMAC acceptance + complete ledger, mock Docker only.
+
+        This never claims real Docker or an independently authenticated Agent.
+        Unlike other CC03 tests, qualification is NOT patched.
+        """
+        source = {"repository": "FFmpeg/FFmpeg", "revision": "pinned-unit-source",
+                  "content_sha256": "f" * 64, "license_disposition": "REVIEWED_COMPATIBLE"}
+        target = {**cap()["target"], "mapping_relation": "SAME"}
+        binding = {**cap()["bindings"][0], "preconditions": []}
+        capability = {
+            "schema_version": "app8-capability-v1",
+            "capability_id": "cap:ffmpeg-inspect", "revision": 1,
+            "semantic": {
+                "name": "Read FFmpeg version", "purpose": "Inspect pinned runtime",
+                "user_job": "Read a pinned tool version without side effects",
+                "inputs": ["version argument"], "outputs": ["version text"],
+                "variants": [], "constraints": ["exact frozen argv"],
+                "negative_boundaries": ["different argv not admitted"],
+                "failure_modes": ["runtime unavailable"], "side_effects": [],
+            },
+            "source": source, "target": target, "bindings": [binding],
+            "evidence_refs": ["ev:cc03-real-ledger-fixture"],
+            "readiness": {
+                "lifecycle_state": "HYPOTHESIZED", "export_ready": False,
+                "derived_by_policy": True, "policy_revision": "unit-synthetic",
+                "reason_codes": ["NOT_YET_DERIVED"],
+            }, "projection_refs": [],
+        }
+        record_plan = {
+            key: value for key, value in self.approved_plan.items()
+            if key != "request_sha256"
+        }
+        ev = {
+            "schema_version": "app8-evidence-v1",
+            "evidence_id": "ev:cc03-real-ledger-fixture",
+            "claim_id": "claim:ffmpeg-version", "capability_id": capability["capability_id"],
+            "source": {k: source[k] for k in ("repository", "revision", "content_sha256")},
+            "target": target,
+            "fixture": {"content_sha256": "0" * 64,
+                        "input_description": "fixed -version",
+                        "reset_procedure": "synthetic unit fixture"},
+            "plan": record_plan,
+            "observation": {
+                "observer": "DETERMINISTIC_EXECUTION_ADAPTER",
+                "execution_status": "EXECUTED",
+                "invocation_sha256": "c" * 64, "exit_code": 0,
+                "stdout_sha256": hashlib.sha256(b"ok").hexdigest(),
+                "stderr_sha256": hashlib.sha256(b"").hexdigest(),
+                "artifacts": [], "recorded_at": "2026-10-27T00:00:00Z",
+            },
+            "assessment": {
+                "verdict": "SUPPORTED",
+                "assessor_kind": "DETERMINISTIC_ASSERTION_ENGINE",
+                "reason_codes": ["ASSERTIONS_PASSED"],
+            },
+            "replay": {"manifest_sha256": "d" * 64,
+                       "artifact_location": "LOCAL_CONTENT_ADDRESSED"},
+        }
+
+        def canonical(x):
+            return (json.dumps(x, sort_keys=True, separators=(",", ":"),
+                               ensure_ascii=False, allow_nan=False) + "\\n").encode("utf-8")
+
+        att = {
+            "schema_version": "app8-attested-evidence-v2",
+            "evidence_sha256": hashlib.sha256(canonical(ev)).hexdigest(),
+            "runner_id": "fixture-runner", "policy_sha256": "a" * 64,
+            "image_sha256": SHA, "nonce": "1" * 32,
+        }
+        att["mac_sha256"] = hmac.new(
+            b"synthetic-test-key-only".ljust(32, b"x"),
+            canonical(att), hashlib.sha256,
+        ).hexdigest()
+        import_signed_observation(self.store, self.gate, ev, att)
+        kwargs = dict(store=self.store, gate=self.gate,
+                      signed_attestations={ev["evidence_id"]: att},
+                      runner=self.runner, binding_id="binding:ffmpeg",
+                      docker_cli_sha256="f" * 64, args=("-version",))
+        with patch.object(self.runner, "execute", return_value=observed()) as execute:
+            first = run_agent_cli(capability, session_id="fixture-task-A", **kwargs)
+            second = run_agent_cli(capability, session_id="fixture-task-B", **kwargs)
+            self.assertEqual(execute.call_count, 2)
+            self.assertEqual(first.evidence_snapshot_sha256,
+                             second.evidence_snapshot_sha256)
+            self.assertEqual(first.stdout_base64, "b2s=")
+            self.assertEqual(second.stdout_base64, "b2s=")
+            self.assertNotEqual(first.session_id, second.session_id)
+
+        self.store.append_event(capability["capability_id"], "STALE",
+                                {"reason": "synthetic drift veto"})
+        with patch.object(self.runner, "execute") as denied:
+            with self.assertRaises(AgentConsumerBlocked):
+                run_agent_cli(capability, session_id="fixture-task-C", **kwargs)
+        denied.assert_not_called()
 
     def test_wrong_trust_objects_and_unbounded_session_fail(self):
         with self.assertRaises(AgentConsumerBlocked):
