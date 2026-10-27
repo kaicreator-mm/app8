@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from pathlib import Path
 from runpy import run_path
+import sys
 import unittest
 
 module = run_path(str(Path(__file__).resolve().parents[2] /
@@ -50,7 +51,7 @@ def config():
             "projection_refs": [],
         },
         "docker": {
-            "client_path": str(Path("/usr/bin/docker")),
+            "client_path": str(Path(sys.executable).resolve()),
             "client_sha256": SHA,
             "runner_id": "trusted-fixture",
             "environment_id": "test-env",
