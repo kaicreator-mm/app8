@@ -134,6 +134,28 @@ class ConsumerTests(unittest.TestCase):
                 self.run_case(binding="binding:other")
         exec_run.assert_not_called()
 
+    def test_local_image_id_keeps_exact_observed_plan_and_result(self):
+        local = "sha256:" + SHA
+        document = cap()
+        document["target"]["identity"] = local
+        local_plan = freeze_execution_plan(
+            "binding:ffmpeg", ["exit_code==0"],
+            ContainerRequest(image_ref=local, command="/usr/bin/ffmpeg",
+                             args=("-version",), docker_cli_sha256="f" * 64),
+        )
+        record = {"plan": local_plan, "assessment": {"verdict": "SUPPORTED"}}
+        with patch("app8.cli.consumer.qualify_stored_capability", return_value=qualifier()), \
+             patch.object(self.store, "list_evidence_for_capability", return_value=[record]), \
+             patch.object(self.runner, "execute", return_value=observed()) as execute:
+            result = run_agent_cli(
+                document, store=self.store, gate=self.gate, signed_attestations={},
+                runner=self.runner, binding_id="binding:ffmpeg",
+                docker_cli_sha256="f" * 64, args=("-version",),
+                session_id="scoped-local-host",
+            )
+        self.assertEqual(execute.call_args.args[0].image_ref, local)
+        self.assertEqual(result.stdout_base64, "b2s=")
+
     def test_wrong_image_digest_or_environment_rejected(self):
         for kind in ("target", "environment"):
             document = cap()
