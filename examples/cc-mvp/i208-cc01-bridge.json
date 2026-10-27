@@ -1,0 +1,234 @@
+{
+ "schema_version": "app8-i208-cc01-bridge-v1",
+ "executed_at": "2026-10-28",
+ "classification": "MODEL_PROPOSAL_ORIGIN_YES / CC01_COMPILER_PATH_UNPROVEN (historical) -> closed by this post-hoc minimal existing-API bridge",
+ "honesty_note": "The #208 Host jobs did NOT historically pass through CC01. This bridge was executed afterwards with the existing public functions; it creates NEW typed candidates, not retroactive history. Sealed model outputs are quoted verbatim, never modified.",
+ "assets": {
+  "ffmpeg": {
+   "executed_capability_id": "cap:cc04-ffmpeg-mux-data",
+   "bridge_candidate_id": "cap:v04-ffmpeg-004",
+   "envelope": {
+    "schema_version": "app8-typed-candidate-envelope-v1",
+    "origin": "MODEL_PROPOSAL_ONLY",
+    "proposal_sha256": "d4cf510591b5a3c1ac54abde6991a20dd6badd8fe543d9fa027b0d4cebc52526",
+    "source_anchor": "doc/muxers.texi @ git blob a2489760fcd9d95cc8eda1371b1d29e4f3ddaf5e",
+    "binding_origin": "UNTRUSTED_PROPOSAL",
+    "real_execution_status": "NOT_RUN",
+    "capability_promotion_allowed": false
+   },
+   "sealed_p_response_sha256": "1935555ae01f7c886fed43db09d817a249d8e25283062be537f88f7ff7fd0718",
+   "sealed_p_model": "deepseek-v4-pro",
+   "source_anchor": "doc/muxers.texi @ git blob a2489760fcd9d95cc8eda1371b1d29e4f3ddaf5e",
+   "hypothesis_freeze": {
+    "schema_version": "app8-hypothesis-freeze-v1",
+    "origin": "MODEL_PROPOSAL_ONLY",
+    "source_sha256": "64c7feadb1b59b2d7bad1055dd4bd54a10a45cdfff73acfd3724c3d2ed957512",
+    "proposal_sha256": "d4cf510591b5a3c1ac54abde6991a20dd6badd8fe543d9fa027b0d4cebc52526",
+    "source_revision": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8",
+    "hypotheses": [
+     {
+      "id": "V04-FFMPEG-004",
+      "user_job": "Mux the pinned rawvideo fixture through the generic `data` muxer: Raw muxers accept a single stream matching the designated codec and 'do not store timestamps or metadata'; the `data` muxer is described as 'Generic data muxer', accepts a single stream with any codec of any type, the input stream has to be selected using `-map`, and no extension is registered so `-f data` must be supplied. The copied output must equal the input bytes (12288 bytes; data demuxer at raw_packet_size 1024 reads 12 packets whose payloads reconstruct the input in order).",
+      "surface": "CLI",
+      "constraints": [
+       "no network",
+       "no file writes outside the /tmp tmpfs",
+       "read-only root filesystem"
+      ],
+      "source_anchor": "doc/muxers.texi @ git blob a2489760fcd9d95cc8eda1371b1d29e4f3ddaf5e"
+     }
+    ],
+    "evidence_claimed": false
+   },
+   "candidate": {
+    "schema_version": "app8-capability-v1",
+    "capability_id": "cap:v04-ffmpeg-004",
+    "revision": 1,
+    "semantic": {
+     "outputs": [
+      "one deterministic receipt line on stdout: result/bytes/sha256/packets/packet_bytes/chain"
+     ],
+     "constraints": [
+      "no network",
+      "no file writes outside the /tmp tmpfs",
+      "read-only root filesystem"
+     ],
+     "name": "FFmpeg data muxer raw copy inspection",
+     "variants": [],
+     "inputs": [
+      "no caller file input; pinned gray8 64x48 4-frame rawvideo fixture baked into the image at /opt/ccmvp/fixture/input_gray8_64x48_f4.raw"
+     ],
+     "side_effects": [],
+     "negative_boundaries": [
+      "out-of-range stream selection (-map 0:v:9) must fail with 'matches no streams' and write no output file"
+     ],
+     "failure_modes": [
+      "fixture or binary identity drift refuses to run",
+      "packet chain mismatch fails closed"
+     ],
+     "purpose": "Verify the pinned source-built FFmpeg copies one selected stream verbatim into the generic data muxer, from the V04-FFMPEG-004 model proposal",
+     "user_job": "Mux the pinned rawvideo fixture through the generic `data` muxer: Raw muxers accept a single stream matching the designated codec and 'do not store timestamps or metadata'; the `data` muxer is described as 'Generic data muxer', accepts a single stream with any codec of any type, the input stream has to be selected using `-map`, and no extension is registered so `-f data` must be supplied. The copied output must equal the input bytes (12288 bytes; data demuxer at raw_packet_size 1024 reads 12 packets whose payloads reconstruct the input in order)."
+    },
+    "source": {
+     "repository": "FFmpeg/FFmpeg",
+     "revision": "f2bf7a2440d1e49023e4b3ed0e224a8806d388b8",
+     "content_sha256": "64c7feadb1b59b2d7bad1055dd4bd54a10a45cdfff73acfd3724c3d2ed957512",
+     "license_disposition": "UNKNOWN"
+    },
+    "target": {
+     "identity": "sha256:1c9e656a250c3ad93cb8fa98071bbf065b9bd530c8a790f32ec3e37d21fda74e",
+     "package_sha256": "1c9e656a250c3ad93cb8fa98071bbf065b9bd530c8a790f32ec3e37d21fda74e",
+     "mapping_relation": "UNRESOLVED",
+     "environment_id": "docker-desktop-29.7.2-wsl2-win11-26300"
+    },
+    "bindings": [
+     {
+      "binding_id": "binding:ffmpeg-data",
+      "kind": "CLI",
+      "address": "/opt/ccmvp/ffmpeg-data-job",
+      "preconditions": [],
+      "side_effects": []
+     }
+    ],
+    "evidence_refs": [],
+    "readiness": {
+     "lifecycle_state": "HYPOTHESIZED",
+     "export_ready": false,
+     "derived_by_policy": true,
+     "policy_revision": "cc01-candidate-v1",
+     "reason_codes": [
+      "MODEL_PROPOSAL_ONLY",
+      "REAL_EVIDENCE_NOT_ADMITTED"
+     ]
+    },
+    "projection_refs": []
+   },
+   "join": {
+    "semantic_sha256_executed": "7c9d707fd3b417fc12931235a6bdbd50f3dfc70db97068dc2f7e55a5a2b26eef",
+    "semantic_sha256_candidate": "7c9d707fd3b417fc12931235a6bdbd50f3dfc70db97068dc2f7e55a5a2b26eef",
+    "semantic_equal": true,
+    "source_sha256": "64c7feadb1b59b2d7bad1055dd4bd54a10a45cdfff73acfd3724c3d2ed957512",
+    "target_identity": "sha256:1c9e656a250c3ad93cb8fa98071bbf065b9bd530c8a790f32ec3e37d21fda74e",
+    "binding_address": "/opt/ccmvp/ffmpeg-data-job",
+    "differences_by_design": [
+     "candidate.license_disposition=UNKNOWN vs executed REVIEWED_COMPATIBLE (CC01 proposes; admission raises)",
+     "candidate.mapping_relation=UNRESOLVED vs executed SAME (independently reviewed in #216/#217/#208 chain)",
+     "candidate.capability_id derived from the frozen case id, not the executed demo id"
+    ]
+   }
+  },
+  "pandas": {
+   "executed_capability_id": "cap:cc04-pandas-merge-m2m",
+   "bridge_candidate_id": "cap:v04-pandas-002",
+   "envelope": {
+    "schema_version": "app8-typed-candidate-envelope-v1",
+    "origin": "MODEL_PROPOSAL_ONLY",
+    "proposal_sha256": "ccc7d137d88ba6277c6b3cfcf90ec18bdb31e210512c70201b6fba475327c556",
+    "source_anchor": "doc/source/user_guide/merging.rst @ git blob 339b10aa7fd73a5ccb02b3a7b17102dc698b061d",
+    "binding_origin": "UNTRUSTED_PROPOSAL",
+    "real_execution_status": "NOT_RUN",
+    "capability_promotion_allowed": false
+   },
+   "sealed_p_response_sha256": "09659400757b7f21e6342132b86204320f7a5f695a54afc96943f99786338d4e",
+   "sealed_p_model": "deepseek-v4-pro",
+   "source_anchor": "doc/source/user_guide/merging.rst @ git blob 339b10aa7fd73a5ccb02b3a7b17102dc698b061d",
+   "hypothesis_freeze": {
+    "schema_version": "app8-hypothesis-freeze-v1",
+    "origin": "MODEL_PROPOSAL_ONLY",
+    "source_sha256": "26aee1ac6fceec129defa54d63ce894a15298e1e566c447ccfdbd8028e99b9ef",
+    "proposal_sha256": "ccc7d137d88ba6277c6b3cfcf90ec18bdb31e210512c70201b6fba475327c556",
+    "source_revision": "82c18c170b9aea7cbb96ef54b8005bed07c94220",
+    "hypotheses": [
+     {
+      "id": "V04-PANDAS-002",
+      "user_job": "Merge two pinned CSV frames on a duplicated key: A key combination appearing more than once in both tables produces the Cartesian product of associated data, and validate checks merge-key uniqueness before merge operations, with validate='one_to_one' shown to raise for a duplicate-key example. (P model proposal wording preserved from V04-PANDAS-002; see provenance record). Positive: print the canonical inner-merge result; negative: validate='one_to_one' must raise pandas.errors.MergeError and exit nonzero.",
+      "surface": "CLI",
+      "constraints": [
+       "no network",
+       "no file writes outside the /tmp tmpfs",
+       "read-only root filesystem"
+      ],
+      "source_anchor": "doc/source/user_guide/merging.rst @ git blob 339b10aa7fd73a5ccb02b3a7b17102dc698b061d"
+     }
+    ],
+    "evidence_claimed": false
+   },
+   "candidate": {
+    "schema_version": "app8-capability-v1",
+    "capability_id": "cap:v04-pandas-002",
+    "revision": 1,
+    "semantic": {
+     "outputs": [
+      "positive: canonical key,lval,rval CSV text on stdout (oracle-derived sha256 1510df55...); negative: exception class line on stderr"
+     ],
+     "constraints": [
+      "no network",
+      "no file writes outside the /tmp tmpfs",
+      "read-only root filesystem"
+     ],
+     "name": "Pandas many-to-many merge semantics inspection",
+     "variants": [],
+     "inputs": [
+      "pinned left.csv/right.csv baked into the image at /opt/ccmvp/merge (approved fixture SHAs 509bd460.../7f21b43e...)"
+     ],
+     "side_effects": [],
+     "negative_boundaries": [
+      "validate='one_to_one' raises pandas.errors.MergeError and exits 2 on the duplicate-key fixture"
+     ],
+     "failure_modes": [
+      "fixture SHA drift refuses admission at image build",
+      "unexpected validate success exits 5"
+     ],
+     "purpose": "Verify the pinned pandas wheel's documented many-to-many merge and uniqueness-validation behavior on pinned fixtures, from the V04-PANDAS-002 model proposal",
+     "user_job": "Merge two pinned CSV frames on a duplicated key: A key combination appearing more than once in both tables produces the Cartesian product of associated data, and validate checks merge-key uniqueness before merge operations, with validate='one_to_one' shown to raise for a duplicate-key example. (P model proposal wording preserved from V04-PANDAS-002; see provenance record). Positive: print the canonical inner-merge result; negative: validate='one_to_one' must raise pandas.errors.MergeError and exit nonzero."
+    },
+    "source": {
+     "repository": "pandas-dev/pandas",
+     "revision": "82c18c170b9aea7cbb96ef54b8005bed07c94220",
+     "content_sha256": "26aee1ac6fceec129defa54d63ce894a15298e1e566c447ccfdbd8028e99b9ef",
+     "license_disposition": "UNKNOWN"
+    },
+    "target": {
+     "identity": "sha256:7d134859d150c7b349ef997fa838b8925c0d646d649bb1eb824589c8dd4e4620",
+     "package_sha256": "7d134859d150c7b349ef997fa838b8925c0d646d649bb1eb824589c8dd4e4620",
+     "mapping_relation": "UNRESOLVED",
+     "environment_id": "docker-desktop-29.7.2-wsl2-win11-26300"
+    },
+    "bindings": [
+     {
+      "binding_id": "binding:pandas-merge",
+      "kind": "CLI",
+      "address": "/opt/ccmvp/pandas-merge-job",
+      "preconditions": [],
+      "side_effects": []
+     }
+    ],
+    "evidence_refs": [],
+    "readiness": {
+     "lifecycle_state": "HYPOTHESIZED",
+     "export_ready": false,
+     "derived_by_policy": true,
+     "policy_revision": "cc01-candidate-v1",
+     "reason_codes": [
+      "MODEL_PROPOSAL_ONLY",
+      "REAL_EVIDENCE_NOT_ADMITTED"
+     ]
+    },
+    "projection_refs": []
+   },
+   "join": {
+    "semantic_sha256_executed": "d923c5cd05ce036ef4d4b2de1d828353ece9ba2dd3ad7c58d54119d3243ed20b",
+    "semantic_sha256_candidate": "d923c5cd05ce036ef4d4b2de1d828353ece9ba2dd3ad7c58d54119d3243ed20b",
+    "semantic_equal": true,
+    "source_sha256": "26aee1ac6fceec129defa54d63ce894a15298e1e566c447ccfdbd8028e99b9ef",
+    "target_identity": "sha256:7d134859d150c7b349ef997fa838b8925c0d646d649bb1eb824589c8dd4e4620",
+    "binding_address": "/opt/ccmvp/pandas-merge-job",
+    "differences_by_design": [
+     "candidate.license_disposition=UNKNOWN vs executed REVIEWED_COMPATIBLE (CC01 proposes; admission raises)",
+     "candidate.mapping_relation=UNRESOLVED vs executed SAME (independently reviewed in #216/#217/#208 chain)",
+     "candidate.capability_id derived from the frozen case id, not the executed demo id"
+    ]
+   }
+  }
+ }
+}
