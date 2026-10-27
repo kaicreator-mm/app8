@@ -123,11 +123,11 @@ class CC04HostPreflightTests(unittest.TestCase):
             freeze_cases(cap, spec["docker"], cases)
 
     def test_unpinned_target_rejected_in_preflight(self):
-        from app8.execution.docker_policy import SandboxPolicyError
+        from app8.execution.docker_runner import RunnerBlocked
         spec = config()
         spec["capability"]["target"]["identity"] = "latest-unpinned"
         cap, cases = validate_job(spec)
-        with self.assertRaises(SandboxPolicyError):
+        with self.assertRaisesRegex(RunnerBlocked, "POLICY_REJECTED"):
             freeze_cases(cap, spec["docker"], cases)
 
     def test_environment_or_case_shape_drift_blocks(self):
