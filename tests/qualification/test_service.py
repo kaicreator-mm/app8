@@ -8,7 +8,7 @@ import unittest
 
 from app8.evidence.attestation import AttestationGate
 from app8.evidence.ingress import import_signed_observation
-from app8.qualification import qualify_stored_capability
+from app8.qualification import qualify_stored_capability, verify_evidence_link, EvidenceLinkError
 from app8.storage import EvidenceStore
 
 HEX0 = "0" * 64
@@ -180,6 +180,53 @@ class QualificationTests(unittest.TestCase):
         with self.assertRaises(Exception):
             self.store.list_evidence_for_capability("cap:json-parse", max_records=True)
 
+
+
+    def test_cc02_existing_signed_receipt_links_without_promoting(self):
+        ev = evidence("ev:positive")
+        self.add(ev, 1)
+        result = verify_evidence_link(capability(["ev:positive"]), ev, self.sidecars["ev:positive"], self.gate)
+        self.assertEqual(result.status, "AUTHENTICATED_LINK_NOT_RELEASE_QUALIFIED")
+        self.assertFalse(result.export_ready)
+        self.assertEqual(result.binding_id, "binding:json")
+
+    def test_cc02_unsigned_and_forged_sidecar_fail(self):
+        ev = evidence("ev:positive")
+        self.add(ev, 1)
+        with self.assertRaises(EvidenceLinkError):
+            verify_evidence_link(capability(["ev:positive"]), ev, {}, self.gate)
+        fake = dict(self.sidecars["ev:positive"])
+        fake["mac_sha256"] = "0" * 64
+        with self.assertRaises(EvidenceLinkError):
+            verify_evidence_link(capability(["ev:positive"]), ev, fake, self.gate)
+
+    def test_cc02_identity_mismatch_fails(self):
+        ev = evidence("ev:positive")
+        self.add(ev, 1)
+        original = capability(["ev:positive"])
+        changed = capability(["ev:positive"])
+        changed["target"]["environment_id"] = "wrong-host"
+        with self.assertRaises(EvidenceLinkError):
+            verify_evidence_link(changed, ev, self.sidecars["ev:positive"], self.gate)
+        changed = capability(["ev:positive"])
+        changed["bindings"][0]["binding_id"] = "binding:other"
+        with self.assertRaises(EvidenceLinkError):
+            verify_evidence_link(changed, ev, self.sidecars["ev:positive"], self.gate)
+        changed = capability([])
+        with self.assertRaises(EvidenceLinkError):
+            verify_evidence_link(changed, ev, self.sidecars["ev:positive"], self.gate)
+
+    def test_cc02_receipt_is_not_authority_for_license(self):
+        ev = evidence("ev:positive")
+        self.add(ev, 1)
+        changed = capability(["ev:positive"])
+        changed["source"]["license_disposition"] = "UNKNOWN"
+        # Link check only: full-ledger qualification remains BLOCKED.
+        linked = verify_evidence_link(changed, ev, self.sidecars["ev:positive"], self.gate)
+        self.assertFalse(linked.export_ready)
+        qualified = self.qualify(changed)
+        self.assertEqual(qualified.status, "BLOCKED")
+        self.assertEqual(qualified.readiness.reason_codes, ("LICENSE_DISPOSITION_NOT_REVIEWED",))
 
 if __name__ == "__main__":
     unittest.main()

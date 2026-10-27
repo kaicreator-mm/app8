@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+"""V04-PANDAS-002 bounded CLI: many-to-many merge + uniqueness validation.
+
+Model origin: P proposal (deepseek-v4-pro) for V04-PANDAS-002, doc-level
+hypothesis from the pinned merging.rst: a key combination appearing more than
+once in both tables produces the Cartesian product of associated data, and
+validate checks merge-key uniqueness before the merge, raising for a
+duplicate-key example. Expectations (7 rows, canonical SHA) were
+independently re-derived by the i150 oracle review, not taken from the model.
+Read-only rootfs: no writes, stdout only. Fail-closed, no retries.
+"""
+import pathlib
+import sys
+
+import pandas
+
+MERGE_DIR = pathlib.Path("/opt/ccmvp/merge")
+
+
+def canonical_m2m() -> str:
+    left = pandas.read_csv(MERGE_DIR / "left.csv")
+    right = pandas.read_csv(MERGE_DIR / "right.csv")
+    m2m = left.merge(right, on="key", how="inner", validate="many_to_many")
+    return "key,lval,rval\n" + "".join(
+        f"{r.key},{r.lval},{r.rval}\n"
+        for r in m2m.sort_values(["key", "lval", "rval"]).itertuples(index=False)
+    ).replace("\r\n", "\n")
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) == 1 and argv[0] == "m2m":
+        sys.stdout.write(canonical_m2m())
+        return 0
+    if len(argv) == 2 and argv[0] == "validate":
+        mode = argv[1]
+        if mode not in {"one_to_one", "many_to_one", "one_to_many"}:
+            print("error: unsupported validate mode", file=sys.stderr)
+            return 4
+        left = pandas.read_csv(MERGE_DIR / "left.csv")
+        right = pandas.read_csv(MERGE_DIR / "right.csv")
+        try:
+            left.merge(right, on="key", how="inner", validate=mode)
+        except pandas.errors.MergeError as exc:
+            print(f"error: {type(exc).__module__}.{type(exc).__name__}: {exc}",
+                  file=sys.stderr)
+            return 2
+        print("error: validate mode unexpectedly allowed the merge", file=sys.stderr)
+        return 5
+    print("error: usage: pandas-merge-job m2m | validate <one_to_one|many_to_one|one_to_many>",
+          file=sys.stderr)
+    return 4
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

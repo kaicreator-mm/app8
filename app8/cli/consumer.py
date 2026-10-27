@@ -1,0 +1,137 @@
+"""One scoped Agent-facing CLI consumer over the existing trusted Docker runner.
+
+This module is the bridge, not a new command executor or authorization service.
+The CC04 journey must independently establish real Agent caller/session identity.
+"""
+from __future__ import annotations
+
+from base64 import b64encode
+from dataclasses import dataclass
+from hashlib import sha256
+from typing import Any, Mapping
+
+from app8.evidence.attestation import AttestationGate
+from app8.execution.docker_policy import ContainerRequest
+from app8.execution.docker_runner import RealDockerRunner, RunnerBlocked, freeze_execution_plan
+from app8.qualification.service import qualify_stored_capability
+from app8.storage import EvidenceStore
+
+
+class AgentConsumerBlocked(ValueError):
+    """No qualified scoped Capability / approved target tool is available."""
+
+
+@dataclass(frozen=True)
+class AgentToolResult:
+    capability_id: str
+    revision: int
+    binding_id: str
+    evidence_snapshot_sha256: str
+    source_sha256: str
+    target_sha256: str
+    session_id: str
+    invocation_sha256: str
+    execution_status: str
+    exit_code: int | None
+    stdout_sha256: str
+    stderr_sha256: str
+    stdout_base64: str
+    stderr_base64: str
+    stdout_truncated: bool
+    stderr_truncated: bool
+    output_class: str = "REAL_RUNNER_OBSERVATION_NOT_PRODUCT_RELEASE"
+
+
+def run_agent_cli(
+    capability: dict[str, Any],
+    *,
+    store: EvidenceStore,
+    gate: AttestationGate,
+    signed_attestations: Mapping[str, dict[str, Any]],
+    runner: RealDockerRunner,
+    binding_id: str,
+    docker_cli_sha256: str,
+    args: tuple[str, ...],
+    session_id: str,
+) -> AgentToolResult:
+    """Requalify full ledger on *every* real invocation, then use trusted runner.
+
+    Agent caller/session is supplied by the host and must be independently
+    authenticated by CC04; this module does NOT certify caller authenticity.
+    No caller path/target override, arbitrary subprocess or model permission.
+    """
+    if (type(store) is not EvidenceStore or type(gate) is not AttestationGate
+            or type(runner) is not RealDockerRunner):
+        raise AgentConsumerBlocked("trusted store, attestation gate and runner required")
+    if not isinstance(session_id, str) or not 1 <= len(session_id) <= 128 or any(ord(c) < 33 for c in session_id):
+        raise AgentConsumerBlocked("bounded trusted session identity required")
+    if not isinstance(binding_id, str) or not binding_id:
+        raise AgentConsumerBlocked("exact binding ID required")
+    qualified = qualify_stored_capability(
+        capability, store=store, attestation_gate=gate, signed_attestations=signed_attestations
+    )
+    if qualified.status != "SCOPED_EXPORT_READY" or not qualified.readiness.export_ready:
+        raise AgentConsumerBlocked("Capability not qualified for scoped consumption")
+    bindings = [b for b in capability["bindings"]
+                if b["kind"] == "CLI" and b["binding_id"] == binding_id]
+    if len(bindings) != 1:
+        raise AgentConsumerBlocked("requested pinned CLI binding not available")
+    if any(b["side_effects"] for b in bindings):
+        raise AgentConsumerBlocked("mutating CLI bindings excluded from MVP consumer")
+    target = capability["target"]
+    image_ref = target["identity"]
+    if not isinstance(image_ref, str) or not (
+            image_ref.endswith("@sha256:" + target["package_sha256"]) or
+            image_ref == "sha256:" + target["package_sha256"]):
+        raise AgentConsumerBlocked("target is not an exact pinned registry digest or local image ID")
+    if runner._config.environment_id != target["environment_id"]:
+        raise AgentConsumerBlocked("trusted runner environment mismatch")
+    # The qualified ledger proves only specific observed tasks, not every
+    # argument accepted by this CLI. Match a previously accepted, supported,
+    # fully frozen request before an Agent can use its observed invocation.
+    # The full-ledger qualifier above has authenticated every stored receipt.
+    approved_request = None
+    for ev in store.list_evidence_for_capability(capability["capability_id"]):
+        plan = ev["plan"]
+        if plan["binding_id"] != binding_id or ev["assessment"]["verdict"] != "SUPPORTED":
+            continue
+        budget = plan["budget"]
+        candidate = ContainerRequest(
+            image_ref=image_ref, command=bindings[0]["address"],
+            args=args, docker_cli_sha256=docker_cli_sha256,
+            wall_seconds=budget["wall_seconds"],
+            max_output_bytes=budget["max_output_bytes"],
+        )
+        try:
+            frozen = freeze_execution_plan(binding_id, plan["assertions"], candidate)
+        except RunnerBlocked:
+            continue
+        if frozen["plan_sha256"] == plan["plan_sha256"]:
+            approved_request = candidate
+            break
+    if approved_request is None:
+        raise AgentConsumerBlocked("CLI arguments are not a signed, scoped observed plan")
+    observation = runner.execute(approved_request)
+    result = AgentToolResult(
+        capability_id=capability["capability_id"],
+        revision=capability["revision"],
+        binding_id=binding_id,
+        evidence_snapshot_sha256=qualified.evidence_snapshot_sha256,
+        source_sha256=capability["source"]["content_sha256"],
+        target_sha256=target["package_sha256"],
+        session_id=session_id,
+        invocation_sha256=observation.invocation_sha256,
+        execution_status=observation.status,
+        exit_code=observation.exit_code,
+        stdout_sha256=sha256(observation.stdout).hexdigest(),
+        stderr_sha256=sha256(observation.stderr).hexdigest(),
+        stdout_base64=b64encode(observation.stdout).decode("ascii"),
+        stderr_base64=b64encode(observation.stderr).decode("ascii"),
+        stdout_truncated=observation.stdout_truncated,
+        stderr_truncated=observation.stderr_truncated,
+    )
+    # Audit only identity/digests; deliver bounded raw data to caller, not to ledger.
+    audit = {name: value for name, value in vars(result).items()
+             if name not in {"stdout_base64", "stderr_base64"}}
+    store.append_event(capability["capability_id"], "AGENT_CLI_OBSERVED", audit)
+    return result
