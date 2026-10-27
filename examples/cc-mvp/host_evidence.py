@@ -89,6 +89,8 @@ def freeze_cases(cap: dict, docker: dict, cases: list[dict]) -> list[tuple[Conta
     binding = cap["bindings"][0]
     prepared = []
     for case in cases:
+        for assertion in case["assertions"]:
+            RealDockerRunner._parse_assertion(assertion)
         req = ContainerRequest(
             image_ref=cap["target"]["identity"], command=binding["address"],
             args=tuple(case["args"]), docker_cli_sha256=docker["client_sha256"],
