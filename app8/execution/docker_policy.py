@@ -64,8 +64,9 @@ def prepare_docker_sandbox(request: ContainerRequest) -> PreparedSandbox:
     if not isinstance(request.image_ref, str):
         raise SandboxPolicyError("image must be text")
     # Immutable registry RepoDigest OR the exact content-addressed Docker
-    # image ID present on this approved Host. Never accept a tag, a pseudo
-    # repo@config-ID alias, a truncated ID, or a remote fetch.
+    # image ID present on this approved Host. Never accept a tag or
+    # truncated local ID; a repo@digest must be externally checked as a
+    # real RepoDigest, not a locally invented config-ID alias.
     m = _IMAGE.fullmatch(request.image_ref) or _LOCAL_IMAGE_ID.fullmatch(request.image_ref)
     if m is None:
         raise SandboxPolicyError(
