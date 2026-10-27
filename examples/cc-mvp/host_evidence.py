@@ -25,6 +25,7 @@ from app8.execution.docker_runner import (
     load_signing_key, policy_source_sha256,
 )
 from app8.qualification import qualify_stored_capability
+from app8.projections.render import digest
 from app8.storage import EvidenceStore
 
 
@@ -79,6 +80,24 @@ def validate_job(spec: dict) -> tuple[dict, list[dict]]:
     return cap, cases
 
 
+def freeze_cases(cap: dict, docker: dict, cases: list[dict]) -> list[tuple[ContainerRequest, dict]]:
+    """Validate ALL frozen requests before the first Docker invocation.
+
+    A malformed later case must not leave a partially executed private ledger.
+    This reuses the runner's existing assertion parser and request policy.
+    """
+    binding = cap["bindings"][0]
+    prepared = []
+    for case in cases:
+        req = ContainerRequest(
+            image_ref=cap["target"]["identity"], command=binding["address"],
+            args=tuple(case["args"]), docker_cli_sha256=docker["client_sha256"],
+        )
+        frozen = freeze_execution_plan(binding["binding_id"], case["assertions"], req)
+        prepared.append((req, frozen))
+    return prepared
+
+
 def _write_private(path: Path, obj: dict) -> None:
     path.write_text(json.dumps(obj, sort_keys=True, indent=2) + "\n",
                     encoding="utf-8")
@@ -97,6 +116,7 @@ def run(spec: dict, private_dir: Path) -> dict:
     if root.exists() and any(root.iterdir()):
         raise CC04Blocked("use an empty private directory per evidence admission")
     d = spec["docker"]
+    prepared_cases = freeze_cases(cap, d, cases)  # no Host action before all cases pass
     cli = Path(d["client_path"])
     if not cli.is_file() or cli.is_symlink():
         raise CC04Blocked("approved Docker client binary missing or symlinked")
@@ -124,14 +144,8 @@ def run(spec: dict, private_dir: Path) -> dict:
         policy_sha256=runner_cfg.policy_sha256, image_sha256=image_sha,
         nonce_db=root / "accepted-nonces.sqlite3",
     ) as gate:
-        for index, case in enumerate(cases, 1):
-            req = ContainerRequest(
-                image_ref=image, command=binding["address"],
-                args=tuple(case["args"]),
-                docker_cli_sha256=d["client_sha256"],
-            )
-            frozen = freeze_execution_plan(binding["binding_id"],
-                                           case["assertions"], req)
+        for index, (case, prepared) in enumerate(zip(cases, prepared_cases), 1):
+            req, frozen = prepared
             receipt = runner.execute_attest(
                 req, claim_id=case["claim_id"],
                 capability_id=cap["capability_id"], source=source,
@@ -148,6 +162,7 @@ def run(spec: dict, private_dir: Path) -> dict:
             records.append({
                 "case": index, "evidence_id": eid,
                 "evidence_sha256": imported.evidence_sha256,
+                "plan_sha256": frozen["plan_sha256"],
                 "verdict": receipt.evidence["assessment"]["verdict"],
                 "runner_status": receipt.observation.status,
                 "exit_code": receipt.observation.exit_code,
@@ -164,6 +179,13 @@ def run(spec: dict, private_dir: Path) -> dict:
         report = {
             "schema_version": "app8-cc04-host-receipt-v1",
             "capability_id": cap["capability_id"],
+            "capability_revision": cap["revision"],
+            "semantic_sha256": digest(cap["semantic"]),
+            "source_sha256": cap["source"]["content_sha256"],
+            "target_sha256": image_sha,
+            "target_identity": image,
+            "environment_id": runner_cfg.environment_id,
+            "binding_id": binding["binding_id"],
             "qualification": qualification.status,
             "evidence_snapshot_sha256": qualification.evidence_snapshot_sha256,
             "evidence": records,
