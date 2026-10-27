@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+import sys
 from unittest.mock import patch
 
 from app8.cli.consumer import run_agent_cli, AgentConsumerBlocked
@@ -60,7 +61,7 @@ class ConsumerTests(unittest.TestCase):
         self.addCleanup(self.gate.close)
         conf = RunnerConfig(
             runner_id="fixture-runner", policy_sha256="a" * 64,
-            client_argv_head=("/nonexistent/docker",),
+            client_argv_head=(str(Path(sys.executable).resolve()),),
             environment_id="fixture-env",
             allowlist=frozenset({(IMAGE, "/usr/bin/ffmpeg")}),
         )
