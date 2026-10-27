@@ -1,0 +1,106 @@
+#!/bin/sh
+# V04-FFMPEG-004 bounded CLI: generic data muxer raw-copy inspection.
+# Model origin: P proposal (deepseek-v4-pro) for V04-FFMPEG-004, doc-level
+# hypothesis from doc/muxers.texi (raw muxers accept a single stream, store no
+# timestamps/metadata; data muxer takes any single stream selected via -map;
+# no extension registered so -f data must be supplied). Expectations
+# independently derived by the i150 oracle (12288B, 12x1024 packets, chain).
+# Read-only rootfs: all writes go to /tmp tmpfs. Fail-closed, no retries.
+set -u
+
+FF=/opt/ccmvp/ffmpeg
+FP=/opt/ccmvp/ffprobe
+FIX=/opt/ccmvp/fixture/input_gray8_64x48_f4.raw
+EXPECT_SHA=cd2f9116cf8261de24cff1d83905f445acfa75b26c01aeb749e6cdff930612b9
+EXPECTED_CHAIN="f70be7b630a1a64523e668efaa6555e97a6a8711695c38eb83a149acee6c15eb
+fbc186d2f1e7be3681461393890722469711a4aef073e7cee3aa442d7c1e3ea7
+497ec2c6057edc3454d01fdeac85dd7dc5b721d2aa116dda43f8d9b830e6cf5c
+b9308fbbd37fcfff9512449bc7aa0c977999ca3e3266855349d3c278e9fd5512
+ca446e4b1094b812a328c845ae44cea7fd6340c612639bdf16aa6f71487e0210
+169462ae227a9c55e0079827e35ee49262a166b25b7a1b5ab6907c89a8814444
+180ab8d1f372acc916b0d046d9bea715e2538e577e3fe3d8dd1259458d876472
+04c56ff122875d6ab2966268b5a7e087a2be857fc6e8741cee703bfa814e3bcb
+153d0ece2910722e273e73a3d7482cc583cd868ebfd720e802e14958aa5b3479
+84774ebf145889ad3c8a1ad7058251effe0c8e7eebbcd535a598c78cd809c6af
+9f9fc23dff121ab44d0af282dac656ebc33d169a9465bf4d00b51cfbb504a96c
+e456ce1c0d7a610135cf95bae291b1134f1419d9d0de5c82a8402814315824cb"
+
+MODE="${1:-}"
+OUT=/tmp/output.data
+
+# Fixture bytes are pinned; refuse to run against a drifted image.
+ACTUAL_FIX_SHA=$(sha256sum "$FIX" | cut -d' ' -f1)
+if [ "$ACTUAL_FIX_SHA" != "$EXPECT_SHA" ]; then
+  echo "error: fixture sha drift: $ACTUAL_FIX_SHA" >&2
+  exit 6
+fi
+
+case "$MODE" in
+  mux)
+    "$FF" -nostdin -hide_banner -nostats -y \
+      -f rawvideo -pix_fmt gray8 -s 64x48 -r 10 -i "$FIX" \
+      -map 0:v:0 -c copy -f data "$OUT" > /tmp/mux.log 2>&1
+    RC=$?
+    if [ "$RC" -ne 0 ]; then
+      echo "error: mux failed rc=$RC" >&2
+      tail -2 /tmp/mux.log >&2
+      exit "$RC"
+    fi
+    SIZE=$(stat -c %s "$OUT")
+    SHA=$(sha256sum "$OUT" | cut -d' ' -f1)
+    if [ "$SIZE" -ne 12288 ] || [ "$SHA" != "$EXPECT_SHA" ]; then
+      echo "error: output identity mismatch size=$SIZE sha=$SHA" >&2
+      exit 7
+    fi
+    "$FP" -v error -f data -raw_packet_size 1024 -count_packets \
+      -show_packets -of json "$OUT" > /tmp/probe.json 2>/tmp/probe.err || {
+        echo "error: ffprobe failed" >&2; cat /tmp/probe.err >&2; exit 7; }
+    COUNT=$(grep -c '"size"' /tmp/probe.json)
+    SIZES=$(grep -o '"size": "[0-9]*"' /tmp/probe.json | grep -o '[0-9]*' | sort -u | tr '\n' ',')
+    if [ "$COUNT" -ne 12 ] || [ "$SIZES" != "1024," ]; then
+      echo "error: packet structure mismatch count=$COUNT sizes=$SIZES" >&2
+      exit 7
+    fi
+    # Demuxed packet payloads in order must reconstruct the pinned fixture.
+    i=0
+    CHAIN_OK=1
+    for want in $EXPECTED_CHAIN; do
+      dd if="$OUT" bs=1024 skip="$i" count=1 2>/dev/null | sha256sum | cut -d' ' -f1 > /tmp/chk.sha
+      read -r got < /tmp/chk.sha
+      if [ "$got" != "$want" ]; then CHAIN_OK=0; break; fi
+      i=$((i + 1))
+    done
+    if [ "$CHAIN_OK" -ne 1 ]; then
+      echo "error: packet chain mismatch at chunk $i" >&2
+      exit 7
+    fi
+    echo "result=PASS bytes=12288 sha256=$EXPECT_SHA packets=12 packet_bytes=1024 chain=12_OF_12_MATCH_IN_ORDER"
+    ;;
+  badmap)
+    # Doc-grounded negative: the input stream has to be selected via -map;
+    # an out-of-range selection must fail without writing an output file.
+    "$FF" -nostdin -hide_banner -nostats -y \
+      -f rawvideo -pix_fmt gray8 -s 64x48 -r 10 -i "$FIX" \
+      -map 0:v:9 -c copy -f data "$OUT" > /tmp/mux.log 2>&1
+    RC=$?
+    if [ "$RC" -eq 0 ]; then
+      echo "error: bad map unexpectedly succeeded" >&2
+      exit 5
+    fi
+    if [ -e "$OUT" ]; then
+      echo "error: output file written despite failure" >&2
+      exit 7
+    fi
+    grep -q "matches no streams" /tmp/mux.log || {
+      echo "error: unexpected failure mode (rc=$RC)" >&2
+      tail -3 /tmp/mux.log >&2
+      exit 8
+    }
+    echo "error: ffmpeg rc=$RC Stream map 0:v:9 matches no streams" >&2
+    exit "$RC"
+    ;;
+  *)
+    echo "error: unknown mode (expected: mux|badmap)" >&2
+    exit 4
+    ;;
+esac

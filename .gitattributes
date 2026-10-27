@@ -21,3 +21,16 @@
 /examples/cc-mvp/pandas/Dockerfile text eol=lf
 /examples/cc-mvp/pandas/pandas-job text eol=lf
 /examples/cc-mvp/pandas/orders.csv text eol=lf
+
+# CC04 model-origin task sources shipped from the actual #208 Host run
+# (PR #219 source-shipment delta). Same rationale as above: the CLI
+# entrypoints and build inputs must keep byte-identical LF on Windows
+# core.autocrlf=true checkouts so the Git blob SHA256 matches the executed
+# in-image bytes recorded in examples/cc-mvp/i208-source-manifest.json.
+/examples/cc-mvp/ffmpeg/data-job/Dockerfile text eol=lf
+/examples/cc-mvp/ffmpeg/data-job/ffmpeg-data-job text eol=lf
+/examples/cc-mvp/ffmpeg/data-job/gen_fixture.py text eol=lf
+/examples/cc-mvp/pandas/merge-job/Dockerfile text eol=lf
+/examples/cc-mvp/pandas/merge-job/pandas-merge-job text eol=lf
+/examples/cc-mvp/pandas/merge-job/merge/left.csv text eol=lf
+/examples/cc-mvp/pandas/merge-job/merge/right.csv text eol=lf
