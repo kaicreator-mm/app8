@@ -8,9 +8,6 @@ ROOT = Path(__file__).resolve().parents[2]
 checked_selection = run_path(
     str(ROOT / "examples" / "cc-mvp" / "agent_consume.py")
 )["checked_selection"]
-UseBlocked = run_path(
-    str(ROOT / "examples" / "cc-mvp" / "agent_consume.py")
-)["UseBlocked"]
 operator_job = run_path(
     str(ROOT / "tests" / "integration" / "test_cc04_host_evidence.py")
 )["config"]
