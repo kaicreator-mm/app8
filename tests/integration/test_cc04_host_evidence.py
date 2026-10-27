@@ -10,6 +10,7 @@ import unittest
 module = run_path(str(Path(__file__).resolve().parents[2] /
                       "examples" / "cc-mvp" / "host_evidence.py"))
 validate_job = module["validate_job"]
+freeze_cases = module["freeze_cases"]
 CC04Blocked = module["CC04Blocked"]
 
 SHA = "a" * 64
@@ -97,6 +98,37 @@ class CC04HostPreflightTests(unittest.TestCase):
                 job["capability"]["bindings"][0]["side_effects"] = ["file write"]
             with self.subTest(field=field), self.assertRaises(CC04Blocked):
                 validate_job(job)
+
+    def test_all_requests_use_exact_frozen_binding_and_plan(self):
+        spec = config()
+        spec["cases"].append(deepcopy(spec["cases"][0]))
+        spec["cases"][1]["claim_id"] = "claim:invalid-option"
+        spec["cases"][1]["args"] = ["--group-by", "wrong"]
+        spec["cases"][1]["assertions"] = ["exit_code==2"]
+        cap, cases = validate_job(spec)
+        prepared = freeze_cases(cap, spec["docker"], cases)
+        self.assertEqual(len(prepared), 2)
+        self.assertEqual(prepared[0][0].args, ("--group-by", "category"))
+        self.assertEqual(prepared[1][0].args, ("--group-by", "wrong"))
+        self.assertNotEqual(prepared[0][1]["plan_sha256"],
+                            prepared[1][1]["plan_sha256"])
+
+    def test_later_unknown_assertion_rejected_in_preflight(self):
+        from app8.execution.docker_runner import RunnerBlocked
+        spec = config()
+        spec["cases"].append(deepcopy(spec["cases"][0]))
+        spec["cases"][1]["assertions"] = ["model_said_pass"]
+        cap, cases = validate_job(spec)
+        with self.assertRaises(RunnerBlocked):
+            freeze_cases(cap, spec["docker"], cases)
+
+    def test_unpinned_target_rejected_in_preflight(self):
+        from app8.execution.docker_policy import SandboxPolicyError
+        spec = config()
+        spec["capability"]["target"]["identity"] = "latest-unpinned"
+        cap, cases = validate_job(spec)
+        with self.assertRaises(SandboxPolicyError):
+            freeze_cases(cap, spec["docker"], cases)
 
     def test_environment_or_case_shape_drift_blocks(self):
         for field in ("environment", "case_extra"):
