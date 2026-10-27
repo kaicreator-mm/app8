@@ -72,6 +72,8 @@ python examples/cc-mvp/host_evidence.py --job /private/reviewed-ffmpeg.json --pr
 python examples/cc-mvp/host_evidence.py --job /private/reviewed-pandas.json --private-dir /private/cc04-pandas-new
 ```
 
+All cases are checked for Docker policy conformance, exact argv and supported frozen assertion syntax **before the first Host execution**. `host-report.json` records the CC04 join identity (`capability_id`, revision, `semantic_sha256`, source SHA, target SHA, OCI identity, environment ID, binding ID, Evidence snapshot SHA and per-case frozen plan SHA). Compare those exact values across real Agent first/second use; a matching session label alone is insufficient.
+
 Run only on an explicitly authorized real Host and an **empty output directory**, one per asset. Nonzero exit means blocked/unready, never a silent PASS. Evidence artifacts, signed sidecars and selected Capability stay outside Git in the private directory. The emitted `host-report.json` deliberately says `agent_first_use=NOT_RUN`, `agent_second_use=NOT_RUN`, `mvp_release=NOT_QUALIFIED`. Afterwards an independently authenticated actual Agent must consume that persisted selected Capability via CC03's narrowly scoped `run_agent_cli`, then a **different** actual Agent task/session must reuse it without re-reading source or rerunning the proposal model. Store the externally verified Agent identities/results with the final CC04 report. A caller-supplied `session_id` string and two manual terminal invocations do not meet that gate.
 
 **This script and its Host images have not yet been run on the approved Host; execution, signatures and real Agent proof remain NOT_RUN.** Run focused Python tests on the exact joined source before real Host use.
