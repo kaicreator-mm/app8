@@ -13,3 +13,11 @@
 /research/e10/stage-c/stage_c.py text eol=lf
 /research/e11/stage-c/stage_c.py text eol=lf
 /research/e11/execution-targets/execution-target-selection.json text eol=lf
+
+# CC04 real Host image build: Windows core.autocrlf=true must not rewrite
+# Linux entrypoint shebang, bundled CSV bytes or Dockerfile commands.
+# 2026-10-27 PR #216 independent Host finding P1; preserve exact LF on checkout.
+/examples/cc-mvp/ffmpeg/Dockerfile text eol=lf
+/examples/cc-mvp/pandas/Dockerfile text eol=lf
+/examples/cc-mvp/pandas/pandas-job text eol=lf
+/examples/cc-mvp/pandas/orders.csv text eol=lf
