@@ -77,3 +77,33 @@ All cases are checked for Docker policy conformance, exact argv and supported fr
 Run only on an explicitly authorized real Host and an **empty output directory**, one per asset. Nonzero exit means blocked/unready, never a silent PASS. Evidence artifacts, signed sidecars and selected Capability stay outside Git in the private directory. The emitted `host-report.json` deliberately says `agent_first_use=NOT_RUN`, `agent_second_use=NOT_RUN`, `mvp_release=NOT_QUALIFIED`. Afterwards an independently authenticated actual Agent must consume that persisted selected Capability via CC03's narrowly scoped `run_agent_cli`, then a **different** actual Agent task/session must reuse it without re-reading source or rerunning the proposal model. Store the externally verified Agent identities/results with the final CC04 report. A caller-supplied `session_id` string and two manual terminal invocations do not meet that gate.
 
 **This script and its Host images have not yet been run on the approved Host; execution, signatures and real Agent proof remain NOT_RUN.** Run focused Python tests on the exact joined source before real Host use.
+
+## Actual Agent-facing consumer from persisted Evidence (CC04 final gate)
+
+`agent_consume.py` provides the **minimal executable handoff** from the private, already-qualified Host ledger to the existing `run_agent_cli` API. It does not create Evidence or a new sandbox/signature/client framework. It rechecks the original reviewed operator-job Capability (ignoring only populated `evidence_refs`), frozen case index, operator Docker client SHA, exact target/binding/environment, every signed receipt and complete-ledger readiness **on each call**. The selected args must match an authenticated previously-supported plan.
+
+Use this only after `host_evidence.py` has produced `capability.json`, `signed-attestations.json`, `accepted-nonces.sqlite3` and `store/` for the asset, with `SCOPED_EXPORT_READY` obtained from actual approved Host execution.
+
+```sh
+# Called by one independently authenticated real Agent task A,
+# NOT directly interpreted as proof of who issued the command:
+python examples/cc-mvp/agent_consume.py \
+  --job /private/reviewed-ffmpeg.json \
+  --private-dir /private/cc04-ffmpeg-new \
+  --case-index 1 --session-id REAL_AGENT_TASK_A
+
+# A different independently authenticated real Agent task B uses
+# the SAME stored Capability, job and private Evidence directory:
+python examples/cc-mvp/agent_consume.py \
+  --job /private/reviewed-ffmpeg.json \
+  --private-dir /private/cc04-ffmpeg-new \
+  --case-index 1 --session-id REAL_AGENT_TASK_B
+```
+
+Repeat for pandas, replacing the two private paths with the pandas job and ledger. Only use a case whose assertions were genuinely `SUPPORTED`; an expected invalid-input boundary may return nonzero and is not a successful Agent task by itself. The JSON result includes base64-encoded bounded stdout/stderr, real exit/status, invocation SHA, complete Evidence snapshot and scoped Capability identity. The event ledger stores hashes, not raw stdout/stderr.
+
+**Authentication limitation:** A `--session-id` string is **not** evidence that a separate real Agent was involved. The host-side Agent orchestrator must authenticate and retain two independent caller/task records, exact invocation and output hashes, snapshot and binding tuple; absent this, `session_authentication=EXTERNALLY_REQUIRED_NOT_PROVEN_BY_THIS_CLI` and `release_qualified=false` remain mandatory. Source-reading/LLM proposal regeneration must not occur between uses. Running this script twice manually proves only an operator smoke, never the two-Agent CC04 gate.
+
+Only the approved real Host should run this script with access to its private signing key and nonce database. Do not expose these paths or key to an untrusted Agent; the Host invokes the tool on behalf of authenticated Agents.
+
+**Execution status:** this consumer itself, real Docker image builds, actual signed Host executions and authenticated two-Agent reuse remain **NOT_RUN** until confirmed by independent Host receipts.
