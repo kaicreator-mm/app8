@@ -1,0 +1,70 @@
+{
+  "schema_version": "app8-i208-source-shipment-v1",
+  "purpose": "Byte-exact source shipment of the two model-origin CC04 CLIs and their image build recipes actually executed on the approved Host for issue #208 (V04-FFMPEG-004, V04-PANDAS-002), as requested by PR #219. Source-only: no signing key, no sealed model bytes, no oracle expectation files, no private ledgers.",
+  "baseline": "version/v0.4@e65e1a2c790606893475b0b345491f86105879e7",
+  "provenance_chain": {
+    "model_origin": "P role deepseek-v4-pro sealed paid responses (V04-FFMPEG-004 resp 1935555ae01f7c88..., V04-PANDAS-002 resp 09659400757b7f21...), read-only extraction recorded in the #208 Host report",
+    "expectations": "all expected values were independently derived by the earlier i150 oracle review/exec rounds, never taken from any model output",
+    "host_report": "https://github.com/kaicreator-mm/app8/issues/208#issuecomment-6454284485",
+    "local_image_id_policy": "PR #218 exact-HEAD R1 admitted bare sha256:<64hex> local content addresses"
+  },
+  "shipped_files": {
+    "examples/cc-mvp/ffmpeg/data-job/ffmpeg-data-job": {
+      "sha256": "ce2c2fc462e4c872bfc3c57f5cac4f98035b7070403b45f0c4d6d659672a1358",
+      "executed_source_path": "_tmp/i208-cc04/build/ffmpeg/ffmpeg-data-job",
+      "in_image_path": "/opt/ccmvp/ffmpeg-data-job",
+      "in_image_sha256_verified": "ce2c2fc462e4c872bfc3c57f5cac4f98035b7070403b45f0c4d6d659672a1358",
+      "executed_image": "app8-cc04-ffmpeg-i208:latest = sha256:1c9e656a250c3ad93cb8fa98071bbf065b9bd530c8a790f32ec3e37d21fda74e"
+    },
+    "examples/cc-mvp/ffmpeg/data-job/Dockerfile": {
+      "sha256": "184ad66ceebf5b52da3dc30a856e4ead41db5c1ac8aa6fb0d8d98caf9f20196a",
+      "executed_source_path": "_tmp/i208-cc04/build/ffmpeg/Dockerfile (same file name at execution; content byte-identical)",
+      "build_exit_code": 0
+    },
+    "examples/cc-mvp/ffmpeg/data-job/gen_fixture.py": {
+      "sha256": "8ef5395f262eec8d3719628ab01685f0c37325131ebb0d35e4ee7b2edfc140f4",
+      "note": "deterministic stdlib-only INPUT fixture generator from the earlier i150 private prep round, content preserved; regenerates fixture/input_gray8_64x48_f4.raw byte-exact (verified 2026-10-28, EXIT=0)"
+    },
+    "examples/cc-mvp/ffmpeg/data-job/fixture-manifest.json": {
+      "note": "public fixture identity + regeneration instructions; no oracle label content"
+    },
+    "examples/cc-mvp/pandas/merge-job/pandas-merge-job": {
+      "sha256": "cfeb999f8fcce5486311fba59b59506ea8ddbd3e93cf973c473825cf7b85472b",
+      "executed_source_path": "_tmp/i208-cc04/build/pandas/pandas-merge-job",
+      "in_image_path": "/opt/ccmvp/pandas-merge-job",
+      "in_image_sha256_verified": "cfeb999f8fcce5486311fba59b59506ea8ddbd3e93cf973c473825cf7b85472b",
+      "executed_image": "app8-cc04-pandas-i208:latest = sha256:7d134859d150c7b349ef997fa838b8925c0d646d649bb1eb824589c8dd4e4620"
+    },
+    "examples/cc-mvp/pandas/merge-job/Dockerfile": {
+      "sha256": "36f533c05ab7d5917b639be1c0131e3be16a474b0293658eb75a2b95850ff71f",
+      "executed_source_path": "_tmp/i208-cc04/build/pandas/Dockerfile (same file name at execution; content byte-identical)",
+      "build_exit_code": 0
+    },
+    "examples/cc-mvp/pandas/merge-job/merge/left.csv": {
+      "sha256": "509bd4605eafd3867e2136fb59bdb5c45c92ccfa2adb0530abc98e1a8e1ec997",
+      "note": "inert synthetic duplicate-key fixture input; SHA matches the i150 oracle approved-fixture record"
+    },
+    "examples/cc-mvp/pandas/merge-job/merge/right.csv": {
+      "sha256": "7f21b43e2750969cff21d70c66e34762bdeb04225363f09f9f9253e99447c964",
+      "note": "inert synthetic duplicate-key fixture input; SHA matches the i150 oracle approved-fixture record"
+    }
+  },
+  "not_shipped_and_why": {
+    "ffmpeg/ffprobe binaries": "large pinned build outputs (ffmpeg fb2e2c6895f9e8a740587b0e540dfdce888387d4dc73a5e6c50d5ce8cba56023, ffprobe bedd1eade64dffd2d72e9f8aa23d3487841b3501e9a74dad209c4f7b14bc0a2f); gitignored like the existing demo binary; obtain from the same source build or the existing pinned image",
+    "pandas/numpy/dateutil/six wheels": "large pinned wheels (SHAs asserted inside Dockerfile.merge-job); extract from the existing app8-cc04-pandas-pr216 image or the frozen wheel cache",
+    "runner HMAC key": "operator-owned, never in git (*.key gitignored)",
+    "sealed P/R/X responses, oracle expectation files": "private paid-model and oracle records; provenance summaries are public in the #208 report only",
+    "signed ledgers / agent session logs": "private evidence stores; identity digests are public in the #208 report"
+  },
+  "reproduction": {
+    "ffmpeg": "cd examples/cc-mvp/ffmpeg/data-job && python gen_fixture.py (verify sha256 cd2f9116...) && place pinned ffmpeg+ffprobe in this directory && docker build -t <tag> . && compare image ID sha256:1c9e656a250c3ad93cb8fa98071bbf065b9bd530c8a790f32ec3e37d21fda74e",
+    "pandas": "cd examples/cc-mvp/pandas/merge-job && extract the four pinned wheels into wheelhouse/ && docker build -t <tag> . && compare image ID sha256:7d134859d150c7b349ef997fa838b8925c0d646d649bb1eb824589c8dd4e4620",
+    "caveat": "image IDs reproduce only with the same base-image digests and Docker build determinism of the approved Host; byte-identity of the shipped sources themselves is the reviewable invariant"
+  },
+  "verification_commands_for_reviewer": [
+    "git grep -c '' -- examples/cc-mvp/ffmpeg/data-job/ffmpeg-data-job",
+    "sha256sum examples/cc-mvp/ffmpeg/data-job/ffmpeg-data-job examples/cc-mvp/pandas/merge-job/pandas-merge-job examples/cc-mvp/pandas/merge-job/merge/left.csv examples/cc-mvp/pandas/merge-job/merge/right.csv",
+    "docker create app8-cc04-ffmpeg-i208:latest && docker cp <cid>:/opt/ccmvp/ffmpeg-data-job - | sha256sum  (expect ce2c2fc4...)",
+    "docker create app8-cc04-pandas-i208:latest && docker cp <cid>:/opt/ccmvp/pandas-merge-job - | sha256sum  (expect cfeb999f...)"
+  ]
+}

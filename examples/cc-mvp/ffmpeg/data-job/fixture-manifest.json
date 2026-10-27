@@ -1,0 +1,21 @@
+{
+  "schema_version": "app8-i208-fixture-manifest-v1",
+  "purpose": "Deterministic public regeneration of the V04-FFMPEG-004 input fixture used by the model-origin ffmpeg-data-job image build. This is an INPUT fixture only: no hidden expected-output or oracle label bytes are published here.",
+  "fixture": {
+    "path": "fixture/input_gray8_64x48_f4.raw",
+    "bytes": 12288,
+    "sha256": "cd2f9116cf8261de24cff1d83905f445acfa75b26c01aeb749e6cdff930612b9",
+    "generator": "gen_fixture.py",
+    "generator_command": "python gen_fixture.py",
+    "generator_verified_2026_10_28": true,
+    "content_layout": "4 frames of 64x48 gray8; per frame f, row y==0 is the frame-tag row byte(x)=(f+x)&0xFF, rows y>=1 are byte(x)=(x*31+y*17+f*53)&0xFF"
+  },
+  "provenance": {
+    "first_prepared": "2026-10-25 i150 oracle prep round (private Host record)",
+    "same_bytes_are_mux_output": "the data muxer copies the selected stream raw (no timestamps/metadata stored), so the muxed output.data carries this identical SHA256 — observed independently by the i150 oracle official run and the #208 model-origin capability run",
+    "public_references": [
+      "https://github.com/kaicreator-mm/app8/issues/208#issuecomment-6454284485",
+      "https://github.com/kaicreator-mm/app8/pull/218#issuecomment-6453389544"
+    ]
+  }
+}
