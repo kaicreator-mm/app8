@@ -232,7 +232,7 @@ class ConsumerTests(unittest.TestCase):
 
         def canonical(x):
             return (json.dumps(x, sort_keys=True, separators=(",", ":"),
-                               ensure_ascii=False, allow_nan=False) + "\\n").encode("utf-8")
+                               ensure_ascii=False, allow_nan=False) + "\n").encode("utf-8")
 
         att = {
             "schema_version": "app8-attested-evidence-v2",
