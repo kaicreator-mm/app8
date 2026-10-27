@@ -15,6 +15,7 @@ import re
 
 _DIGEST = re.compile(r"[0-9a-f]{64}\Z")
 _IMAGE = re.compile(r"[a-z0-9][a-z0-9._-]*(?:/[a-z0-9][a-z0-9._-]*)+@sha256:([0-9a-f]{64})\Z")
+_LOCAL_IMAGE_ID = re.compile(r"sha256:([0-9a-f]{64})\Z")  # Host-local content address, not RepoDigest
 _FORBIDDEN_COMMANDS = frozenset({"/bin/sh", "/bin/bash", "/usr/bin/bash", "/bin/dash", "/usr/bin/env"})
 
 
@@ -62,9 +63,14 @@ def prepare_docker_sandbox(request: ContainerRequest) -> PreparedSandbox:
         raise SandboxPolicyError("typed ContainerRequest required")
     if not isinstance(request.image_ref, str):
         raise SandboxPolicyError("image must be text")
-    m = _IMAGE.fullmatch(request.image_ref)
+    # Immutable registry RepoDigest OR the exact content-addressed Docker
+    # image ID present on this approved Host. Never accept a tag, a pseudo
+    # repo@config-ID alias, a truncated ID, or a remote fetch.
+    m = _IMAGE.fullmatch(request.image_ref) or _LOCAL_IMAGE_ID.fullmatch(request.image_ref)
     if m is None:
-        raise SandboxPolicyError("OCI image must be path@sha256:64-lowercase-hex; tags forbidden")
+        raise SandboxPolicyError(
+            "image must be registry/path@sha256:<64hex> or local sha256:<64hex>; tags forbidden"
+        )
     if not isinstance(request.docker_cli_sha256, str) or not _DIGEST.fullmatch(request.docker_cli_sha256):
         raise SandboxPolicyError("exact Docker CLI SHA256 must be frozen")
     if not isinstance(request.command, str) or not request.command.startswith("/"):
