@@ -33,3 +33,45 @@ An expected-error observation can substantiate the documented input boundary; do
 After CC02 #211 and CC03 #212 pass their independent focused tests and merge `version/v0.4`, choose one real attributed model-origin task-level Capability per asset, preserve proposal origin, verify source/license/target authority, use the existing `RealDockerRunner.execute_attest` and `import_signed_observation` to produce genuine signed evidence, and run the full `qualify_stored_capability` ledger. The actual Agent consumes the scoped-ready Capability through the CC03 bridge and receives bounded real output bytes; a **second distinct actual task/session** must reuse the stored Capability without source reread or model-generation and have credible external Agent context (not a caller-supplied session string alone). Maintain the exact evidence snapshot tuple, real exit/result and honest `PASS/PARTIAL/BLOCKED` for each asset.
 
 **Current test scope:** Only the Python `pandas-job` algorithm has been executed outside the target container, using different installed pandas (2.2.3): fixed CSV => totals seeds=10, tools=15, exit 0; invalid group => argparse exit 2. The source-built wheel and FFmpeg bundle, actual Docker Host, signatures, model evidence, two Agent sessions and original SE10/SE11 Gold/hidden are **NOT_RUN**. This source-example PR is not a Release gate pass.
+
+## Minimal Host Evidence join (operator only)
+
+`host_evidence.py` now connects each reviewed selected Capability and 1–4 fixed cases to **existing** `RealDockerRunner.execute_attest`, `import_signed_observation`, `EvidenceStore` and `qualify_stored_capability`. It does **not** synthesize a model proposal, silently set `REVIEWED_COMPATIBLE` or `SAME`, authenticate a real Agent, or qualify a product release.
+
+Create one private JSON job per asset with exactly:
+
+```json
+{
+  "capability": "<full selected app8-capability-v1 JSON object, NOT a string>",
+  "docker": {
+    "client_path": "<absolute approved Docker CLI binary>",
+    "client_sha256": "<actual independently pinned 64-hex SHA256>",
+    "runner_id": "<operator-approved runner ID>",
+    "environment_id": "<identical to capability.target.environment_id>"
+  },
+  "cases": [
+    {
+      "claim_id": "claim:bounded-user-job",
+      "args": ["<reviewed exact arguments>"],
+      "assertions": ["exit_code==0"],
+      "fixture": {
+        "content_sha256": "<64-hex SHA256 of the reviewed fixture>",
+        "input_description": "<bounded real input description>",
+        "reset_procedure": "ephemeral pinned image; no network or Host mount"
+      }
+    }
+  ]
+}
+```
+
+Here `capability` is a **JSON object**, not the illustrative placeholder string. Input Capability must already have independent license `REVIEWED_COMPATIBLE`, target `SAME`, exactly one reviewed read-only CLI binding and **empty** `evidence_refs`; these are required prerequisites, not statements made by this program. Use actual binary/wheel OCI RepoDigest and exact runner environment; do not substitute bare parent images.
+
+```sh
+export APP8_RUNNER_HMAC_KEY_FILE=/private/operator-owned-runner-key
+python examples/cc-mvp/host_evidence.py --job /private/reviewed-ffmpeg.json --private-dir /private/cc04-ffmpeg-new
+python examples/cc-mvp/host_evidence.py --job /private/reviewed-pandas.json --private-dir /private/cc04-pandas-new
+```
+
+Run only on an explicitly authorized real Host and an **empty output directory**, one per asset. Nonzero exit means blocked/unready, never a silent PASS. Evidence artifacts, signed sidecars and selected Capability stay outside Git in the private directory. The emitted `host-report.json` deliberately says `agent_first_use=NOT_RUN`, `agent_second_use=NOT_RUN`, `mvp_release=NOT_QUALIFIED`. Afterwards an independently authenticated actual Agent must consume that persisted selected Capability via CC03's narrowly scoped `run_agent_cli`, then a **different** actual Agent task/session must reuse it without re-reading source or rerunning the proposal model. Store the externally verified Agent identities/results with the final CC04 report. A caller-supplied `session_id` string and two manual terminal invocations do not meet that gate.
+
+**This script and its Host images have not yet been run on the approved Host; execution, signatures and real Agent proof remain NOT_RUN.** Run focused Python tests on the exact joined source before real Host use.
